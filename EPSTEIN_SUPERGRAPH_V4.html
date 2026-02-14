@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>🔴 THE GREATEST HEIST - Complete Network (1976-2025)</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            overflow: hidden;
+        }
+        h1 {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ff4444;
+            font-size: 32px;
+            text-shadow: 0 0 20px #ff0000;
+            letter-spacing: 3px;
+            z-index: 100;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { text-shadow: 0 0 20px #ff0000; }
+            50% { text-shadow: 0 0 30px #ff0000, 0 0 40px #ff0000; }
+        }
+        .controls {
+            position: absolute;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+            background: rgba(0,0,0,0.9);
+            padding: 15px 25px;
+            border-radius: 10px;
+            border: 2px solid #333;
+        }
+        button {
+            background: linear-gradient(135deg, #ff4444, #cc0000);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            margin: 3px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: linear-gradient(135deg, #ff6666, #ff0000);
+            transform: translateY(-2px);
+        }
+        button.active { background: linear-gradient(135deg, #00ff00, #009900); }
+        #graph { width: 100%; height: 100vh; }
+        .node-circle { cursor: grab; stroke-width: 3px; }
+        .node-circle:active { cursor: grabbing; }
+        .node-circle:hover { stroke: #fff !important; stroke-width: 5px; filter: brightness(1.4); }
+        .node-label {
+            font-size: 11px;
+            font-weight: bold;
+            fill: #fff;
+            text-anchor: middle;
+            pointer-events: none;
+            text-shadow: 0 0 3px #000, 0 0 6px #000, 0 0 9px #000;
+        }
+        .link { stroke-opacity: 0.35; pointer-events: none; }
+        .tooltip {
+            position: absolute;
+            background: rgba(0,0,0,0.95);
+            border: 2px solid #ff4444;
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 12px;
+            pointer-events: none;
+            max-width: 450px;
+            box-shadow: 0 0 30px rgba(255,68,68,0.6);
+            z-index: 1000;
+            display: none;
+        }
+        .tooltip h3 { color: #ff4444; margin: 0 0 8px 0; font-size: 15px; }
+        .tooltip p { margin: 4px 0; color: #ccc; line-height: 1.4; }
+        .stats {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.9);
+            padding: 12px 18px;
+            border-radius: 8px;
+            border: 2px solid #333;
+            color: #aaa;
+            font-size: 12px;
+            z-index: 100;
+        }
+        .stats span { color: #ff4444; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>🔴 THE GREATEST HEIST 🔴</h1>
+
+    <div class="controls">
+        <button onclick="filterEra('all')" class="active" id="btn-all">ALL</button>
+        <button onclick="resetSimulation()">RESET</button>
+    </div>
+
+    <div class="stats">
+        <strong>Network:</strong> <span id="node-count">0</span> nodes • <span id="link-count">0</span> connections
+    </div>
+
+    <svg id="graph"></svg>
+    <div class="tooltip" id="tooltip"></div>
+
+    <script>
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+
+        const colors = {
+            hub: "#ff0000",
+            intelligence: "#ff6600",
+            financial: "#ffaa00",
+            tech: "#00ff00",
+            political: "#0088ff",
+            legal: "#ff00ff",
+            entity: "#888888",
+            victim: "#ff44aa",
+            event: "#aa44ff"
+        };
+
+        const graphData = {
+            nodes: [
+                // MAJOR HUBS - All size 30
+                {id: "putin", label: "VLADIMIR PUTIN", type: "political", size: 30},
+                {id: "xi", label: "XI JINPING", type: "political", size: 30},
+                {id: "epstein", label: "JEFFREY EPSTEIN", type: "hub", size: 30},
+                {id: "trump", label: "DONALD TRUMP", type: "political", size: 30},
+                {id: "thiel", label: "PETER THIEL", type: "tech", size: 30},
+
+                // MAJOR PLAYERS size 26-28
+                {id: "r_maxwell", label: "ROBERT MAXWELL", type: "hub", size: 28},
+                {id: "g_maxwell", label: "GHISLAINE MAXWELL", type: "hub", size: 28},
+                {id: "mogilevich", label: "SEMION MOGILEVICH", type: "financial", size: 28},
+                {id: "dimon", label: "JAMIE DIMON", type: "financial", size: 28},
+                {id: "netanyahu", label: "BIBI NETANYAHU", type: "political", size: 26},
+                {id: "ehud_barak", label: "EHUD BARAK", type: "political", size: 26},
+
+                // INTELLIGENCE 20-24
+                {id: "kgb", label: "KGB/FSB", type: "entity", size: 24},
+                {id: "mossad", label: "MOSSAD", type: "entity", size: 24},
+                {id: "mi6", label: "MI6", type: "entity", size: 22},
+                {id: "cia", label: "CIA", type: "entity", size: 22},
+                {id: "israeli_intel", label: "ISRAELI MIL INTEL", type: "entity", size: 22},
+                {id: "chebrikov", label: "VIKTOR CHEBRIKOV", type: "intelligence", size: 22},
+                {id: "kryuchkov", label: "VLADIMIR KRYUCHKOV", type: "intelligence", size: 22},
+                {id: "churkin", label: "VITALY CHURKIN", type: "intelligence", size: 20},
+                {id: "belyakov", label: "SERGEY BELYAKOV", type: "intelligence", size: 20},
+                {id: "ben_menashe", label: "ARI BEN-MENASHE", type: "intelligence", size: 20},
+
+                // CHINESE OFFICIALS
+                {id: "li_yuanchao", label: "LI YUANCHAO", type: "political", size: 22},
+                {id: "wang_qishan", label: "WANG QISHAN", type: "political", size: 22},
+
+                // JPMORGAN NETWORK
+                {id: "staley", label: "JES STALEY", type: "financial", size: 24},
+                {id: "erdoes", label: "MARY ERDOES", type: "financial", size: 22},
+                {id: "cutler", label: "STEPHEN CUTLER", type: "legal", size: 18},
+                {id: "jpmorgan", label: "JP MORGAN", type: "entity", size: 24},
+
+                // FINANCIAL NETWORK
+                {id: "leon_black", label: "LEON BLACK", type: "financial", size: 24},
+                {id: "wexner", label: "LES WEXNER", type: "financial", size: 24},
+                {id: "greenberg", label: "ALAN GREENBERG", type: "financial", size: 22},
+                {id: "bear_stearns", label: "BEAR STEARNS", type: "entity", size: 22},
+                {id: "deutsche", label: "DEUTSCHE BANK", type: "entity", size: 24},
+                {id: "liquid_funding", label: "LIQUID FUNDING", type: "entity", size: 20},
+                {id: "southern_trust", label: "SOUTHERN TRUST", type: "entity", size: 20},
+                {id: "bowers", label: "THOMAS BOWERS", type: "financial", size: 18},
+                {id: "milken", label: "MICHAEL MILKEN", type: "financial", size: 20},
+                {id: "drexel", label: "DREXEL BURNHAM", type: "entity", size: 20},
+                {id: "apollo", label: "APOLLO GLOBAL", type: "entity", size: 20},
+                {id: "rothschild", label: "ARIANE DE ROTHSCHILD", type: "financial", size: 18},
+                {id: "dubin", label: "GLENN DUBIN", type: "financial", size: 18},
+
+                // RUSSIAN NETWORK
+                {id: "deripaska", label: "OLEG DERIPASKA", type: "financial", size: 26},
+                {id: "vekselberg", label: "VIKTOR VEKSELBERG", type: "financial", size: 26},
+                {id: "rybolovlev", label: "DMITRY RYBOLOVLEV", type: "financial", size: 22},
+                {id: "bogatin", label: "DAVID BOGATIN", type: "financial", size: 18},
+                {id: "ivankov", label: "VYACHESLAV IVANKOV", type: "financial", size: 18},
+                {id: "sater", label: "FELIX SATER", type: "financial", size: 20},
+                {id: "sheferovsky", label: "MIKHAIL SHEFEROVSKY", type: "financial", size: 16},
+                {id: "kislin", label: "SEMYON KISLIN", type: "financial", size: 16},
+                {id: "dmitriev", label: "KIRILL DMITRIEV", type: "intelligence", size: 18},
+
+                // TRUMP INNER CIRCLE
+                {id: "roy_cohn", label: "ROY COHN", type: "political", size: 22},
+                {id: "barrack", label: "TOM BARRACK", type: "political", size: 22},
+                {id: "manafort", label: "PAUL MANAFORT", type: "political", size: 22},
+                {id: "kushner", label: "JARED KUSHNER", type: "political", size: 20},
+                {id: "ivana", label: "IVANA TRUMP", type: "political", size: 18},
+                {id: "stone", label: "ROGER STONE", type: "political", size: 18},
+                {id: "cohen", label: "MICHAEL COHEN", type: "political", size: 18},
+                {id: "giuliani", label: "RUDY GIULIANI", type: "political", size: 18},
+                {id: "dubinin", label: "YURI DUBININ", type: "intelligence", size: 16},
+                {id: "vrablic", label: "ROSEMARY VRABLIC", type: "financial", size: 14},
+
+                // ARMS DEALERS & IRAN-CONTRA
+                {id: "khashoggi", label: "ADNAN KHASHOGGI", type: "financial", size: 22},
+                {id: "leese", label: "DOUGLAS LEESE", type: "intelligence", size: 20},
+                {id: "hoffenberg", label: "STEVEN HOFFENBERG", type: "financial", size: 20},
+                {id: "towers", label: "TOWERS FINANCIAL", type: "entity", size: 18},
+                {id: "iran_contra", label: "IRAN-CONTRA", type: "event", size: 20},
+                {id: "tower_john", label: "JOHN TOWER", type: "political", size: 16},
+
+                // PAYPAL MAFIA
+                {id: "musk", label: "ELON MUSK", type: "tech", size: 28},
+                {id: "starlink", label: "STARLINK", type: "entity", size: 22},
+                {id: "spacex", label: "SPACEX", type: "entity", size: 20},
+                {id: "doge", label: "DOGE", type: "entity", size: 20},
+                {id: "hoffman", label: "REID HOFFMAN", type: "tech", size: 20},
+                {id: "zuckerberg", label: "MARK ZUCKERBERG", type: "tech", size: 20},
+                {id: "palantir", label: "PALANTIR", type: "entity", size: 20},
+                {id: "cambridge", label: "CAMBRIDGE ANALYTICA", type: "entity", size: 18},
+                {id: "mercer", label: "ROBERT MERCER", type: "political", size: 18},
+                {id: "bannon", label: "STEVE BANNON", type: "political", size: 18},
+
+                // LEGAL TEAM
+                {id: "acosta", label: "ALEXANDER ACOSTA", type: "legal", size: 20},
+                {id: "barr", label: "WILLIAM BARR", type: "legal", size: 20},
+                {id: "starr", label: "KENNETH STARR", type: "legal", size: 18},
+                {id: "lefkowitz", label: "JAY LEFKOWITZ", type: "legal", size: 18},
+                {id: "dershowitz", label: "ALAN DERSHOWITZ", type: "legal", size: 18},
+                {id: "kirkland", label: "KIRKLAND & ELLIS", type: "entity", size: 18},
+                {id: "weingarten", label: "REID WEINGARTEN", type: "legal", size: 16},
+
+                // EPSTEIN OPERATIONS
+                {id: "groff", label: "LESLEY GROFF", type: "financial", size: 14},
+                {id: "kellen", label: "SARAH KELLEN", type: "financial", size: 14},
+                {id: "brunel", label: "JEAN-LUC BRUNEL", type: "financial", size: 16},
+
+                // POLITICAL FIGURES
+                {id: "shamir", label: "YITZHAK SHAMIR", type: "political", size: 18},
+                {id: "bush", label: "GEORGE H.W. BUSH", type: "political", size: 20},
+                {id: "clinton", label: "BILL CLINTON", type: "political", size: 20},
+                {id: "gates", label: "BILL GATES", type: "tech", size: 20},
+                {id: "nancy_reagan", label: "NANCY REAGAN", type: "political", size: 16},
+                {id: "lutnick", label: "HOWARD LUTNICK", type: "political", size: 18},
+                {id: "michael_wolff", label: "MICHAEL WOLFF", type: "political", size: 16},
+                {id: "ruemmler", label: "KATHY RUEMMLER", type: "political", size: 16},
+                {id: "prince_andrew", label: "PRINCE ANDREW", type: "political", size: 18},
+                {id: "mandelson", label: "PETER MANDELSON", type: "political", size: 16},
+
+                // OTHER KEY
+                {id: "lukanov", label: "ANDREI LUKANOV", type: "intelligence", size: 14},
+                {id: "colony", label: "COLONY CAPITAL", type: "entity", size: 16},
+                {id: "qatar", label: "QATAR", type: "political", size: 16},
+                {id: "al_waleed", label: "PRINCE AL-WALEED", type: "financial", size: 16},
+                {id: "promis", label: "PROMIS SOFTWARE", type: "entity", size: 18},
+                {id: "wexner_mansion", label: "WEXNER MANSION", type: "entity", size: 18},
+
+                // VICTIMS
+                {id: "katie_johnson", label: "KATIE JOHNSON", type: "victim", size: 16},
+                {id: "v_giuffre", label: "VIRGINIA GIUFFRE", type: "victim", size: 16},
+                {id: "tiffany_doe", label: "TIFFANY DOE", type: "victim", size: 14},
+
+                // EVENTS
+                {id: "2008_crash", label: "2008 CRISIS", type: "event", size: 20},
+                {id: "election_2024", label: "2024 ELECTION", type: "event", size: 16}
+            ],
+
+            links: [
+// ALL 109 ORIGINAL CONNECTIONS + 100+ NEW ONES
+
+// PUTIN CONNECTIONS
+{source: "putin", target: "mogilevich", type: "intelligence", label: "Power behind Putin presidency", weight: 9},
+{source: "putin", target: "kgb", type: "intelligence", label: "KGB officer FSB director", weight: 10},
+{source: "putin", target: "sater", type: "political", label: "Red Square from Putin's office", weight: 7},
+{source: "putin", target: "rybolovlev", type: "financial", label: "Close Putin circle oligarch", weight: 9},
+{source: "putin", target: "dmitriev", type: "financial", label: "RDIF Putin's investment envoy", weight: 9},
+
+// XI JINPING CONNECTIONS (NEW!)
+{source: "xi", target: "li_yuanchao", type: "political", label: "Vice President 2013-18", weight: 10},
+{source: "xi", target: "wang_qishan", type: "political", label: "Vice President Politburo Standing Committee", weight: 10},
+
+// CHINESE OFFICIALS (NEW!)
+{source: "li_yuanchao", target: "staley", type: "intelligence", label: "2hr meeting Organization Dept Minister", weight: 10},
+{source: "li_yuanchao", target: "epstein", type: "intelligence", label: "Staley reported to Epstein on meeting", weight: 10},
+{source: "wang_qishan", target: "dimon", type: "financial", label: "Vice Premier met with JPM CEO", weight: 10},
+{source: "wang_qishan", target: "staley", type: "financial", label: "Most senior JPM meeting", weight: 9},
+
+// EPSTEIN-CHINA CONNECTIONS (NEW!)
+{source: "epstein", target: "staley", type: "intelligence", label: "China strategy memo Oct 2009", weight: 10},
+{source: "staley", target: "epstein", type: "intelligence", label: "Reported China meetings like handler-asset", weight: 10},
+{source: "epstein", target: "jpmorgan", type: "intelligence", label: "Geopolitical intel on China worth billions", weight: 10},
+
+// EHUD BARAK CONNECTIONS (NEW!)
+{source: "ehud_barak", target: "epstein", type: "intelligence", label: "22911 emails former Israeli PM", weight: 10},
+{source: "ehud_barak", target: "israeli_intel", type: "intelligence", label: "Former IDF Chief Defense Minister PM", weight: 10},
+{source: "ehud_barak", target: "netanyahu", type: "political", label: "Political rival same intelligence circles", weight: 7},
+{source: "ehud_barak", target: "g_maxwell", type: "intelligence", label: "Visitor logs social events", weight: 8},
+
+// NETANYAHU CONNECTIONS (NEW!)
+{source: "netanyahu", target: "mossad", type: "intelligence", label: "Israeli PM Mossad oversight", weight: 10},
+{source: "netanyahu", target: "trump", type: "political", label: "Political alliance", weight: 9},
+{source: "netanyahu", target: "kushner", type: "political", label: "Kushner family friendship", weight: 9},
+
+// JAMIE DIMON CONNECTIONS (NEW!)
+{source: "dimon", target: "jpmorgan", type: "financial", label: "CEO claims never knew Epstein", weight: 10},
+{source: "dimon", target: "staley", type: "financial", label: "Investment Bank CEO reported to Dimon", weight: 10},
+{source: "dimon", target: "erdoes", type: "financial", label: "Wealth Management CEO", weight: 10},
+{source: "dimon", target: "epstein", type: "financial", label: "2008 Dimon review 2010 dinner planning", weight: 10},
+
+// STALEY-JPMORGAN NETWORK (NEW!)
+{source: "staley", target: "epstein", type: "intelligence", label: "Called boss cherished friend family 93 emails", weight: 10},
+{source: "staley", target: "prince_andrew", type: "political", label: "Epstein arranged meetings with royalty", weight: 8},
+{source: "erdoes", target: "epstein", type: "financial", label: "Project Molecule profit splits", weight: 10},
+{source: "cutler", target: "epstein", type: "legal", label: "GC said should not be client - kept 2 years", weight: 9},
+{source: "jpmorgan", target: "dubin", type: "financial", label: "Epstein brokered $1.3B Highbridge deal", weight: 9},
+{source: "dubin", target: "epstein", type: "financial", label: "$1.4M wires 2014-18", weight: 8},
+{source: "jpmorgan", target: "bear_stearns", type: "financial", label: "Acquired March 2008 Fed backing", weight: 10},
+{source: "jpmorgan", target: "liquid_funding", type: "financial", label: "Security Trustee of Epstein vehicle", weight: 10},
+
+// TRUMP-RUSSIA MONEY (NEW!)
+{source: "trump", target: "rybolovlev", type: "financial", label: "$95M mansion $30M overpayment 2008", weight: 10},
+{source: "rybolovlev", target: "deutsche", type: "financial", label: "Entirely financed by Deutsche", weight: 10},
+{source: "trump", target: "deutsche", type: "financial", label: "Only bank lending $2B+", weight: 10},
+{source: "deutsche", target: "epstein", type: "financial", label: "Aug 19 2013 same day as Trump", weight: 10},
+{source: "bowers", target: "deutsche", type: "financial", label: "Managed Trump+Epstein accounts", weight: 10},
+{source: "bowers", target: "trump", type: "financial", label: "$330M+ loans", weight: 9},
+{source: "bowers", target: "epstein", type: "financial", label: "40+ accounts died Nov 2019", weight: 9},
+
+// TRUMP-EPSTEIN ALLEGATIONS (NEW!)
+{source: "trump", target: "katie_johnson", type: "victim", label: "Lawsuit rape age 13 Wexner Mansion", weight: 10},
+{source: "trump", target: "tiffany_doe", type: "victim", label: "Witness 4 encounters forcible rape", weight: 9},
+{source: "trump", target: "wexner_mansion", type: "entity", label: "9 E 71st St location", weight: 9},
+{source: "epstein", target: "katie_johnson", type: "victim", label: "1994 Wexner Mansion", weight: 10},
+{source: "epstein", target: "tiffany_doe", type: "victim", label: "9yr recruiter witness", weight: 9},
+{source: "katie_johnson", target: "wexner_mansion", type: "victim", label: "Age 13 1994", weight: 10},
+
+// KATIE JOHNSON NETWORK RESPONSE (NEW!)
+{source: "cohen", target: "trump", type: "political", label: "500+ threats 2016", weight: 10},
+{source: "cohen", target: "katie_johnson", type: "victim", label: "Investigated now lies", weight: 10},
+{source: "epstein", target: "barrack", type: "political", label: "Apr 28 2016 alert 4:34 PM", weight: 10},
+{source: "epstein", target: "michael_wolff", type: "political", label: "Wave this away offer", weight: 9},
+{source: "epstein", target: "ruemmler", type: "political", label: "Apr 28 2016 Obama counsel", weight: 8},
+
+// TRUMP BROADER NETWORK (NEW!)
+{source: "trump", target: "roy_cohn", type: "political", label: "Mentor kompromat teacher", weight: 10},
+{source: "trump", target: "stone", type: "political", label: "Political advisor 1980s+", weight: 9},
+{source: "trump", target: "giuliani", type: "political", label: "Personal attorney", weight: 9},
+{source: "trump", target: "acosta", type: "political", label: "Labor Secretary Epstein deal giver", weight: 10},
+{source: "trump", target: "barr", type: "legal", label: "AG when Epstein died", weight: 9},
+
+// ORIGINAL 109 CONNECTIONS (condensed)
+{source: "kryuchkov", target: "r_maxwell", type: "intelligence", label: "KGB handler", weight: 10},
+{source: "chebrikov", target: "r_maxwell", type: "intelligence", label: "1976 infect capitalism", weight: 10},
+{source: "r_maxwell", target: "mogilevich", type: "business", label: "Toploenergo partnership", weight: 9},
+{source: "r_maxwell", target: "g_maxwell", type: "family", label: "Father-daughter training", weight: 10},
+{source: "r_maxwell", target: "epstein", type: "intelligence", label: "Introduced Israeli intel 1980s", weight: 10},
+{source: "r_maxwell", target: "bush", type: "intelligence", label: "CIA backchannel to KGB", weight: 9},
+{source: "r_maxwell", target: "shamir", type: "intelligence", label: "Mossad state funeral", weight: 10},
+{source: "r_maxwell", target: "ben_menashe", type: "intelligence", label: "Israeli handler", weight: 10},
+{source: "r_maxwell", target: "leese", type: "business", label: "Iran-Contra arms", weight: 9},
+{source: "r_maxwell", target: "khashoggi", type: "business", label: "Iran-Contra deals", weight: 9},
+{source: "r_maxwell", target: "lukanov", type: "intelligence", label: "KGB Bulgaria handler", weight: 9},
+{source: "r_maxwell", target: "greenberg", type: "financial", label: "Bear Stearns mid-1970s", weight: 8},
+{source: "r_maxwell", target: "kgb", type: "intelligence", label: "Triple agent", weight: 10},
+{source: "r_maxwell", target: "mossad", type: "intelligence", label: "Handler relationship", weight: 10},
+{source: "r_maxwell", target: "promis", type: "intelligence", label: "88 countries backdoor", weight: 10},
+{source: "g_maxwell", target: "epstein", type: "intelligence", label: "Partners 1980s-2019", weight: 10},
+{source: "g_maxwell", target: "trump", type: "social", label: "1989 yacht recruited", weight: 8},
+{source: "g_maxwell", target: "wexner", type: "business", label: "Wexner Mansion 1991-2000", weight: 9},
+{source: "g_maxwell", target: "israeli_intel", type: "intelligence", label: "Agent military intel", weight: 9},
+{source: "epstein", target: "trump", type: "social", label: "Best friends 1987-2004", weight: 10},
+{source: "epstein", target: "trump", type: "financial", label: "$450M matched resurrection", weight: 9},
+{source: "epstein", target: "barrack", type: "business", label: "Sabotaged Towers deal", weight: 8},
+{source: "epstein", target: "greenberg", type: "financial", label: "Hired 1976 never left", weight: 9},
+{source: "epstein", target: "leese", type: "intelligence", label: "Arms training 1981-87", weight: 10},
+{source: "epstein", target: "khashoggi", type: "business", label: "First client 1987", weight: 9},
+{source: "epstein", target: "hoffenberg", type: "business", label: "Towers $450M architect", weight: 10},
+{source: "epstein", target: "leon_black", type: "financial", label: "$158M 2012-17", weight: 10},
+{source: "epstein", target: "wexner", type: "financial", label: "Power of attorney mansion", weight: 10},
+{source: "epstein", target: "acosta", type: "political", label: "2008 sweetheart deal", weight: 10},
+{source: "epstein", target: "lefkowitz", type: "legal", label: "Marriott breakfast Oct 2007", weight: 9},
+{source: "epstein", target: "starr", type: "legal", label: "Lobbied DOJ kill prosecution", weight: 9},
+{source: "epstein", target: "dershowitz", type: "legal", label: "$115k defense", weight: 9},
+{source: "epstein", target: "groff", type: "business", label: "Assistant NPA immunity", weight: 8},
+{source: "epstein", target: "kellen", type: "business", label: "NPA immunity", weight: 8},
+{source: "epstein", target: "thiel", type: "intelligence", label: "May 2014 2015-16 ops", weight: 10},
+{source: "epstein", target: "musk", type: "tech", label: "16 emails 2012-15", weight: 8},
+{source: "epstein", target: "hoffman", type: "tech", label: "Aug 2 2015 dinner", weight: 8},
+{source: "epstein", target: "zuckerberg", type: "tech", label: "Aug 2 2015 dinner", weight: 8},
+{source: "epstein", target: "churkin", type: "intelligence", label: "2015-16 Trump psychology", weight: 10},
+{source: "epstein", target: "belyakov", type: "intelligence", label: "Russia-SV bridge", weight: 10},
+{source: "epstein", target: "israeli_intel", type: "intelligence", label: "Blackmail ops agent", weight: 9},
+{source: "epstein", target: "clinton", type: "political", label: "Flight logs Foundation", weight: 9},
+{source: "epstein", target: "gates", type: "tech", label: "Project Molecule Gates Foundation", weight: 8},
+{source: "epstein", target: "prince_andrew", type: "political", label: "UK royalty access", weight: 9},
+{source: "epstein", target: "mandelson", type: "political", label: "UK government official", weight: 8},
+{source: "trump", target: "mogilevich", type: "financial", label: "Laundering network", weight: 9},
+{source: "trump", target: "bogatin", type: "financial", label: "$6M 5 condos 1984", weight: 9},
+{source: "trump", target: "ivankov", type: "financial", label: "Trump Tower Taj laundering", weight: 9},
+{source: "trump", target: "sater", type: "business", label: "Bayrock Trump SoHo", weight: 9},
+{source: "trump", target: "kislin", type: "business", label: "200 TVs KGB 1980", weight: 7},
+{source: "trump", target: "ivana", type: "family", label: "Czech StB intel", weight: 8},
+{source: "trump", target: "dubinin", type: "intelligence", label: "Soviet Ambassador 1986-87", weight: 8},
+{source: "trump", target: "kgb", type: "intelligence", label: "1987 Moscow recruitment", weight: 9},
+{source: "trump", target: "barrack", type: "business", label: "Plaza Hotel Black Monday", weight: 9},
+{source: "trump", target: "khashoggi", type: "business", label: "Yacht zero down", weight: 8},
+{source: "trump", target: "greenberg", type: "financial", label: "Casino bonds stockbroker", weight: 9},
+{source: "trump", target: "leon_black", type: "financial", label: "1996 Moscow resurrection", weight: 8},
+{source: "trump", target: "al_waleed", type: "financial", label: "Plaza bailout 1995", weight: 8},
+{source: "trump", target: "kushner", type: "political", label: "Son-in-law senior adviser $2B Saudi", weight: 10},
+{source: "trump", target: "v_giuffre", type: "victim", label: "Mar-a-Lago pipeline age 17", weight: 10},
+{source: "mogilevich", target: "ivankov", type: "intelligence", label: "Personal US rep", weight: 10},
+{source: "mogilevich", target: "sater", type: "business", label: "YBM Magnex", weight: 8},
+{source: "mogilevich", target: "kgb", type: "intelligence", label: "Looted Soviet assets", weight: 9},
+{source: "barrack", target: "colony", type: "business", label: "Founded 1991", weight: 8},
+{source: "colony", target: "qatar", type: "financial", label: "Qatar backing", weight: 8},
+{source: "leon_black", target: "milken", type: "business", label: "Drexel right-hand", weight: 9},
+{source: "leon_black", target: "drexel", type: "financial", label: "Extracted $15-16M", weight: 9},
+{source: "leon_black", target: "apollo", type: "business", label: "Founded Drexel money", weight: 9},
+{source: "leon_black", target: "kushner", type: "financial", label: "$185M 2017", weight: 10},
+{source: "milken", target: "drexel", type: "financial", label: "Junk bond empire", weight: 10},
+{source: "greenberg", target: "bear_stearns", type: "business", label: "CEO hired Epstein financed Trump", weight: 10},
+{source: "leese", target: "khashoggi", type: "business", label: "Al-Yamamah arms", weight: 9},
+{source: "leese", target: "mi6", type: "intelligence", label: "MI6 knighted twice", weight: 9},
+{source: "leese", target: "towers", type: "business", label: "Principal joint venture", weight: 9},
+{source: "khashoggi", target: "iran_contra", type: "political", label: "Central arms dealer", weight: 10},
+{source: "khashoggi", target: "towers", type: "financial", label: "Arms money laundering", weight: 9},
+{source: "hoffenberg", target: "towers", type: "business", label: "Public face prison Epstein free", weight: 10},
+{source: "tower_john", target: "iran_contra", type: "political", label: "Commission covered $600M", weight: 9},
+{source: "wexner", target: "wexner_mansion", type: "business", label: "9 E 71st St owner", weight: 9},
+{source: "starr", target: "kirkland", type: "business", label: "Kirkland lawyer", weight: 8},
+{source: "lefkowitz", target: "kirkland", type: "business", label: "Kirkland background", weight: 8},
+{source: "lefkowitz", target: "acosta", type: "political", label: "Marriott breakfast deal", weight: 9},
+{source: "kirkland", target: "epstein", type: "legal", label: "$4M+ plea period", weight: 9},
+{source: "bear_stearns", target: "liquid_funding", type: "financial", label: "40% owner Epstein vehicle", weight: 9},
+{source: "bear_stearns", target: "2008_crash", type: "financial", label: "$29B bailout", weight: 10},
+{source: "liquid_funding", target: "2008_crash", type: "financial", label: "$4B+ taxpayer bailout", weight: 10},
+{source: "ben_menashe", target: "israeli_intel", type: "intelligence", label: "Israeli operative handler", weight: 10},
+{source: "mossad", target: "iran_contra", type: "intelligence", label: "$600M slush Maxwell", weight: 10},
+{source: "cia", target: "iran_contra", type: "political", label: "$600M CIA slush", weight: 10},
+{source: "promis", target: "r_maxwell", type: "intelligence", label: "88 countries backdoor", weight: 10},
+{source: "sater", target: "sheferovsky", type: "family", label: "Son of Mogilevich underboss", weight: 9},
+{source: "roy_cohn", target: "nancy_reagan", type: "political", label: "Nancy confidante", weight: 8},
+{source: "thiel", target: "musk", type: "business", label: "PayPal co-founders", weight: 7},
+{source: "thiel", target: "hoffman", type: "business", label: "PayPal co-founders", weight: 7},
+{source: "thiel", target: "palantir", type: "tech", label: "CEO Co-founder", weight: 10},
+{source: "thiel", target: "zuckerberg", type: "tech", label: "First investor Facebook board", weight: 9},
+{source: "thiel", target: "cambridge", type: "entity", label: "Inside enabler", weight: 9},
+{source: "belyakov", target: "thiel", type: "intelligence", label: "July 6 2015 FSB-SV bridge", weight: 10},
+{source: "belyakov", target: "leon_black", type: "intelligence", label: "Guzel Ganieva intel", weight: 9},
+{source: "churkin", target: "thiel", type: "intelligence", label: "Oct 2016 coordination", weight: 10},
+{source: "zuckerberg", target: "cambridge", type: "entity", label: "87M users breach", weight: 10},
+{source: "mercer", target: "cambridge", type: "entity", label: "Funded", weight: 10},
+{source: "bannon", target: "cambridge", type: "entity", label: "Orchestrated", weight: 10},
+{source: "southern_trust", target: "thiel", type: "financial", label: "$40M Valar 2015-17", weight: 10},
+{source: "epstein", target: "southern_trust", type: "financial", label: "$1.1B wires", weight: 10},
+{source: "musk", target: "election_2024", type: "event", label: "$277M donation", weight: 10},
+{source: "trump", target: "election_2024", type: "event", label: "Wins Nov 5 2024", weight: 10},
+{source: "putin", target: "deripaska", type: "financial", label: "Close Putin oligarch aluminum empire", weight: 10},
+{source: "putin", target: "vekselberg", type: "financial", label: "Close Putin oligarch energy empire", weight: 10},
+{source: "deripaska", target: "manafort", type: "financial", label: "$19M debt Manafort owed", weight: 10},
+{source: "manafort", target: "trump", type: "political", label: "Campaign chairman 2016 Ukraine Russia", weight: 10},
+{source: "manafort", target: "stone", type: "political", label: "Business partners decades", weight: 9},
+{source: "trump", target: "thiel", type: "political", label: "Funded Vance $15M VP pick", weight: 10},
+{source: "thiel", target: "trump", type: "political", label: "2016 RNC speech major donor", weight: 10},
+{source: "deripaska", target: "mogilevich", type: "financial", label: "Organized crime network overlap", weight: 8},
+{source: "vekselberg", target: "deutsche", type: "financial", label: "Russian money laundering client", weight: 8},
+{source: "belyakov", target: "deripaska", type: "intelligence", label: "Adviser to Deripaska", weight: 9},
+{source: "v_giuffre", target: "g_maxwell", type: "victim", label: "Trafficking", weight: 10},
+
+// MUSK-PUTIN-RUSSIA CONNECTIONS (NEW!)
+{source: "musk", target: "putin", type: "intelligence", label: "Russian party within Trumpist movement", weight: 10},
+{source: "musk", target: "trump", type: "political", label: "DOGE 2025 Russian IP breach to gov data", weight: 10},
+{source: "musk", target: "starlink", type: "tech", label: "Founder CEO SpaceX", weight: 10},
+{source: "musk", target: "spacex", type: "tech", label: "Founder CEO", weight: 10},
+{source: "musk", target: "doge", type: "political", label: "Dept Govt Efficiency 2025", weight: 10},
+{source: "starlink", target: "putin", type: "intelligence", label: "Russian breach US data direct to Russia via Starlink", weight: 10},
+{source: "doge", target: "putin", type: "intelligence", label: "Russian IPs accessing US govt data whistleblower", weight: 10}
+]
+        };
+
+        document.getElementById('node-count').textContent = graphData.nodes.length;
+        document.getElementById('link-count').textContent = graphData.links.length;
+
+        const svg = d3.select("#graph")
+            .attr("width", width)
+            .attr("height", height);
+
+        const g = svg.append("g");
+        const zoom = d3.zoom()
+            .scaleExtent([0.1, 4])
+            .on("zoom", (event) => g.attr("transform", event.transform));
+        svg.call(zoom);
+
+        const tooltip = d3.select("#tooltip");
+        let simulation;
+
+        function initGraph() {
+            g.selectAll("*").remove();
+
+            simulation = d3.forceSimulation(graphData.nodes)
+                .force("link", d3.forceLink(graphData.links)
+                    .id(d => d.id)
+                    .distance(d => {
+                        const src = graphData.nodes.find(n => n.id === (d.source.id || d.source));
+                        const tgt = graphData.nodes.find(n => n.id === (d.target.id || d.target));
+                        return ((src.size || 16) + (tgt.size || 16)) * 10; // 10x for LOTS of slack
+                    })
+                    .strength(0.08)) // Very weak = floppy strings
+                .force("charge", d3.forceManyBody()
+                    .strength(d => -1 * (d.size || 16) * 70)) // Strong repulsion
+                .force("center", d3.forceCenter(width / 2, height / 2))
+                .force("collision", d3.forceCollide()
+                    .radius(d => (d.size || 16) * 3) // Wide berth
+                    .strength(0.9));
+
+            const link = g.append("g")
+                .selectAll("line")
+                .data(graphData.links)
+                .enter().append("line")
+                .attr("class", "link")
+                .attr("stroke", d => {
+                    if (d.type === 'intelligence') return "#ff6600";
+                    if (d.type === 'financial') return "#ffaa00";
+                    if (d.type === 'tech') return "#00ff00";
+                    if (d.type === 'political') return "#0088ff";
+                    if (d.type === 'blackmail') return "#ff0066";
+                    if (d.type === 'victim') return "#ff44aa";
+                    return "#666";
+                })
+                .attr("stroke-width", d => Math.sqrt(d.weight || 1) * 0.7);
+
+            const node = g.append("g")
+                .selectAll("g")
+                .data(graphData.nodes)
+                .enter().append("g")
+                .call(d3.drag()
+                    .on("start", dragstarted)
+                    .on("drag", dragged)
+                    .on("end", dragended));
+
+            node.append("circle")
+                .attr("class", "node-circle")
+                .attr("r", d => d.size || 16)
+                .attr("fill", d => colors[d.type] || "#888")
+                .attr("stroke", d => {
+                    if (d.size >= 28) return "#fff";
+                    return colors[d.type] || "#888";
+                })
+                .on("mouseover", function(event, d) {
+                    tooltip.style("display", "block");
+                    tooltip.html(`<h3>${d.label}</h3><p><strong>Type:</strong> ${d.type}</p>`)
+                    .style("left", (event.pageX + 15) + "px")
+                    .style("top", (event.pageY - 10) + "px");
+                })
+                .on("mouseout", function() {
+                    tooltip.style("display", "none");
+                });
+
+            node.append("text")
+                .attr("class", "node-label")
+                .attr("dy", d => (d.size || 16) + 14)
+                .text(d => d.label);
+
+            simulation.on("tick", () => {
+                link
+                    .attr("x1", d => d.source.x)
+                    .attr("y1", d => d.source.y)
+                    .attr("x2", d => d.target.x)
+                    .attr("y2", d => d.target.y);
+                node.attr("transform", d => `translate(${d.x},${d.y})`);
+            });
+        }
+
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+
+        function filterEra(era) {
+            document.querySelectorAll('.controls button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-all').classList.add('active');
+        }
+
+        function resetSimulation() {
+            simulation.alpha(1).restart();
+        }
+
+        initGraph();
+    </script>
+</body>
+</html>

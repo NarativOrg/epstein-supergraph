@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>🔴 THE GREATEST HEIST - Complete Network (1976-2025)</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        #container {
+            max-width: 100%;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #ff4444;
+            font-size: clamp(28px, 5vw, 48px);
+            text-shadow: 0 0 20px #ff0000;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { text-shadow: 0 0 20px #ff0000; }
+            50% { text-shadow: 0 0 30px #ff0000, 0 0 40px #ff0000; }
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #aaa;
+            font-size: clamp(16px, 3vw, 24px);
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .timeline {
+            text-align: center;
+            color: #ff6666;
+            font-size: clamp(14px, 2.5vw, 20px);
+            font-family: 'Courier New', monospace;
+            margin-bottom: 20px;
+        }
+
+        #graph {
+            width: 100%;
+            height: 900px;
+            border: 3px solid #333;
+            background: #0f0f0f;
+            border-radius: 10px;
+            box-shadow: 0 0 50px rgba(255, 68, 68, 0.4);
+        }
+
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: #1a1a1a;
+            border-radius: 10px;
+            border: 2px solid #333;
+        }
+
+        button {
+            background: linear-gradient(135deg, #ff4444, #cc0000);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            margin: 5px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: linear-gradient(135deg, #ff6666, #ff0000);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 68, 68, 0.4);
+        }
+
+        button.active {
+            background: linear-gradient(135deg, #00ff00, #009900);
+        }
+
+        .node-circle { cursor: pointer; stroke-width: 3px; }
+        .node-circle:hover { stroke: #fff !important; stroke-width: 6px; filter: brightness(1.5); }
+
+        .node-label {
+            font-size: 12px;
+            font-weight: bold;
+            fill: #fff;
+            text-anchor: middle;
+            pointer-events: none;
+            text-shadow: 0 0 5px #000, 0 0 10px #000;
+        }
+
+        .link { stroke-opacity: 0.6; }
+        .link:hover { stroke-opacity: 1; stroke-width: 4px; }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(0,0,0,0.95);
+            border: 2px solid #ff4444;
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 13px;
+            pointer-events: none;
+            max-width: 400px;
+            box-shadow: 0 0 30px rgba(255,68,68,0.6);
+            z-index: 1000;
+        }
+
+        .tooltip h3 {
+            color: #ff4444;
+            margin: 0 0 10px 0;
+            font-size: 16px;
+        }
+
+        .tooltip p {
+            margin: 5px 0;
+            color: #ccc;
+            line-height: 1.5;
+        }
+
+        .legend {
+            position: absolute;
+            top: 100px;
+            right: 20px;
+            background: rgba(0,0,0,0.9);
+            border: 2px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 12px;
+            max-width: 250px;
+        }
+
+        .legend h3 {
+            color: #ff4444;
+            margin: 0 0 10px 0;
+            font-size: 14px;
+        }
+
+        .legend-item {
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 10px;
+            border: 2px solid #fff;
+        }
+
+        .stats {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: #1a1a1a;
+            border-radius: 8px;
+            border: 2px solid #333;
+            color: #aaa;
+        }
+
+        .stats span {
+            color: #ff4444;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>🔴 THE GREATEST HEIST 🔴</h1>
+        <div class="subtitle">Complete Network Architecture (1976-2025)</div>
+        <div class="timeline">49 YEARS • 80+ NODES • 200+ CONNECTIONS</div>
+
+        <div class="controls">
+            <button onclick="filterEra('all')" class="active" id="btn-all">ALL ERAS</button>
+            <button onclick="filterEra('origins')" id="btn-origins">1976-1987: ORIGINS</button>
+            <button onclick="filterEra('extraction1')" id="btn-extraction1">1987-1996: FIRST EXTRACTION</button>
+            <button onclick="filterEra('blackmail')" id="btn-blackmail">1996-2008: BLACKMAIL MACHINE</button>
+            <button onclick="filterEra('heist')" id="btn-heist">2008: THE GREAT HEIST</button>
+            <button onclick="filterEra('2015')" id="btn-2015">2015-2016: ASSEMBLY</button>
+            <button onclick="filterEra('endgame')" id="btn-endgame">2020-2025: ENDGAME</button>
+            <button onclick="resetZoom()">RESET ZOOM</button>
+        </div>
+
+        <div class="stats">
+            <strong>Network Overview:</strong>
+            <span id="node-count">0</span> entities •
+            <span id="link-count">0</span> connections •
+            <span id="era-filter">All Eras</span>
+        </div>
+
+        <svg id="graph"></svg>
+
+        <div class="legend">
+            <h3>NODE TYPES</h3>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #ff0000;"></div>
+                <span>Hub/Central (Epstein, Maxwell)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #ff6600;"></div>
+                <span>Intelligence (KGB, Mossad)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #ffaa00;"></div>
+                <span>Financial (Banks, Funds)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #00ff00;"></div>
+                <span>Tech (PayPal Mafia)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #0088ff;"></div>
+                <span>Political (Trump, Barr)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #ff00ff;"></div>
+                <span>Legal/Enforcement</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #888888;"></div>
+                <span>Entity/Organization</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const width = document.getElementById('graph').clientWidth;
+        const height = 900;
+
+        // COMPLETE SUPERGRAPH DATA
+        const graphData = {
+            nodes: [
+                // === HUB (1970s-2019) ===
+                {id: "epstein", label: "JEFFREY\nEPSTEIN", type: "hub", era: ["origins", "extraction1", "blackmail", "heist", "2015"], desc: "Intelligence broker, financial engineer, blackmail operator. Hub connecting Russian intelligence → Silicon Valley → Finance (1976-2019)"},
+                {id: "r_maxwell", label: "ROBERT\nMAXWELL", type: "hub", era: ["origins", "extraction1"], desc: "Mastermind. KGB/Mossad/MI6 triple agent. 1976: Receives Chebrikov directive. Dies Nov 1991 near yacht."},
+                {id: "g_maxwell", label: "GHISLAINE\nMAXWELL", type: "hub", era: ["extraction1", "blackmail", "heist", "2015"], desc: "Robert's daughter. Inherits operation Nov 1991. Convicted 2021. Sentenced 20 years."},
+
+                // === INTELLIGENCE (1976-2017) ===
+                {id: "chebrikov", label: "VIKTOR\nCHEBRIKOV", type: "intelligence", era: ["origins"], desc: "KGB chief 1982-1988. 1976: Hands Maxwell envelope: 'Infect capitalism with our money. Learn the machinery. Bring about its downfall.'"},
+                {id: "kgb", label: "KGB/SVR", type: "intelligence", era: ["origins", "extraction1"], desc: "Soviet/Russian intelligence. Systematic cultivation of Trump through Ivana (1977-1987)."},
+                {id: "mossad", label: "MOSSAD", type: "intelligence", era: ["origins", "extraction1", "blackmail"], desc: "Israeli intelligence. Maxwell's handler. PROMIS software backdoor (1982)."},
+                {id: "mi6", label: "MI6", type: "intelligence", era: ["origins"], desc: "British intelligence. Maxwell simultaneously serving three intelligence services."},
+                {id: "churkin", label: "VITALY\nCHURKIN", type: "intelligence", era: ["2015"], desc: "Russia's UN Ambassador. 2015-2016: Receives Trump psychological profile from Epstein. 'Churkin was great. He understood Trump after our conversations.' Dies Feb 20, 2017."},
+                {id: "belyakov", label: "SERGEY\nBELYAKOV", type: "intelligence", era: ["2015"], desc: "FSB Academy graduate. July 6, 2015: Epstein introduces him to Peter Thiel (Russia-Silicon Valley bridge)."},
+
+                // === TRUMP NETWORK (1977-2025) ===
+                {id: "trump", label: "DONALD\nTRUMP", type: "political", era: ["origins", "extraction1", "blackmail", "heist", "2015", "endgame"], desc: "Money laundry, cultivated asset. 1977: Marries Ivana (KGB surveillance). 1987: Moscow trip. 1984-2016: Launders Russian mob money. President 2017-2021, 2025-present."},
+                {id: "ivana", label: "IVANA\nZELNÍČKOVÁ", type: "political", era: ["origins"], desc: "Czech citizen. KGB officer Yuri Shvets: 'Everybody who wanted to immigrate was approached with blackmail.' Marries Trump 1977."},
+                {id: "roy_cohn", label: "ROY\nCOHN", type: "political", era: ["origins"], desc: "Trump's lawyer/mentor. Mob connections. Facilitates 1981 Olympic Tower meeting with Khashoggi. Dies 1986."},
+                {id: "barr", label: "WILLIAM\nBARR", type: "legal", era: ["blackmail", "2015", "endgame"], desc: "His father Donald Barr hired Epstein at Dalton (no college degree). AG 2019-2021, oversees Epstein death cover-up."},
+                {id: "acosta", label: "ALEXANDER\nACOSTA", type: "legal", era: ["blackmail"], desc: "US Attorney who gave Epstein 2008 sweetheart deal. Becomes Trump's Labor Secretary 2017."},
+
+                // === ORGANIZED CRIME (1980s-1990s) ===
+                {id: "khashoggi", label: "ADNAN\nKHASHOGGI", type: "financial", era: ["origins", "extraction1"], desc: "Arms dealer, Iran-Contra. 1981: Meets Trump at Olympic Tower. His associate Douglas Leese recruits Epstein from Bear Stearns."},
+                {id: "mogilevich", label: "SEMION\nMOGILEVICH", type: "financial", era: ["origins", "extraction1", "blackmail"], desc: "Russian mob boss. Maxwell's partner. 1996: Trump at his Moscow party. $50B Soviet collapse money laundering."},
+                {id: "bogatin", label: "DAVID\nBOGATIN", type: "financial", era: ["origins"], desc: "Mogilevich lieutenant. 1984: Buys 5 Trump Tower condos with $6M cash. Trump personally attends closing."},
+                {id: "ivankov", label: "VYACHESLAV\nIVANKOV", type: "financial", era: ["origins", "extraction1"], desc: "Russian mob boss. Trump Taj Mahal back entrance, $1.5M daily cash processing."},
+                {id: "sater", label: "FELIX\nSATER", type: "financial", era: ["extraction1", "blackmail", "heist"], desc: "Russian mob. 1996: At Mogilevich party with Trump. Later Trump Organization senior adviser."},
+
+                // === FINANCIAL NETWORK (1980s-2020s) ===
+                {id: "hoffenberg", label: "STEVEN\nHOFFENBERG", type: "financial", era: ["origins", "extraction1"], desc: "Towers Financial $450M Ponzi (actually arms dealing). Provides devastating testimony about parallel structures. 'Truck by truck, file by file' - Ghislaine transferring operation."},
+                {id: "towers", label: "TOWERS\nFINANCIAL", type: "entity", era: ["origins", "extraction1"], desc: "$450M Ponzi scheme (1987-1993). Actually arms dealing operation. Epstein's training ground."},
+                {id: "j_epstein_co", label: "J. EPSTEIN\n& COMPANY", type: "entity", era: ["extraction1", "blackmail"], desc: "Launched Nov 1988. First client: Khashoggi. Only clients: billionaires. $1B+ minimum. Actually intelligence operation."},
+                {id: "leon_black", label: "LEON\nBLACK", type: "financial", era: ["extraction1", "heist", "2015"], desc: "Apollo Global CEO. $158M+ payments to Epstein (2012-2017). RDIF board member. Received Guzel Ganieva intelligence from Belyakov. Later: $185M to Kushner (2017)."},
+                {id: "wexner", label: "LES\nWEXNER", type: "financial", era: ["extraction1", "blackmail"], desc: "Victoria's Secret CEO. Gave Epstein power of attorney. Wexner Mansion (9 E 71st St NYC) = Katie Johnson rape location. $46M NYC townhouse to Epstein for $0."},
+                {id: "deutsche", label: "DEUTSCHE\nBANK", type: "entity", era: ["heist", "2015"], desc: "Aug 19, 2013: Trump AND Epstein open accounts SAME DAY (anniversary of 1991 Soviet coup). Same banker: Thomas Bowers. Both flagged for Russian transfers. Bowers 'suicide' Nov 2019."},
+                {id: "jpmorgan", label: "JP MORGAN\nCHASE", type: "entity", era: ["blackmail", "heist"], desc: "Epstein's bank 1998-2013. Jes Staley (exec) visited island, hundreds of emails. $4B+ Bear Stearns bailout includes Liquid Funding (Epstein chairman). 'Lost' Trump's pre-2000 banking records."},
+                {id: "bear_stearns", label: "BEAR\nSTEARNS", type: "entity", era: ["origins", "heist"], desc: "Epstein employed 1976-1981, leaves under insider trading cloud. 40% owner of Liquid Funding. Collapses April 2008, triggers financial crisis."},
+                {id: "liquid_funding", label: "LIQUID\nFUNDING LTD", type: "entity", era: ["heist"], desc: "Epstein = chairman 6 years. April 2008: Bear Stearns bailout pays Liquid Funding $4B+ taxpayer money. Epstein directly enriched by Fed."},
+                {id: "southern_trust", label: "SOUTHERN\nTRUST", type: "entity", era: ["2015"], desc: "USVI shell company. $1.1B wire transfers. $40M to Valar (Thiel) 2015-2017. JPMorgan SAR: Russian banks (Alfa, Sberbank)."},
+                {id: "rothschild", label: "ARIANE DE\nROTHSCHILD", type: "financial", era: ["2015"], desc: "Edmond de Rothschild CEO. Oct 5, 2015: $25M agreement with Epstein. Name appears 4,400+ times in DOJ files. RDIF banking connection."},
+
+                // === PAYPAL MAFIA (2012-2025) ===
+                {id: "thiel", label: "PETER\nTHIEL", type: "tech", era: ["2015", "endgame"], desc: "PayPal co-founder, Palantir CEO, Facebook board. July 6, 2015: Belyakov intro (Russia bridge). July 2016: RNC speech, Barrack intro. Oct 2016: Churkin coordination. 2024: Funded Vance $15M → VP. Received $40M from Southern Trust."},
+                {id: "musk", label: "ELON\nMUSK", type: "tech", era: ["2015", "endgame"], desc: "PayPal co-founder, Tesla/SpaceX. 16 emails with Epstein (2012-2015). Aug 2, 2015: Dinner with Hoffman, Zuckerberg, Epstein. 2024: $277M to Trump campaign, DOGE head."},
+                {id: "hoffman", label: "REID\nHOFFMAN", type: "tech", era: ["2015"], desc: "PayPal/LinkedIn. Aug 2, 2015: HOSTS dinner for Epstein, Musk, Zuckerberg. PayPal Mafia coordination."},
+                {id: "zuckerberg", label: "MARK\nZUCKERBERG", type: "tech", era: ["2015"], desc: "Facebook CEO. Aug 2, 2015: Dinner with Epstein, Musk, Hoffman. Thiel = first investor, board member. Cambridge Analytica data harvest 2014-2016."},
+                {id: "palantir", label: "PALANTIR", type: "entity", era: ["2015", "endgame"], desc: "Thiel's surveillance company. 2024: $10B+ gov contracts, 'OS for entire government.' Data infrastructure for intelligence state."},
+
+                // === BLACKMAIL OPERATION (1990s-2019) ===
+                {id: "maria_farmer", label: "MARIA\nFARMER", type: "victim", era: ["blackmail"], desc: "Artist. April 1996: FBI office, reports systematic surveillance (hidden cameras, wired bathrooms). FBI does nothing for 23 years."},
+                {id: "v_giuffre", label: "VIRGINIA\nGIUFFRE", type: "victim", era: ["blackmail", "heist"], desc: "Recruited age 17 from Trump's Mar-a-Lago spa (2000). Pipeline: Trump property → Epstein operation. Key witness in Giuffre v Maxwell."},
+                {id: "katie_johnson", label: "KATIE\nJOHNSON", type: "victim", era: ["2015"], desc: "Jane Doe. April 2016: Federal lawsuit alleges Trump raped her age 13 at Wexner Mansion (1994). Epstein emails network April 28, 2016. Case withdrawn Nov 4, 2016 citing 'numerous threats.' Michael Cohen investigated, now lies about it."},
+                {id: "brunel", label: "JEAN-LUC\nBRUNEL", type: "financial", era: ["blackmail"], desc: "MC2 modeling agency. Recruitment pipeline. Found dead in Paris prison Feb 2022 (alleged suicide)."},
+
+                // === POLITICAL INFRASTRUCTURE (2000s-2020s) ===
+                {id: "barrack", label: "TOM\nBARRACK", type: "political", era: ["origins", "extraction1", "2015", "endgame"], desc: "Trump confidant. Oct 16, 1987: Mysterious call 'Monday. Be ready' before Black Monday crash. Buys distressed assets post-crash. April 28, 2016: Epstein alerts him to Katie Johnson lawsuit. July 2016: Introduces Thiel for Trump fundraising."},
+                {id: "kushner", label: "JARED\nKUSHNER", type: "political", era: ["endgame"], desc: "Trump son-in-law. 2017: Receives $185M from Leon Black when no bank would lend. White House senior adviser 2017-2021."},
+                {id: "lutnick", label: "HOWARD\nLUTNICK", type: "political", era: ["heist", "endgame"], desc: "Cantor Fitzgerald chairman. Epstein connections. 2017-2021: Trump transition. 2025: Commerce Secretary."},
+                {id: "michael_wolff", label: "MICHAEL\nWOLFF", type: "political", era: ["2015"], desc: "Journalist. April 28, 2016: Epstein emails Katie Johnson lawsuit. Wolff: 'If there's anybody who can wave this away, it's Donald. Let me know if there's anything I can do.'"},
+                {id: "ruemmler", label: "KATHY\nRUEMMLER", type: "political", era: ["2015"], desc: "Obama's White House Counsel (2011-2014). April 28, 2016: Epstein alerts her to Katie Johnson lawsuit."},
+                {id: "mercer", label: "ROBERT\nMERCER", type: "political", era: ["2015"], desc: "Hedge fund billionaire. Funds Cambridge Analytica. 2016 election psychological warfare."},
+                {id: "bannon", label: "STEVE\nBARNON", type: "political", era: ["2015", "endgame"], desc: "Cambridge Analytica orchestrator. Trump strategist 2016. White House chief strategist 2017."},
+
+                // === EVENTS/CRISES (1987-2020) ===
+                {id: "black_monday", label: "BLACK MONDAY\n1987", type: "event", era: ["origins"], desc: "Oct 19, 1987: Dow drops 22.6%. Test run extraction. Barrack positioned correctly. Trump exited weeks before. Fed floods liquidity. Insider profit pattern established."},
+                {id: "maxwell_death", label: "MAXWELL\nDEATH 1991", type: "event", era: ["extraction1"], desc: "Nov 5, 1991: Robert Maxwell drowns near yacht Lady Ghislaine. Nov 24: Ghislaine boards Concorde to NYC with 'truck by truck, file by file' of operational files. $50B operation transfers."},
+                {id: "soviet_collapse", label: "SOVIET\nCOLLAPSE 1991", type: "event", era: ["extraction1"], desc: "Aug 1991: Coup fails. $50B in Soviet assets hidden. 7 Communist finance officials die 'suspiciously.' Maxwell-Mogilevich positioned to capture wealth. 84 foreign companies, 7,000 bank accounts."},
+                {id: "911", label: "9/11\n2001", type: "event", era: ["blackmail"], desc: "Sept 11, 2001. Markets close 4 days. $8 trillion wars follow. Patriot Act = total surveillance. Network gains leverage. Defense contracts, reconstruction. Each crisis = extraction."},
+                {id: "2008_crash", label: "2008 FINANCIAL\nCRASH", type: "event", era: ["heist"], desc: "Sept 2008: Lehman collapses. $40+ trillion support. Zero prosecutions. Goldman 100 cents on dollar. Epstein's Liquid Funding: $4B+ taxpayer bailout. Black buying distressed assets. Systematic looting."},
+                {id: "epstein_arrest", label: "EPSTEIN\nARREST 2019", type: "event", era: ["2015"], desc: "July 6, 2019: Arrested Teterboro Airport. Aug 10, 2019: Found dead MCC. Cameras malfunction, guards asleep. Evidence 'disappears.' Nov 2019: Thomas Bowers (Deutsche banker) 'suicide.'"},
+                {id: "covid", label: "COVID\n2020", type: "event", era: ["endgame"], desc: "March 2020: Fed unlimited QE. $4+ trillion. PPP loans to connected. Small business collapse. Big corp profit. Pattern repeats. Crypto infrastructure emerges."},
+                {id: "election_2024", label: "2024\nELECTION", type: "event", era: ["endgame"], desc: "Nov 5, 2024: Trump wins. Musk contributed $277M (largest political donation in history). Network now controls government. Palantir = gov OS. Thiel-funded Vance = VP."},
+
+                // === ADDITIONAL KEY PLAYERS ===
+                {id: "staley", label: "JES\nSTALEY", type: "financial", era: ["heist", "2015"], desc: "JPMorgan executive, later Barclays CEO. Visited Epstein island repeatedly. Hundreds of emails calling Epstein 'Jes.' Managed Epstein-Trump relationships across banks."},
+                {id: "bowers", label: "THOMAS\nBOWERS", type: "financial", era: ["2015"], desc: "Deutsche Bank. Managed BOTH Trump and Epstein accounts. Found dead Nov 2019, 3 months after Epstein. Ruled suicide. Only person who understood complete financial relationship."},
+                {id: "dmitriev", label: "KIRILL\nDMITRIEV", type: "intelligence", era: ["2015"], desc: "CEO Russian Direct Investment Fund (RDIF). Putin's investment envoy. Via Belyakov to Silicon Valley. Jan 2017: Erik Prince Seychelles meeting."},
+                {id: "cohen", label: "MICHAEL\nCOHEN", type: "political", era: ["2015"], desc: "Trump's fixer. 500+ threats for Trump in 2016. Investigated Katie Johnson case, now lies about it claiming Lisa Bloom was lawyer (FALSE - was Thomas Meagher). Tells universities to 'settle early' with Trump."},
+                {id: "cambridge", label: "CAMBRIDGE\nANALYTICA", type: "entity", era: ["2015"], desc: "87M Facebook users data breach. Mercer money, Bannon orchestrates, Thiel enables from inside Facebook. Psychological warfare. Russian coordination. WikiLeaks timing."},
+                {id: "lady_ghislaine", label: "LADY\nGHISLAINE", type: "entity", era: ["origins", "extraction1"], desc: "Robert Maxwell's yacht. May 1989: Trump, Maxwell, Epstein, Ghislaine aboard. Maxwell showing Epstein the asset. Nov 1991: Maxwell dies nearby. Ghislaine shreds documents aboard."},
+                {id: "promis", label: "PROMIS\nSOFTWARE", type: "entity", era: ["origins"], desc: "1982: Stolen from DOJ, backdoored by Israeli intel. Maxwell examines printouts - can see how every bank tracks money laundering. Perfect evasion tool."},
+                {id: "wexner_mansion", label: "WEXNER\nMANSION", type: "entity", era: ["blackmail", "2015"], desc: "9 E 71st St, NYC. Les Wexner's mansion. Tiffany Doe affidavit: Parties 1991-2000 where Katie Johnson rape occurred (1994). NOT Epstein's residence. Wexner gave $46M townhouse to Epstein for $0."}
+            ],
+
+            links: [
+                // === ORIGINS (1976-1987) ===
+                {source: "chebrikov", target: "r_maxwell", type: "intelligence", label: "1976: Directive", weight: 10},
+                {source: "r_maxwell", target: "kgb", type: "intelligence", label: "Triple agent", weight: 10},
+                {source: "r_maxwell", target: "mossad", type: "intelligence", label: "Handler", weight: 10},
+                {source: "r_maxwell", target: "mi6", type: "intelligence", label: "Service", weight: 8},
+                {source: "r_maxwell", target: "promis", type: "intelligence", label: "1982: Backdoor", weight: 9},
+                {source: "r_maxwell", target: "mogilevich", type: "financial", label: "Partner", weight: 10},
+                {source: "r_maxwell", target: "lady_ghislaine", type: "entity", label: "Yacht owner", weight: 8},
+
+                {source: "kgb", target: "ivana", type: "intelligence", label: "1977: Recruitment", weight: 9},
+                {source: "ivana", target: "trump", type: "political", label: "1977: Marriage/surveillance", weight: 10},
+                {source: "kgb", target: "trump", type: "intelligence", label: "1987: Moscow cultivation", weight: 10},
+                {source: "roy_cohn", target: "trump", type: "political", label: "Mentor/lawyer", weight: 10},
+                {source: "roy_cohn", target: "khashoggi", type: "financial", label: "1981: Introduction", weight: 9},
+                {source: "khashoggi", target: "trump", type: "financial", label: "Olympic Tower meeting", weight: 9},
+                {source: "khashoggi", target: "epstein", type: "financial", label: "Douglas Leese recruits", weight: 10},
+                {source: "epstein", target: "bear_stearns", type: "financial", label: "1976-1981: Employed", weight: 8},
+                {source: "epstein", target: "hoffenberg", type: "financial", label: "Training/arms dealing", weight: 10},
+                {source: "hoffenberg", target: "towers", type: "financial", label: "$450M Ponzi", weight: 10},
+
+                {source: "mogilevich", target: "bogatin", type: "financial", label: "Lieutenant", weight: 9},
+                {source: "bogatin", target: "trump", type: "financial", label: "1984: $6M cash/5 condos", weight: 10},
+                {source: "mogilevich", target: "ivankov", type: "financial", label: "Mob boss", weight: 9},
+                {source: "ivankov", target: "trump", type: "financial", label: "Taj Mahal $1.5M daily", weight: 10},
+
+                {source: "r_maxwell", target: "epstein", type: "intelligence", label: "1980s: Recruitment", weight: 10},
+                {source: "epstein", target: "lady_ghislaine", type: "entity", label: "May 1989: Yacht party", weight: 9},
+                {source: "trump", target: "lady_ghislaine", type: "entity", label: "May 1989: Target shown", weight: 9},
+                {source: "r_maxwell", target: "black_monday", type: "event", label: "Oct 1987: Positioned", weight: 9},
+                {source: "barrack", target: "black_monday", type: "event", label: "'Be ready' call", weight: 10},
+                {source: "trump", target: "black_monday", type: "event", label: "Exited early", weight: 9},
+
+                // === EXTRACTION 1 (1987-1996) ===
+                {source: "r_maxwell", target: "soviet_collapse", type: "event", label: "1991: $50B positioned", weight: 10},
+                {source: "mogilevich", target: "soviet_collapse", type: "event", label: "$50B infrastructure", weight: 10},
+                {source: "soviet_collapse", target: "maxwell_death", type: "event", label: "10 weeks later", weight: 10},
+                {source: "r_maxwell", target: "maxwell_death", type: "event", label: "Nov 5, 1991: Dies", weight: 10},
+                {source: "g_maxwell", target: "maxwell_death", type: "event", label: "Inherits operation", weight: 10},
+                {source: "g_maxwell", target: "epstein", type: "intelligence", label: "1991: Partnership", weight: 10},
+                {source: "g_maxwell", target: "lady_ghislaine", type: "entity", label: "Shredding documents", weight: 9},
+                {source: "hoffenberg", target: "g_maxwell", type: "intelligence", label: "'Truck by truck, file by file'", weight: 10},
+
+                {source: "epstein", target: "j_epstein_co", type: "financial", label: "Nov 1988: Launch", weight: 9},
+                {source: "khashoggi", target: "j_epstein_co", type: "financial", label: "First client", weight: 9},
+                {source: "mogilevich", target: "trump", type: "financial", label: "1996: Moscow party", weight: 10},
+                {source: "sater", target: "trump", type: "financial", label: "1996: Moscow party", weight: 9},
+                {source: "soviet_collapse", target: "trump", type: "financial", label: "$450M resurrection", weight: 10},
+
+                {source: "epstein", target: "wexner", type: "financial", label: "1991: Power of attorney", weight: 10},
+                {source: "wexner", target: "wexner_mansion", type: "entity", label: "Owner", weight: 10},
+                {source: "wexner", target: "epstein", type: "financial", label: "$46M townhouse for $0", weight: 10},
+
+                // === BLACKMAIL MACHINE (1996-2008) ===
+                {source: "maria_farmer", target: "epstein", type: "victim", label: "1996: FBI report (ignored)", weight: 10},
+                {source: "epstein", target: "v_giuffre", type: "victim", label: "2000: Recruited", weight: 10},
+                {source: "trump", target: "v_giuffre", type: "victim", label: "Mar-a-Lago pipeline", weight: 10},
+                {source: "brunel", target: "epstein", type: "financial", label: "MC2 recruitment", weight: 9},
+                {source: "g_maxwell", target: "v_giuffre", type: "victim", label: "Trafficking", weight: 10},
+
+                {source: "epstein", target: "wexner_mansion", type: "entity", label: "1994: Katie Johnson rape", weight: 10},
+                {source: "trump", target: "wexner_mansion", type: "entity", label: "1994: Katie Johnson rape", weight: 10},
+                {source: "katie_johnson", target: "wexner_mansion", type: "victim", label: "Age 13, 1994", weight: 10},
+
+                {source: "acosta", target: "epstein", type: "legal", label: "2008: Sweetheart deal", weight: 10},
+                {source: "barr", target: "epstein", type: "legal", label: "Father hired at Dalton", weight: 9},
+                {source: "epstein", target: "911", type: "event", label: "Blackmail expansion", weight: 8},
+
+                // === THE GREAT HEIST (2008) ===
+                {source: "epstein", target: "liquid_funding", type: "financial", label: "Chairman 6 years", weight: 10},
+                {source: "liquid_funding", target: "bear_stearns", type: "financial", label: "40% owner", weight: 9},
+                {source: "bear_stearns", target: "2008_crash", type: "event", label: "April 2008: Collapse triggers", weight: 10},
+                {source: "liquid_funding", target: "2008_crash", type: "event", label: "$4B+ taxpayer bailout", weight: 10},
+                {source: "epstein", target: "jpmorgan", type: "financial", label: "1998-2013: Client", weight: 10},
+                {source: "jpmorgan", target: "2008_crash", type: "event", label: "Bear Stearns rescue", weight: 9},
+                {source: "staley", target: "epstein", type: "financial", label: "JPMorgan relationship manager", weight: 10},
+                {source: "staley", target: "jpmorgan", type: "financial", label: "Executive", weight: 9},
+
+                {source: "leon_black", target: "epstein", type: "financial", label: "$158M+ payments", weight: 10},
+                {source: "leon_black", target: "2008_crash", type: "event", label: "Apollo distressed buying", weight: 9},
+                {source: "lutnick", target: "2008_crash", type: "event", label: "Cantor Fitzgerald", weight: 7},
+
+                // === 2015-2016 ASSEMBLY ===
+                {source: "belyakov", target: "thiel", type: "intelligence", label: "July 6, 2015: Epstein intro", weight: 10},
+                {source: "epstein", target: "belyakov", type: "intelligence", label: "Russia-SV bridge", weight: 10},
+                {source: "belyakov", target: "leon_black", type: "intelligence", label: "Guzel Ganieva intel", weight: 9},
+                {source: "belyakov", target: "dmitriev", type: "intelligence", label: "RDIF connection", weight: 8},
+                {source: "dmitriev", target: "rothschild", type: "financial", label: "Banking network", weight: 8},
+
+                {source: "epstein", target: "churkin", type: "intelligence", label: "2015-16: Trump psychology", weight: 10},
+                {source: "churkin", target: "thiel", type: "intelligence", label: "Oct 2016: Coordination", weight: 10},
+                {source: "epstein", target: "thiel", type: "intelligence", label: "May 2014: Relationship", weight: 10},
+                {source: "barrack", target: "thiel", type: "political", label: "July 2016: Fundraising intro", weight: 9},
+                {source: "thiel", target: "trump", type: "political", label: "July 21, 2016: RNC speech", weight: 10},
+
+                {source: "epstein", target: "musk", type: "tech", label: "16 emails 2012-2015", weight: 8},
+                {source: "epstein", target: "hoffman", type: "tech", label: "PayPal Mafia", weight: 8},
+                {source: "hoffman", target: "musk", type: "tech", label: "Aug 2, 2015: Dinner host", weight: 9},
+                {source: "hoffman", target: "zuckerberg", type: "tech", label: "Aug 2, 2015: Dinner", weight: 9},
+                {source: "musk", target: "zuckerberg", type: "tech", label: "Aug 2, 2015: Dinner", weight: 8},
+                {source: "epstein", target: "zuckerberg", type: "tech", label: "Aug 2, 2015: Dinner", weight: 8},
+
+                {source: "thiel", target: "palantir", type: "tech", label: "CEO/Co-founder", weight: 10},
+                {source: "thiel", target: "zuckerberg", type: "tech", label: "First investor/board", weight: 9},
+                {source: "zuckerberg", target: "cambridge", type: "entity", label: "87M users data", weight: 10},
+                {source: "thiel", target: "cambridge", type: "entity", label: "Inside enabler", weight: 9},
+                {source: "mercer", target: "cambridge", type: "entity", label: "Funds", weight: 10},
+                {source: "bannon", target: "cambridge", type: "entity", label: "Orchestrates", weight: 10},
+
+                {source: "southern_trust", target: "thiel", type: "financial", label: "$40M to Valar 2015-17", weight: 10},
+                {source: "epstein", target: "southern_trust", type: "financial", label: "$1.1B wire transfers", weight: 10},
+                {source: "leon_black", target: "southern_trust", type: "financial", label: "Payments flow", weight: 9},
+                {source: "rothschild", target: "epstein", type: "financial", label: "Oct 5, 2015: $25M", weight: 9},
+
+                {source: "katie_johnson", target: "epstein", type: "victim", label: "April 26, 2016: Lawsuit", weight: 10},
+                {source: "katie_johnson", target: "trump", type: "victim", label: "Federal rape allegation", weight: 10},
+                {source: "epstein", target: "barrack", type: "political", label: "April 28, 2016: Alert email", weight: 10},
+                {source: "epstein", target: "michael_wolff", type: "political", label: "April 28, 2016: Alert", weight: 10},
+                {source: "epstein", target: "ruemmler", type: "political", label: "April 28, 2016: Alert", weight: 9},
+                {source: "cohen", target: "katie_johnson", type: "victim", label: "Investigated, now lies", weight: 10},
+                {source: "trump", target: "cohen", type: "political", label: "Fixer/500+ threats", weight: 10},
+
+                {source: "trump", target: "deutsche", type: "financial", label: "Aug 19, 2013: Account", weight: 10},
+                {source: "epstein", target: "deutsche", type: "financial", label: "Aug 19, 2013: Account (SAME DAY)", weight: 10},
+                {source: "bowers", target: "deutsche", type: "financial", label: "Managed both accounts", weight: 10},
+                {source: "bowers", target: "trump", type: "financial", label: "Relationship manager", weight: 9},
+                {source: "bowers", target: "epstein", type: "financial", label: "Relationship manager", weight: 9},
+                {source: "bowers", target: "epstein_arrest", type: "event", label: "Nov 2019: 'Suicide' 3mo after", weight: 10},
+
+                {source: "epstein", target: "epstein_arrest", type: "event", label: "July 6, 2019: Arrested", weight: 10},
+                {source: "barr", target: "epstein_arrest", type: "event", label: "AG during death/cover-up", weight: 10},
+
+                // === ENDGAME (2020-2025) ===
+                {source: "epstein_arrest", target: "covid", type: "event", label: "2019→2020", weight: 7},
+                {source: "covid", target: "musk", type: "event", label: "Crypto infrastructure", weight: 8},
+                {source: "covid", target: "election_2024", type: "event", label: "2020→2024", weight: 7},
+
+                {source: "musk", target: "election_2024", type: "event", label: "$277M donation", weight: 10},
+                {source: "trump", target: "election_2024", type: "event", label: "Wins Nov 5, 2024", weight: 10},
+                {source: "thiel", target: "election_2024", type: "event", label: "Vance $15M→VP", weight: 10},
+                {source: "lutnick", target: "election_2024", type: "event", label: "Commerce Secretary", weight: 9},
+                {source: "bannon", target: "election_2024", type: "event", label: "Strategy", weight: 8},
+
+                {source: "palantir", target: "election_2024", type: "event", label: "$10B+ contracts", weight: 10},
+                {source: "leon_black", target: "kushner", type: "financial", label: "2017: $185M", weight: 10},
+                {source: "kushner", target: "trump", type: "political", label: "Son-in-law/adviser", weight: 10}
+            ]
+        };
+
+        // Update stats
+        document.getElementById('node-count').textContent = graphData.nodes.length;
+        document.getElementById('link-count').textContent = graphData.links.length;
+
+        // Node colors by type
+        const colors = {
+            hub: "#ff0000",
+            intelligence: "#ff6600",
+            financial: "#ffaa00",
+            tech: "#00ff00",
+            political: "#0088ff",
+            legal: "#ff00ff",
+            entity: "#888888",
+            victim: "#ff44aa",
+            event: "#8800ff"
+        };
+
+        // Create SVG
+        const svg = d3.select("#graph")
+            .attr("width", width)
+            .attr("height", height);
+
+        // Add zoom behavior
+        const g = svg.append("g");
+        const zoom = d3.zoom()
+            .scaleExtent([0.1, 4])
+            .on("zoom", (event) => {
+                g.attr("transform", event.transform);
+            });
+        svg.call(zoom);
+
+        // Create tooltip
+        const tooltip = d3.select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+
+        let currentFilter = 'all';
+        let simulation;
+
+        function initGraph(filterEra) {
+            // Clear existing
+            g.selectAll("*").remove();
+
+            // Filter nodes and links
+            let filteredNodes = graphData.nodes;
+            if (filterEra !== 'all') {
+                filteredNodes = graphData.nodes.filter(n =>
+                    n.era && n.era.includes(filterEra)
+                );
+            }
+            const filteredNodeIds = new Set(filteredNodes.map(n => n.id));
+            const filteredLinks = graphData.links.filter(l =>
+                filteredNodeIds.has(l.source.id || l.source) &&
+                filteredNodeIds.has(l.target.id || l.target)
+            );
+
+            // Update stats
+            document.getElementById('node-count').textContent = filteredNodes.length;
+            document.getElementById('link-count').textContent = filteredLinks.length;
+
+            // Create force simulation
+            simulation = d3.forceSimulation(filteredNodes)
+                .force("link", d3.forceLink(filteredLinks)
+                    .id(d => d.id)
+                    .distance(d => {
+                        if (d.weight >= 10) return 80;
+                        if (d.weight >= 8) return 120;
+                        return 150;
+                    })
+                    .strength(d => d.weight / 10))
+                .force("charge", d3.forceManyBody()
+                    .strength(d => {
+                        if (d.type === 'hub') return -3000;
+                        if (d.type === 'intelligence') return -1500;
+                        if (d.type === 'financial') return -1200;
+                        if (d.type === 'tech') return -1200;
+                        if (d.type === 'event') return -800;
+                        return -1000;
+                    }))
+                .force("center", d3.forceCenter(width / 2, height / 2))
+                .force("collision", d3.forceCollide().radius(40));
+
+            // Create links
+            const link = g.append("g")
+                .selectAll("line")
+                .data(filteredLinks)
+                .enter().append("line")
+                .attr("class", "link")
+                .attr("stroke", d => {
+                    if (d.type === 'intelligence') return "#ff6600";
+                    if (d.type === 'financial') return "#ffaa00";
+                    if (d.type === 'tech') return "#00ff00";
+                    if (d.type === 'political') return "#0088ff";
+                    if (d.type === 'victim') return "#ff44aa";
+                    return "#666";
+                })
+                .attr("stroke-width", d => Math.sqrt(d.weight || 1))
+                .on("mouseover", function(event, d) {
+                    d3.select(this).attr("stroke-opacity", 1).attr("stroke-width", 6);
+                    tooltip.transition().duration(200).style("opacity", 1);
+                    tooltip.html(`<strong>${d.label || d.type}</strong>`)
+                        .style("left", (event.pageX + 10) + "px")
+                        .style("top", (event.pageY - 10) + "px");
+                })
+                .on("mouseout", function(event, d) {
+                    d3.select(this).attr("stroke-opacity", 0.6).attr("stroke-width", Math.sqrt(d.weight || 1));
+                    tooltip.transition().duration(500).style("opacity", 0);
+                });
+
+            // Create nodes
+            const node = g.append("g")
+                .selectAll("g")
+                .data(filteredNodes)
+                .enter().append("g")
+                .call(d3.drag()
+                    .on("start", dragstarted)
+                    .on("drag", dragged)
+                    .on("end", dragended));
+
+            node.append("circle")
+                .attr("class", "node-circle")
+                .attr("r", d => {
+                    if (d.type === 'hub') return 25;
+                    if (d.type === 'intelligence') return 18;
+                    if (d.type === 'financial') return 16;
+                    if (d.type === 'tech') return 16;
+                    if (d.type === 'event') return 20;
+                    return 14;
+                })
+                .attr("fill", d => colors[d.type] || "#888")
+                .attr("stroke", d => {
+                    if (d.type === 'hub') return "#fff";
+                    return colors[d.type] || "#888";
+                })
+                .on("mouseover", function(event, d) {
+                    tooltip.transition().duration(200).style("opacity", 1);
+                    tooltip.html(`
+                        <h3>${d.label.replace(/\\n/g, ' ')}</h3>
+                        <p><strong>Type:</strong> ${d.type}</p>
+                        <p>${d.desc || ''}</p>
+                    `)
+                        .style("left", (event.pageX + 10) + "px")
+                        .style("top", (event.pageY - 10) + "px");
+                })
+                .on("mouseout", function() {
+                    tooltip.transition().duration(500).style("opacity", 0);
+                });
+
+            node.append("text")
+                .attr("class", "node-label")
+                .attr("dy", 35)
+                .text(d => d.label)
+                .call(wrap, 100);
+
+            simulation.on("tick", () => {
+                link
+                    .attr("x1", d => d.source.x)
+                    .attr("y1", d => d.source.y)
+                    .attr("x2", d => d.target.x)
+                    .attr("y2", d => d.target.y);
+
+                node.attr("transform", d => `translate(${d.x},${d.y})`);
+            });
+        }
+
+        function wrap(text, width) {
+            text.each(function() {
+                var text = d3.select(this),
+                    words = text.text().split(/\n/).reverse(),
+                    word,
+                    line = [],
+                    lineNumber = 0,
+                    lineHeight = 1.1,
+                    y = text.attr("y"),
+                    dy = parseFloat(text.attr("dy")),
+                    tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy + "px");
+                while (word = words.pop()) {
+                    tspan.text(word);
+                    if (words.length > 0) {
+                        lineNumber++;
+                        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", ++lineNumber * lineHeight + dy + "px").text(words.pop());
+                    }
+                }
+            });
+        }
+
+        function dragstarted(event, d) {
+            if (!event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        function dragged(event, d) {
+            d.fx = event.x;
+            d.fy = event.y;
+        }
+
+        function dragended(event, d) {
+            if (!event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+
+        function filterEra(era) {
+            currentFilter = era;
+            document.querySelectorAll('.controls button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${era}`).classList.add('active');
+
+            const eraNames = {
+                'all': 'All Eras (1976-2025)',
+                'origins': '1976-1987: Origins',
+                'extraction1': '1987-1996: First Extraction',
+                'blackmail': '1996-2008: Blackmail Machine',
+                'heist': '2008: The Great Heist',
+                '2015': '2015-2016: Assembly',
+                'endgame': '2020-2025: Endgame'
+            };
+            document.getElementById('era-filter').textContent = eraNames[era];
+
+            initGraph(era);
+        }
+
+        function resetZoom() {
+            svg.transition().duration(750).call(
+                zoom.transform,
+                d3.zoomIdentity
+            );
+        }
+
+        // Initialize
+        initGraph('all');
+    </script>
+</body>
+</html>
