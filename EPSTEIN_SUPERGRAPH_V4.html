@@ -121,6 +121,16 @@
             display: flex;
             align-items: center;
             margin: 5px 0;
+            cursor: pointer;
+            padding: 3px 5px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        .legend-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        .legend-item.dimmed {
+            opacity: 0.3;
         }
         .legend-color {
             width: 14px;
@@ -156,36 +166,36 @@
     </div>
 
     <div class="legend">
-        <h4>Legend</h4>
-        <div class="legend-item">
+        <h4>Legend (Click to Filter)</h4>
+        <div class="legend-item" onclick="toggleLegendFilter('russian')" data-type="russian">
             <div class="legend-color" style="background: #ff0000;"></div>
-            <span class="legend-label">Central Hubs</span>
+            <span class="legend-label">Russian Network</span>
         </div>
-        <div class="legend-item">
+        <div class="legend-item" onclick="toggleLegendFilter('israeli')" data-type="israeli">
+            <div class="legend-color" style="background: #0088ff;"></div>
+            <span class="legend-label">Israeli Network</span>
+        </div>
+        <div class="legend-item" onclick="toggleLegendFilter('intelligence')" data-type="intelligence">
             <div class="legend-color" style="background: #ff6600;"></div>
-            <span class="legend-label">Intelligence</span>
+            <span class="legend-label">Intelligence Ops</span>
         </div>
-        <div class="legend-item">
+        <div class="legend-item" onclick="toggleLegendFilter('financial')" data-type="financial">
             <div class="legend-color" style="background: #ffaa00;"></div>
             <span class="legend-label">Financial</span>
         </div>
-        <div class="legend-item">
+        <div class="legend-item" onclick="toggleLegendFilter('tech')" data-type="tech">
             <div class="legend-color" style="background: #00ff00;"></div>
             <span class="legend-label">Tech</span>
         </div>
-        <div class="legend-item">
-            <div class="legend-color" style="background: #0088ff;"></div>
-            <span class="legend-label">Political</span>
-        </div>
-        <div class="legend-item">
+        <div class="legend-item" onclick="toggleLegendFilter('legal')" data-type="legal">
             <div class="legend-color" style="background: #ff00ff;"></div>
             <span class="legend-label">Legal</span>
         </div>
-        <div class="legend-item">
+        <div class="legend-item" onclick="toggleLegendFilter('entity')" data-type="entity">
             <div class="legend-color" style="background: #888888;"></div>
             <span class="legend-label">Entities</span>
         </div>
-        <div class="legend-item">
+        <div class="legend-item" onclick="toggleLegendFilter('victim')" data-type="victim">
             <div class="legend-color" style="background: #ff44aa;"></div>
             <span class="legend-label">Victims</span>
         </div>
@@ -204,45 +214,52 @@
         const height = window.innerHeight;
 
         const colors = {
-            hub: "#ff0000",
-            intelligence: "#ff6600",
-            financial: "#ffaa00",
-            tech: "#00ff00",
-            political: "#0088ff",
-            legal: "#ff00ff",
-            entity: "#888888",
-            victim: "#ff44aa",
-            event: "#aa44ff"
+            russian: "#ff0000",      // Red for Russian network
+            israeli: "#0088ff",      // Blue for Israeli network
+            both: "#ff0088",         // Pink/magenta for dual allegiance
+            intelligence: "#ff6600", // Orange
+            financial: "#ffaa00",    // Gold
+            tech: "#00ff00",         // Green
+            legal: "#ff00ff",        // Purple
+            entity: "#888888",       // Gray
+            victim: "#ff44aa",       // Pink
+            event: "#aa44ff"         // Purple
         };
+
+        function getNodeColor(node) {
+            // Allegiance takes priority over type
+            if (node.allegiance) return colors[node.allegiance];
+            return colors[node.type] || "#888";
+        }
 
         const graphData = {
             nodes: [
                 // MAJOR HUBS - All size 30
-                {id: "putin", label: "VLADIMIR PUTIN", type: "political", size: 30},
+                {id: "putin", label: "VLADIMIR PUTIN", type: "political", size: 30, allegiance: "russian"},
                 {id: "xi", label: "XI JINPING", type: "political", size: 30},
-                {id: "epstein", label: "JEFFREY EPSTEIN", type: "hub", size: 30},
-                {id: "trump", label: "DONALD TRUMP", type: "political", size: 30},
+                {id: "epstein", label: "JEFFREY EPSTEIN", type: "hub", size: 30, allegiance: "russian"},
+                {id: "trump", label: "DONALD TRUMP", type: "political", size: 30, allegiance: "russian"},
                 {id: "thiel", label: "PETER THIEL", type: "tech", size: 30},
 
                 // MAJOR PLAYERS size 26-28
-                {id: "r_maxwell", label: "ROBERT MAXWELL", type: "hub", size: 28},
-                {id: "g_maxwell", label: "GHISLAINE MAXWELL", type: "hub", size: 28},
-                {id: "mogilevich", label: "SEMION MOGILEVICH", type: "financial", size: 28},
+                {id: "r_maxwell", label: "ROBERT MAXWELL", type: "hub", size: 28, allegiance: "both"},
+                {id: "g_maxwell", label: "GHISLAINE MAXWELL", type: "hub", size: 28, allegiance: "both"},
+                {id: "mogilevich", label: "SEMION MOGILEVICH", type: "financial", size: 28, allegiance: "both"},
                 {id: "dimon", label: "JAMIE DIMON", type: "financial", size: 28},
-                {id: "netanyahu", label: "BIBI NETANYAHU", type: "political", size: 26},
-                {id: "ehud_barak", label: "EHUD BARAK", type: "political", size: 26},
+                {id: "netanyahu", label: "BIBI NETANYAHU", type: "political", size: 26, allegiance: "israeli"},
+                {id: "ehud_barak", label: "EHUD BARAK", type: "political", size: 26, allegiance: "israeli"},
 
                 // INTELLIGENCE 20-24
-                {id: "kgb", label: "KGB/FSB", type: "entity", size: 24},
-                {id: "mossad", label: "MOSSAD", type: "entity", size: 24},
+                {id: "kgb", label: "KGB/FSB", type: "entity", size: 24, allegiance: "russian"},
+                {id: "mossad", label: "MOSSAD", type: "entity", size: 24, allegiance: "israeli"},
                 {id: "mi6", label: "MI6", type: "entity", size: 22},
                 {id: "cia", label: "CIA", type: "entity", size: 22},
-                {id: "israeli_intel", label: "ISRAELI MIL INTEL", type: "entity", size: 22},
-                {id: "chebrikov", label: "VIKTOR CHEBRIKOV", type: "intelligence", size: 22},
-                {id: "kryuchkov", label: "VLADIMIR KRYUCHKOV", type: "intelligence", size: 22},
-                {id: "churkin", label: "VITALY CHURKIN", type: "intelligence", size: 20},
-                {id: "belyakov", label: "SERGEY BELYAKOV", type: "intelligence", size: 20},
-                {id: "ben_menashe", label: "ARI BEN-MENASHE", type: "intelligence", size: 20},
+                {id: "israeli_intel", label: "ISRAELI MIL INTEL", type: "entity", size: 22, allegiance: "israeli"},
+                {id: "chebrikov", label: "VIKTOR CHEBRIKOV", type: "intelligence", size: 22, allegiance: "russian"},
+                {id: "kryuchkov", label: "VLADIMIR KRYUCHKOV", type: "intelligence", size: 22, allegiance: "russian"},
+                {id: "churkin", label: "VITALY CHURKIN", type: "intelligence", size: 20, allegiance: "russian"},
+                {id: "belyakov", label: "SERGEY BELYAKOV", type: "intelligence", size: 20, allegiance: "russian"},
+                {id: "ben_menashe", label: "ARI BEN-MENASHE", type: "intelligence", size: 20, allegiance: "israeli"},
 
                 // CHINESE OFFICIALS
                 {id: "li_yuanchao", label: "LI YUANCHAO", type: "political", size: 22},
@@ -270,21 +287,21 @@
                 {id: "dubin", label: "GLENN DUBIN", type: "financial", size: 18},
 
                 // RUSSIAN NETWORK
-                {id: "deripaska", label: "OLEG DERIPASKA", type: "financial", size: 26},
-                {id: "vekselberg", label: "VIKTOR VEKSELBERG", type: "financial", size: 26},
-                {id: "rybolovlev", label: "DMITRY RYBOLOVLEV", type: "financial", size: 22},
-                {id: "bogatin", label: "DAVID BOGATIN", type: "financial", size: 18},
-                {id: "ivankov", label: "VYACHESLAV IVANKOV", type: "financial", size: 18},
-                {id: "sater", label: "FELIX SATER", type: "financial", size: 20},
-                {id: "sheferovsky", label: "MIKHAIL SHEFEROVSKY", type: "financial", size: 16},
-                {id: "kislin", label: "SEMYON KISLIN", type: "financial", size: 16},
-                {id: "dmitriev", label: "KIRILL DMITRIEV", type: "intelligence", size: 18},
+                {id: "deripaska", label: "OLEG DERIPASKA", type: "financial", size: 26, allegiance: "russian"},
+                {id: "vekselberg", label: "VIKTOR VEKSELBERG", type: "financial", size: 26, allegiance: "russian"},
+                {id: "rybolovlev", label: "DMITRY RYBOLOVLEV", type: "financial", size: 22, allegiance: "russian"},
+                {id: "bogatin", label: "DAVID BOGATIN", type: "financial", size: 18, allegiance: "russian"},
+                {id: "ivankov", label: "VYACHESLAV IVANKOV", type: "financial", size: 18, allegiance: "russian"},
+                {id: "sater", label: "FELIX SATER", type: "financial", size: 20, allegiance: "both"},
+                {id: "sheferovsky", label: "MIKHAIL SHEFEROVSKY", type: "financial", size: 16, allegiance: "russian"},
+                {id: "kislin", label: "SEMYON KISLIN", type: "financial", size: 16, allegiance: "russian"},
+                {id: "dmitriev", label: "KIRILL DMITRIEV", type: "intelligence", size: 18, allegiance: "russian"},
 
                 // TRUMP INNER CIRCLE
-                {id: "roy_cohn", label: "ROY COHN", type: "political", size: 22},
+                {id: "roy_cohn", label: "ROY COHN", type: "political", size: 22, allegiance: "both"},
                 {id: "barrack", label: "TOM BARRACK", type: "political", size: 22},
-                {id: "manafort", label: "PAUL MANAFORT", type: "political", size: 22},
-                {id: "kushner", label: "JARED KUSHNER", type: "political", size: 20},
+                {id: "manafort", label: "PAUL MANAFORT", type: "political", size: 22, allegiance: "russian"},
+                {id: "kushner", label: "JARED KUSHNER", type: "political", size: 20, allegiance: "israeli"},
                 {id: "ivana", label: "IVANA TRUMP", type: "political", size: 18},
                 {id: "stone", label: "ROGER STONE", type: "political", size: 18},
                 {id: "cohen", label: "MICHAEL COHEN", type: "political", size: 18},
@@ -301,10 +318,10 @@
                 {id: "tower_john", label: "JOHN TOWER", type: "political", size: 16},
 
                 // PAYPAL MAFIA
-                {id: "musk", label: "ELON MUSK", type: "tech", size: 28},
-                {id: "starlink", label: "STARLINK", type: "entity", size: 22},
+                {id: "musk", label: "ELON MUSK", type: "tech", size: 28, allegiance: "russian"},
+                {id: "starlink", label: "STARLINK", type: "entity", size: 22, allegiance: "russian"},
                 {id: "spacex", label: "SPACEX", type: "entity", size: 20},
-                {id: "doge", label: "DOGE", type: "entity", size: 20},
+                {id: "doge", label: "DOGE", type: "entity", size: 20, allegiance: "russian"},
                 {id: "hoffman", label: "REID HOFFMAN", type: "tech", size: 20},
                 {id: "zuckerberg", label: "MARK ZUCKERBERG", type: "tech", size: 20},
                 {id: "palantir", label: "PALANTIR", type: "entity", size: 20},
@@ -675,10 +692,10 @@
             node.append("circle")
                 .attr("class", d => (d.size >= 26) ? "node-circle node-halo" : "node-circle")
                 .attr("r", d => d.size || 16)
-                .attr("fill", d => colors[d.type] || "#888")
+                .attr("fill", d => getNodeColor(d))
                 .attr("stroke", d => {
                     if (d.size >= 28) return "#fff";
-                    return colors[d.type] || "#888";
+                    return getNodeColor(d);
                 })
                 .on("mouseover", function(event, d) {
                     tooltip.style("display", "block");
@@ -720,6 +737,63 @@
             if (!event.active) simulation.alphaTarget(0);
             d.fx = null;
             d.fy = null;
+        }
+
+        let activeLegendFilters = new Set();
+
+        function toggleLegendFilter(filterType) {
+            const legendItem = event.target.closest('.legend-item');
+
+            if (activeLegendFilters.has(filterType)) {
+                activeLegendFilters.delete(filterType);
+                legendItem.classList.remove('dimmed');
+            } else {
+                activeLegendFilters.add(filterType);
+                legendItem.classList.add('dimmed');
+            }
+
+            // If no filters active, show all
+            if (activeLegendFilters.size === 0) {
+                g.selectAll('.node-circle').style('opacity', 1);
+                g.selectAll('.link').style('opacity', 0.35);
+                return;
+            }
+
+            // Otherwise, dim nodes/links that don't match active filters
+            g.selectAll('.node-circle').style('opacity', d => {
+                const matchesFilter = (filterType === 'russian' && d.allegiance === 'russian') ||
+                                     (filterType === 'israeli' && d.allegiance === 'israeli') ||
+                                     (filterType === 'russian' && d.allegiance === 'both') ||
+                                     (filterType === 'israeli' && d.allegiance === 'both') ||
+                                     (filterType === 'intelligence' && d.type === 'intelligence') ||
+                                     (filterType === 'financial' && d.type === 'financial') ||
+                                     (filterType === 'tech' && d.type === 'tech') ||
+                                     (filterType === 'legal' && d.type === 'legal') ||
+                                     (filterType === 'entity' && d.type === 'entity') ||
+                                     (filterType === 'victim' && d.type === 'victim');
+
+                // Show if ANY active filter matches
+                for (let filter of activeLegendFilters) {
+                    if ((filter === 'russian' && (d.allegiance === 'russian' || d.allegiance === 'both')) ||
+                        (filter === 'israeli' && (d.allegiance === 'israeli' || d.allegiance === 'both')) ||
+                        (filter === 'intelligence' && d.type === 'intelligence') ||
+                        (filter === 'financial' && d.type === 'financial') ||
+                        (filter === 'tech' && d.type === 'tech') ||
+                        (filter === 'legal' && d.type === 'legal') ||
+                        (filter === 'entity' && d.type === 'entity') ||
+                        (filter === 'victim' && d.type === 'victim')) {
+                        return 1;
+                    }
+                }
+                return 0.15; // Dimmed
+            });
+
+            // Dim links where both nodes are hidden
+            g.selectAll('.link').style('opacity', function(d) {
+                const sourceVisible = g.select(`circle[data-id="${d.source.id}"]`).style('opacity') == 1;
+                const targetVisible = g.select(`circle[data-id="${d.target.id}"]`).style('opacity') == 1;
+                return (sourceVisible && targetVisible) ? 0.35 : 0.05;
+            });
         }
 
         function filterNetwork(network) {
@@ -835,8 +909,8 @@
             node.append("circle")
                 .attr("class", d => (d.size >= 26) ? "node-circle node-halo" : "node-circle")
                 .attr("r", d => d.size || 16)
-                .attr("fill", d => colors[d.type] || "#888")
-                .attr("stroke", d => (d.size >= 28) ? "#fff" : (colors[d.type] || "#888"))
+                .attr("fill", d => getNodeColor(d))
+                .attr("stroke", d => (d.size >= 28) ? "#fff" : (getNodeColor(d)))
                 .on("mouseover", function(event, d) {
                     tooltip.style("display", "block");
                     tooltip.html(`<h3>${d.label}</h3><p><strong>Type:</strong> ${d.type}</p>`)
