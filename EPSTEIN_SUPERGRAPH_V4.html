@@ -25,8 +25,8 @@
             animation: pulse 2s infinite;
         }
         @keyframes pulse {
-            0%, 100% { text-shadow: 0 0 20px #ff0000; }
-            50% { text-shadow: 0 0 30px #ff0000, 0 0 40px #ff0000; }
+            0%, 100% { text-shadow: 0 0 10px #ff0000; }
+            50% { text-shadow: 0 0 15px #ff0000; }
         }
         .controls {
             position: absolute;
@@ -97,18 +97,103 @@
             z-index: 100;
         }
         .stats span { color: #ff4444; font-weight: bold; }
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.9);
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #333;
+            color: #aaa;
+            font-size: 11px;
+            z-index: 100;
+            max-width: 200px;
+        }
+        .legend h4 {
+            color: #ff4444;
+            margin: 0 0 10px 0;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+        .legend-color {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            margin-right: 8px;
+            border: 2px solid #fff;
+        }
+        .legend-label {
+            font-size: 10px;
+            color: #ccc;
+        }
+        .node-halo {
+            filter: drop-shadow(0 0 8px currentColor) drop-shadow(0 0 12px currentColor);
+        }
     </style>
 </head>
 <body>
     <h1>🔴 THE GREATEST HEIST 🔴</h1>
 
     <div class="controls">
-        <button onclick="filterEra('all')" class="active" id="btn-all">ALL</button>
+        <button onclick="filterNetwork('all')" class="active" id="btn-all">ALL</button>
+        <button onclick="filterNetwork('financial')">FINANCIAL</button>
+        <button onclick="filterNetwork('russia')">RUSSIA</button>
+        <button onclick="filterNetwork('israel')">ISRAEL</button>
+        <button onclick="filterNetwork('tech')">TECH</button>
+        <button onclick="filterNetwork('oligarchs')">OLIGARCHS</button>
         <button onclick="resetSimulation()">RESET</button>
     </div>
 
     <div class="stats">
         <strong>Network:</strong> <span id="node-count">0</span> nodes • <span id="link-count">0</span> connections
+    </div>
+
+    <div class="legend">
+        <h4>Legend</h4>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #ff0000;"></div>
+            <span class="legend-label">Central Hubs</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #ff6600;"></div>
+            <span class="legend-label">Intelligence</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #ffaa00;"></div>
+            <span class="legend-label">Financial</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #00ff00;"></div>
+            <span class="legend-label">Tech</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #0088ff;"></div>
+            <span class="legend-label">Political</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #ff00ff;"></div>
+            <span class="legend-label">Legal</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #888888;"></div>
+            <span class="legend-label">Entities</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background: #ff44aa;"></div>
+            <span class="legend-label">Victims</span>
+        </div>
+        <div style="margin-top: 10px; padding-top: 10px; border-top: 1px solid #333;">
+            <div style="font-size: 10px; color: #888; margin-bottom: 5px;">Line Thickness:</div>
+            <div style="font-size: 9px; color: #aaa;">Weight 10 = Smoking Gun</div>
+            <div style="font-size: 9px; color: #aaa;">Weight 1 = Weak Evidence</div>
+        </div>
     </div>
 
     <svg id="graph"></svg>
@@ -248,6 +333,11 @@
                 {id: "gates", label: "BILL GATES", type: "tech", size: 20},
                 {id: "nancy_reagan", label: "NANCY REAGAN", type: "political", size: 16},
                 {id: "lutnick", label: "HOWARD LUTNICK", type: "political", size: 18},
+                {id: "witkoff", label: "STEVE WITKOFF", type: "political", size: 18},
+                {id: "vance", label: "JD VANCE", type: "political", size: 22},
+                {id: "bondi", label: "PAM BONDI", type: "legal", size: 18},
+                {id: "mbs", label: "MOHAMMED BIN SALMAN", type: "political", size: 24},
+                {id: "mbz", label: "MOHAMMED BIN ZAYED", type: "political", size: 22},
                 {id: "michael_wolff", label: "MICHAEL WOLFF", type: "political", size: 16},
                 {id: "ruemmler", label: "KATHY RUEMMLER", type: "political", size: 16},
                 {id: "prince_andrew", label: "PRINCE ANDREW", type: "political", size: 18},
@@ -481,7 +571,32 @@
 {source: "musk", target: "spacex", type: "tech", label: "Founder CEO", weight: 10},
 {source: "musk", target: "doge", type: "political", label: "Dept Govt Efficiency 2025", weight: 10},
 {source: "starlink", target: "putin", type: "intelligence", label: "Russian breach US data direct to Russia via Starlink", weight: 10},
-{source: "doge", target: "putin", type: "intelligence", label: "Russian IPs accessing US govt data whistleblower", weight: 10}
+{source: "doge", target: "putin", type: "intelligence", label: "Russian IPs accessing US govt data whistleblower", weight: 10},
+
+// MISSING CONNECTIONS ADDED
+{source: "michael_wolff", target: "bannon", type: "political", label: "Fire and Fury Trump inner circle", weight: 8},
+{source: "michael_wolff", target: "g_maxwell", type: "social", label: "Social connections Epstein circle", weight: 7},
+{source: "staley", target: "ehud_barak", type: "intelligence", label: "Epstein arranged meetings Israeli PM", weight: 9},
+{source: "staley", target: "dimon", type: "financial", label: "Investment Bank CEO reported to Dimon", weight: 10},
+{source: "staley", target: "erdoes", type: "financial", label: "JPM executive team", weight: 9},
+{source: "wexner", target: "staley", type: "financial", label: "Epstein broker Victoria's Secret", weight: 8},
+{source: "wexner", target: "dimon", type: "financial", label: "JPM private client Epstein connection", weight: 8},
+{source: "dubinin", target: "putin", type: "intelligence", label: "Soviet Ambassador recruited Trump 1987", weight: 9},
+{source: "dubinin", target: "chebrikov", type: "intelligence", label: "KGB chain of command", weight: 9},
+{source: "cohen", target: "sater", type: "financial", label: "Trump Tower Moscow Bayrock partner", weight: 10},
+{source: "vance", target: "thiel", type: "political", label: "$15M backing Senate VP protege", weight: 10},
+{source: "vance", target: "trump", type: "political", label: "VP 2024 Thiel pick", weight: 10},
+{source: "kushner", target: "mbs", type: "financial", label: "$2B Saudi fund 6mo after leaving WH", weight: 10},
+{source: "mbs", target: "trump", type: "political", label: "Saudi backing Kushner pipeline", weight: 9},
+{source: "mbs", target: "mbz", type: "political", label: "UAE Saudi alliance", weight: 9},
+{source: "lutnick", target: "trump", type: "political", label: "Commerce Secretary 2025 transition chair", weight: 10},
+{source: "lutnick", target: "witkoff", type: "political", label: "Real estate Cantor Fitzgerald", weight: 8},
+{source: "witkoff", target: "trump", type: "political", label: "Special envoy Middle East 2025", weight: 10},
+{source: "bondi", target: "trump", type: "legal", label: "AG 2025 replaced Gaetz", weight: 10},
+{source: "bondi", target: "acosta", type: "legal", label: "Florida AG Epstein case", weight: 9},
+{source: "bannon", target: "trump", type: "political", label: "Chief strategist 2017 Cambridge Analytica", weight: 10},
+{source: "bannon", target: "mercer", type: "political", label: "Funded Breitbart Cambridge", weight: 10},
+{source: "bannon", target: "stone", type: "political", label: "Political operative network", weight: 8}
 ]
         };
 
@@ -510,11 +625,23 @@
                     .distance(d => {
                         const src = graphData.nodes.find(n => n.id === (d.source.id || d.source));
                         const tgt = graphData.nodes.find(n => n.id === (d.target.id || d.target));
-                        return ((src.size || 16) + (tgt.size || 16)) * 10; // 10x for LOTS of slack
+                        const srcSize = src.size || 16;
+                        const tgtSize = tgt.size || 16;
+                        // Satellites closer to suns: if one is big (>= 26), pull closer
+                        const maxSize = Math.max(srcSize, tgtSize);
+                        const minSize = Math.min(srcSize, tgtSize);
+                        if (maxSize >= 26) {
+                            return (srcSize + tgtSize) * 6; // Closer to big nodes
+                        }
+                        return (srcSize + tgtSize) * 10; // Normal distance
                     })
                     .strength(0.08)) // Very weak = floppy strings
                 .force("charge", d3.forceManyBody()
-                    .strength(d => -1 * (d.size || 16) * 70)) // Strong repulsion
+                    .strength(d => {
+                        // Big nodes (suns) push each other harder
+                        if (d.size >= 26) return -1 * d.size * 100;
+                        return -1 * (d.size || 16) * 70;
+                    }))
                 .force("center", d3.forceCenter(width / 2, height / 2))
                 .force("collision", d3.forceCollide()
                     .radius(d => (d.size || 16) * 3) // Wide berth
@@ -546,7 +673,7 @@
                     .on("end", dragended));
 
             node.append("circle")
-                .attr("class", "node-circle")
+                .attr("class", d => (d.size >= 26) ? "node-circle node-halo" : "node-circle")
                 .attr("r", d => d.size || 16)
                 .attr("fill", d => colors[d.type] || "#888")
                 .attr("stroke", d => {
@@ -595,9 +722,139 @@
             d.fy = null;
         }
 
-        function filterEra(era) {
+        function filterNetwork(network) {
             document.querySelectorAll('.controls button').forEach(btn => btn.classList.remove('active'));
-            document.getElementById('btn-all').classList.add('active');
+            event.target.classList.add('active');
+
+            let filteredNodes = graphData.nodes;
+            let filteredLinks = graphData.links;
+
+            if (network === 'financial') {
+                const financialIds = ['dimon', 'staley', 'erdoes', 'jpmorgan', 'deutsche', 'bear_stearns',
+                    'wexner', 'leon_black', 'greenberg', 'liquid_funding', 'southern_trust', 'apollo',
+                    'drexel', 'milken', 'epstein', 'bowers'];
+                filteredNodes = graphData.nodes.filter(n => financialIds.includes(n.id) || n.type === 'financial');
+                const nodeIds = new Set(filteredNodes.map(n => n.id));
+                filteredLinks = graphData.links.filter(l =>
+                    nodeIds.has(l.source.id || l.source) && nodeIds.has(l.target.id || l.target));
+            } else if (network === 'russia') {
+                const russiaIds = ['putin', 'mogilevich', 'deripaska', 'vekselberg', 'rybolovlev',
+                    'manafort', 'sater', 'bogatin', 'ivankov', 'kgb', 'churkin', 'belyakov', 'dmitriev',
+                    'trump', 'stone', 'kushner', 'deutsche'];
+                filteredNodes = graphData.nodes.filter(n => russiaIds.includes(n.id));
+                const nodeIds = new Set(filteredNodes.map(n => n.id));
+                filteredLinks = graphData.links.filter(l =>
+                    nodeIds.has(l.source.id || l.source) && nodeIds.has(l.target.id || l.target));
+            } else if (network === 'israel') {
+                const israelIds = ['netanyahu', 'ehud_barak', 'mossad', 'israeli_intel', 'epstein',
+                    'g_maxwell', 'r_maxwell', 'ben_menashe', 'shamir', 'kushner'];
+                filteredNodes = graphData.nodes.filter(n => israelIds.includes(n.id));
+                const nodeIds = new Set(filteredNodes.map(n => n.id));
+                filteredLinks = graphData.links.filter(l =>
+                    nodeIds.has(l.source.id || l.source) && nodeIds.has(l.target.id || l.target));
+            } else if (network === 'tech') {
+                const techIds = ['thiel', 'musk', 'zuckerberg', 'hoffman', 'gates', 'palantir',
+                    'cambridge', 'starlink', 'spacex', 'epstein'];
+                filteredNodes = graphData.nodes.filter(n => techIds.includes(n.id) || n.type === 'tech');
+                const nodeIds = new Set(filteredNodes.map(n => n.id));
+                filteredLinks = graphData.links.filter(l =>
+                    nodeIds.has(l.source.id || l.source) && nodeIds.has(l.target.id || l.target));
+            } else if (network === 'oligarchs') {
+                const oligarchIds = ['putin', 'deripaska', 'vekselberg', 'rybolovlev', 'dmitriev',
+                    'mogilevich', 'sater', 'bogatin', 'ivankov', 'manafort', 'trump', 'deutsche'];
+                filteredNodes = graphData.nodes.filter(n => oligarchIds.includes(n.id));
+                const nodeIds = new Set(filteredNodes.map(n => n.id));
+                filteredLinks = graphData.links.filter(l =>
+                    nodeIds.has(l.source.id || l.source) && nodeIds.has(l.target.id || l.target));
+            }
+
+            // Update display
+            document.getElementById('node-count').textContent = filteredNodes.length;
+            document.getElementById('link-count').textContent = filteredLinks.length;
+
+            // Rebuild graph with filtered data
+            g.selectAll("*").remove();
+            buildGraph(filteredNodes, filteredLinks);
+        }
+
+        function buildGraph(nodes, links) {
+            const sim = d3.forceSimulation(nodes)
+                .force("link", d3.forceLink(links)
+                    .id(d => d.id)
+                    .distance(d => {
+                        const src = nodes.find(n => n.id === (d.source.id || d.source));
+                        const tgt = nodes.find(n => n.id === (d.target.id || d.target));
+                        const srcSize = src.size || 16;
+                        const tgtSize = tgt.size || 16;
+                        const maxSize = Math.max(srcSize, tgtSize);
+                        if (maxSize >= 26) return (srcSize + tgtSize) * 6;
+                        return (srcSize + tgtSize) * 10;
+                    })
+                    .strength(0.08))
+                .force("charge", d3.forceManyBody()
+                    .strength(d => {
+                        if (d.size >= 26) return -1 * d.size * 100;
+                        return -1 * (d.size || 16) * 70;
+                    }))
+                .force("center", d3.forceCenter(width / 2, height / 2))
+                .force("collision", d3.forceCollide()
+                    .radius(d => (d.size || 16) * 3)
+                    .strength(0.9));
+
+            const link = g.append("g")
+                .selectAll("line")
+                .data(links)
+                .enter().append("line")
+                .attr("class", "link")
+                .attr("stroke", d => {
+                    if (d.type === 'intelligence') return "#ff6600";
+                    if (d.type === 'financial') return "#ffaa00";
+                    if (d.type === 'tech') return "#00ff00";
+                    if (d.type === 'political') return "#0088ff";
+                    if (d.type === 'blackmail') return "#ff0066";
+                    if (d.type === 'victim') return "#ff44aa";
+                    return "#666";
+                })
+                .attr("stroke-width", d => Math.sqrt(d.weight || 1) * 0.7);
+
+            const node = g.append("g")
+                .selectAll("g")
+                .data(nodes)
+                .enter().append("g")
+                .call(d3.drag()
+                    .on("start", (e, d) => {
+                        if (!e.active) sim.alphaTarget(0.3).restart();
+                        d.fx = d.x; d.fy = d.y;
+                    })
+                    .on("drag", (e, d) => { d.fx = e.x; d.fy = e.y; })
+                    .on("end", (e, d) => {
+                        if (!e.active) sim.alphaTarget(0);
+                        d.fx = null; d.fy = null;
+                    }));
+
+            node.append("circle")
+                .attr("class", d => (d.size >= 26) ? "node-circle node-halo" : "node-circle")
+                .attr("r", d => d.size || 16)
+                .attr("fill", d => colors[d.type] || "#888")
+                .attr("stroke", d => (d.size >= 28) ? "#fff" : (colors[d.type] || "#888"))
+                .on("mouseover", function(event, d) {
+                    tooltip.style("display", "block");
+                    tooltip.html(`<h3>${d.label}</h3><p><strong>Type:</strong> ${d.type}</p>`)
+                        .style("left", (event.pageX + 15) + "px")
+                        .style("top", (event.pageY - 10) + "px");
+                })
+                .on("mouseout", function() { tooltip.style("display", "none"); });
+
+            node.append("text")
+                .attr("class", "node-label")
+                .attr("dy", d => (d.size || 16) + 14)
+                .text(d => d.label);
+
+            sim.on("tick", () => {
+                link.attr("x1", d => d.source.x).attr("y1", d => d.source.y)
+                    .attr("x2", d => d.target.x).attr("y2", d => d.target.y);
+                node.attr("transform", d => `translate(${d.x},${d.y})`);
+            });
         }
 
         function resetSimulation() {
