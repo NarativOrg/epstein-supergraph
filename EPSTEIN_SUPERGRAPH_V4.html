@@ -795,7 +795,7 @@
                 return 0.15; // Dimmed
             });
 
-            // Show links only where BOTH nodes are visible
+            // Highlight links where BOTH nodes are visible
             g.selectAll('.link').style('opacity', function(d) {
                 const srcNode = graphData.nodes.find(n => n.id === d.source.id);
                 const tgtNode = graphData.nodes.find(n => n.id === d.target.id);
@@ -825,7 +825,7 @@
                     }
                 }
 
-                return (srcVisible && tgtVisible) ? 0.35 : 0.05;
+                return (srcVisible && tgtVisible) ? 0.7 : 0.03; // Much brighter for visible connections
             });
         }
 
