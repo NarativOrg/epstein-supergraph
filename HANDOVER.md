@@ -18,7 +18,7 @@
 
 ### Data Sources Integrated
 ✅ **Greatest Heist manuscript** (all 26 chapters)
-✅ **Epstein Archive** (83,278 documents via epstein-archive skill)
+✅ **Epstein Archive** (110,484 documents via epstein-archive skill)
 ✅ **Katie Johnson case** (April 28, 2016 network mobilization)
 ✅ **JPMorgan documents** (China strategy memos, Jes Staley emails)
 ✅ **2015-2016 network** (Thiel-Epstein-Churkin-Belyakov)
@@ -324,7 +324,7 @@ Interactive force-directed graph mapping the $80 trillion espionage network (197
 
 ## Data Sources
 - The Greatest Heist manuscript (26 chapters)
-- Epstein Archive (83,278 documents)
+- Epstein Archive (110,484 documents)
 - JPMorgan documents (China strategy, Jes Staley emails)
 - Court filings (Katie Johnson, Virginia Giuffre)
 - Public records (Trump cabinet, Deutsche Bank)

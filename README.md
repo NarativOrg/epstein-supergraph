@@ -61,7 +61,7 @@ A comprehensive interactive network visualization showing the connections betwee
 
 ### Primary Sources
 - **The Greatest Heist** manuscript (26 chapters, 1976-2025)
-- **Epstein Archive** (83,278 documents via MCP server)
+- **Epstein Archive** (110,484 documents via MCP server)
   - House Oversight documents: 25,816
   - Court filings: 835
   - Depositions: 664
