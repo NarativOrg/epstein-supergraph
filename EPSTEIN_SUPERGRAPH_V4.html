@@ -742,36 +742,43 @@
         let activeLegendFilters = new Set();
 
         function toggleLegendFilter(filterType) {
+            // Clear top button filters when using legend
+            document.querySelectorAll('.controls button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-all').classList.add('active');
+
             const legendItem = event.target.closest('.legend-item');
 
+            // Toggle the filter
             if (activeLegendFilters.has(filterType)) {
+                // Remove filter - un-highlight the legend item
                 activeLegendFilters.delete(filterType);
-                legendItem.classList.remove('dimmed');
-            } else {
-                activeLegendFilters.add(filterType);
                 legendItem.classList.add('dimmed');
+            } else {
+                // Add filter - highlight the legend item
+                activeLegendFilters.add(filterType);
+                legendItem.classList.remove('dimmed');
             }
 
-            // If no filters active, show all
+            // If no filters active, show all and reset all legend items
             if (activeLegendFilters.size === 0) {
+                document.querySelectorAll('.legend-item').forEach(item => item.classList.remove('dimmed'));
                 g.selectAll('.node-circle').style('opacity', 1);
                 g.selectAll('.link').style('opacity', 0.35);
                 return;
             }
 
-            // Otherwise, dim nodes/links that don't match active filters
-            g.selectAll('.node-circle').style('opacity', d => {
-                const matchesFilter = (filterType === 'russian' && d.allegiance === 'russian') ||
-                                     (filterType === 'israeli' && d.allegiance === 'israeli') ||
-                                     (filterType === 'russian' && d.allegiance === 'both') ||
-                                     (filterType === 'israeli' && d.allegiance === 'both') ||
-                                     (filterType === 'intelligence' && d.type === 'intelligence') ||
-                                     (filterType === 'financial' && d.type === 'financial') ||
-                                     (filterType === 'tech' && d.type === 'tech') ||
-                                     (filterType === 'legal' && d.type === 'legal') ||
-                                     (filterType === 'entity' && d.type === 'entity') ||
-                                     (filterType === 'victim' && d.type === 'victim');
+            // Dim legend items that are NOT active
+            document.querySelectorAll('.legend-item').forEach(item => {
+                const itemType = item.getAttribute('data-type');
+                if (!activeLegendFilters.has(itemType)) {
+                    item.classList.add('dimmed');
+                } else {
+                    item.classList.remove('dimmed');
+                }
+            });
 
+            // Show/dim nodes based on active filters
+            g.selectAll('.node-circle').style('opacity', d => {
                 // Show if ANY active filter matches
                 for (let filter of activeLegendFilters) {
                     if ((filter === 'russian' && (d.allegiance === 'russian' || d.allegiance === 'both')) ||
@@ -782,21 +789,51 @@
                         (filter === 'legal' && d.type === 'legal') ||
                         (filter === 'entity' && d.type === 'entity') ||
                         (filter === 'victim' && d.type === 'victim')) {
-                        return 1;
+                        return 1; // Visible
                     }
                 }
                 return 0.15; // Dimmed
             });
 
-            // Dim links where both nodes are hidden
+            // Show links only where BOTH nodes are visible
             g.selectAll('.link').style('opacity', function(d) {
-                const sourceVisible = g.select(`circle[data-id="${d.source.id}"]`).style('opacity') == 1;
-                const targetVisible = g.select(`circle[data-id="${d.target.id}"]`).style('opacity') == 1;
-                return (sourceVisible && targetVisible) ? 0.35 : 0.05;
+                const srcNode = graphData.nodes.find(n => n.id === d.source.id);
+                const tgtNode = graphData.nodes.find(n => n.id === d.target.id);
+
+                let srcVisible = false, tgtVisible = false;
+
+                for (let filter of activeLegendFilters) {
+                    if ((filter === 'russian' && (srcNode.allegiance === 'russian' || srcNode.allegiance === 'both')) ||
+                        (filter === 'israeli' && (srcNode.allegiance === 'israeli' || srcNode.allegiance === 'both')) ||
+                        (filter === 'intelligence' && srcNode.type === 'intelligence') ||
+                        (filter === 'financial' && srcNode.type === 'financial') ||
+                        (filter === 'tech' && srcNode.type === 'tech') ||
+                        (filter === 'legal' && srcNode.type === 'legal') ||
+                        (filter === 'entity' && srcNode.type === 'entity') ||
+                        (filter === 'victim' && srcNode.type === 'victim')) {
+                        srcVisible = true;
+                    }
+                    if ((filter === 'russian' && (tgtNode.allegiance === 'russian' || tgtNode.allegiance === 'both')) ||
+                        (filter === 'israeli' && (tgtNode.allegiance === 'israeli' || tgtNode.allegiance === 'both')) ||
+                        (filter === 'intelligence' && tgtNode.type === 'intelligence') ||
+                        (filter === 'financial' && tgtNode.type === 'financial') ||
+                        (filter === 'tech' && tgtNode.type === 'tech') ||
+                        (filter === 'legal' && tgtNode.type === 'legal') ||
+                        (filter === 'entity' && tgtNode.type === 'entity') ||
+                        (filter === 'victim' && tgtNode.type === 'victim')) {
+                        tgtVisible = true;
+                    }
+                }
+
+                return (srcVisible && tgtVisible) ? 0.35 : 0.05;
             });
         }
 
         function filterNetwork(network) {
+            // Clear legend filters when using top buttons
+            activeLegendFilters.clear();
+            document.querySelectorAll('.legend-item').forEach(item => item.classList.remove('dimmed'));
+
             document.querySelectorAll('.controls button').forEach(btn => btn.classList.remove('active'));
             event.target.classList.add('active');
 
