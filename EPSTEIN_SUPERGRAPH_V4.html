@@ -639,13 +639,13 @@
                 .force("charge", d3.forceManyBody()
                     .strength(d => {
                         // Big nodes (suns) push each other harder
-                        if (d.size >= 26) return -1 * d.size * 100;
-                        return -1 * (d.size || 16) * 70;
+                        if (d.size >= 26) return -1 * d.size * 120;
+                        return -1 * (d.size || 16) * 90;
                     }))
                 .force("center", d3.forceCenter(width / 2, height / 2))
                 .force("collision", d3.forceCollide()
-                    .radius(d => (d.size || 16) * 3) // Wide berth
-                    .strength(0.9));
+                    .radius(d => (d.size || 16) * 4) // More separation
+                    .strength(1.0));
 
             const link = g.append("g")
                 .selectAll("line")
@@ -793,13 +793,13 @@
                     .strength(0.08))
                 .force("charge", d3.forceManyBody()
                     .strength(d => {
-                        if (d.size >= 26) return -1 * d.size * 100;
-                        return -1 * (d.size || 16) * 70;
+                        if (d.size >= 26) return -1 * d.size * 120;
+                        return -1 * (d.size || 16) * 90;
                     }))
                 .force("center", d3.forceCenter(width / 2, height / 2))
                 .force("collision", d3.forceCollide()
-                    .radius(d => (d.size || 16) * 3)
-                    .strength(0.9));
+                    .radius(d => (d.size || 16) * 4)
+                    .strength(1.0));
 
             const link = g.append("g")
                 .selectAll("line")
