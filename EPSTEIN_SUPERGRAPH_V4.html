@@ -180,11 +180,11 @@
             <span class="legend-label">Intelligence Ops</span>
         </div>
         <div class="legend-item" onclick="toggleLegendFilter('financial')" data-type="financial">
-            <div class="legend-color" style="background: #ffaa00;"></div>
+            <div class="legend-color" style="background: #00ff00;"></div>
             <span class="legend-label">Financial</span>
         </div>
         <div class="legend-item" onclick="toggleLegendFilter('tech')" data-type="tech">
-            <div class="legend-color" style="background: #00ff00;"></div>
+            <div class="legend-color" style="background: #ffdd00;"></div>
             <span class="legend-label">Tech</span>
         </div>
         <div class="legend-item" onclick="toggleLegendFilter('legal')" data-type="legal">
@@ -214,22 +214,42 @@
         const height = window.innerHeight;
 
         const colors = {
-            russian: "#ff0000",      // Red for Russian network
-            israeli: "#0088ff",      // Blue for Israeli network
+            russian: "#ff0000",      // Red for Russian allegiance
+            israeli: "#0088ff",      // Blue for Israeli allegiance
             both: "#ff0088",         // Pink/magenta for dual allegiance
             intelligence: "#ff6600", // Orange
-            financial: "#ffaa00",    // Gold
-            tech: "#00ff00",         // Green
+            financial: "#00ff00",    // Green (swapped with tech)
+            tech: "#ffdd00",         // Yellow (swapped with financial)
             legal: "#ff00ff",        // Purple
             entity: "#888888",       // Gray
             victim: "#ff44aa",       // Pink
             event: "#aa44ff"         // Purple
         };
 
-        function getNodeColor(node) {
-            // Allegiance takes priority over type
+        function getNodeFill(node) {
+            // For nodes with allegiance, show their ROLE as fill
+            // Allegiance will be shown as stroke/halo
+            if (node.allegiance && node.type !== 'hub' && node.type !== 'political') {
+                return colors[node.type] || "#888";
+            }
+            // For pure allegiance nodes (Putin, Epstein, Trump), show allegiance
             if (node.allegiance) return colors[node.allegiance];
             return colors[node.type] || "#888";
+        }
+
+        function getNodeStroke(node) {
+            // Show allegiance as stroke/halo for dual-nature nodes
+            if (node.allegiance && node.type !== 'hub' && node.type !== 'political') {
+                return colors[node.allegiance];
+            }
+            // Show secondaryType as stroke for institutions (e.g., Deutsche Bank = entity with financial stroke)
+            if (node.secondaryType) {
+                return colors[node.secondaryType];
+            }
+            // Big nodes get white stroke
+            if (node.size >= 28) return "#fff";
+            // Otherwise match fill
+            return getNodeFill(node);
         }
 
         const graphData = {
@@ -276,7 +296,7 @@
                 {id: "wexner", label: "LES WEXNER", type: "financial", size: 24},
                 {id: "greenberg", label: "ALAN GREENBERG", type: "financial", size: 22},
                 {id: "bear_stearns", label: "BEAR STEARNS", type: "entity", size: 22},
-                {id: "deutsche", label: "DEUTSCHE BANK", type: "entity", size: 24},
+                {id: "deutsche", label: "DEUTSCHE BANK", type: "entity", size: 24, secondaryType: "financial"},
                 {id: "liquid_funding", label: "LIQUID FUNDING", type: "entity", size: 20},
                 {id: "southern_trust", label: "SOUTHERN TRUST", type: "entity", size: 20},
                 {id: "bowers", label: "THOMAS BOWERS", type: "financial", size: 18},
@@ -692,10 +712,13 @@
             node.append("circle")
                 .attr("class", d => (d.size >= 26) ? "node-circle node-halo" : "node-circle")
                 .attr("r", d => d.size || 16)
-                .attr("fill", d => getNodeColor(d))
-                .attr("stroke", d => {
-                    if (d.size >= 28) return "#fff";
-                    return getNodeColor(d);
+                .attr("fill", d => getNodeFill(d))
+                .attr("stroke", d => getNodeStroke(d))
+                .attr("stroke-width", d => {
+                    // Thicker stroke for dual-nature nodes to show allegiance/role halo
+                    if (d.allegiance && d.type !== 'hub' && d.type !== 'political') return 4;
+                    if (d.secondaryType) return 4;
+                    return 3;
                 })
                 .on("mouseover", function(event, d) {
                     tooltip.style("display", "block");
@@ -946,8 +969,13 @@
             node.append("circle")
                 .attr("class", d => (d.size >= 26) ? "node-circle node-halo" : "node-circle")
                 .attr("r", d => d.size || 16)
-                .attr("fill", d => getNodeColor(d))
-                .attr("stroke", d => (d.size >= 28) ? "#fff" : (getNodeColor(d)))
+                .attr("fill", d => getNodeFill(d))
+                .attr("stroke", d => getNodeStroke(d))
+                .attr("stroke-width", d => {
+                    if (d.allegiance && d.type !== 'hub' && d.type !== 'political') return 4;
+                    if (d.secondaryType) return 4;
+                    return 3;
+                })
                 .on("mouseover", function(event, d) {
                     tooltip.style("display", "block");
                     tooltip.html(`<h3>${d.label}</h3><p><strong>Type:</strong> ${d.type}</p>`)
