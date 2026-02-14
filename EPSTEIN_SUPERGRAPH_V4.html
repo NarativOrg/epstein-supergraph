@@ -295,9 +295,11 @@
                 {id: "leon_black", label: "LEON BLACK", type: "financial", size: 24},
                 {id: "wexner", label: "LES WEXNER", type: "financial", size: 24},
                 {id: "greenberg", label: "ALAN GREENBERG", type: "financial", size: 22},
+                {id: "cayne", label: "JIMMY CAYNE", type: "financial", size: 20},
                 {id: "bear_stearns", label: "BEAR STEARNS", type: "entity", size: 22},
                 {id: "deutsche", label: "DEUTSCHE BANK", type: "entity", size: 24, secondaryType: "financial"},
                 {id: "liquid_funding", label: "LIQUID FUNDING", type: "entity", size: 20},
+                {id: "carbyne", label: "CARBYNE", type: "entity", size: 18},
                 {id: "southern_trust", label: "SOUTHERN TRUST", type: "entity", size: 20},
                 {id: "bowers", label: "THOMAS BOWERS", type: "financial", size: 18},
                 {id: "milken", label: "MICHAEL MILKEN", type: "financial", size: 20},
@@ -633,7 +635,23 @@
 {source: "bondi", target: "acosta", type: "legal", label: "Florida AG Epstein case", weight: 9},
 {source: "bannon", target: "trump", type: "political", label: "Chief strategist 2017 Cambridge Analytica", weight: 10},
 {source: "bannon", target: "mercer", type: "political", label: "Funded Breitbart Cambridge", weight: 10},
-{source: "bannon", target: "stone", type: "political", label: "Political operative network", weight: 8}
+{source: "bannon", target: "stone", type: "political", label: "Political operative network", weight: 8},
+
+// ADDITIONAL MISSING CONNECTIONS
+{source: "churkin", target: "dubinin", type: "intelligence", label: "Soviet/Russian diplomats UN ambassador", weight: 8},
+{source: "mogilevich", target: "ehud_barak", type: "intelligence", label: "Israeli-Russian organized crime nexus", weight: 9},
+{source: "sheferovsky", target: "mogilevich", type: "financial", label: "Son of Mogilevich underboss", weight: 9},
+{source: "dmitriev", target: "leon_black", type: "financial", label: "RDIF Apollo connections", weight: 8},
+{source: "dmitriev", target: "trump", type: "political", label: "RDIF Trump transition Seychelles", weight: 9},
+{source: "epstein", target: "bear_stearns", type: "financial", label: "Greenberg hired 1976 proprietary trading", weight: 10},
+{source: "epstein", target: "liquid_funding", type: "financial", label: "Bear Stearns Epstein structured vehicle", weight: 10},
+{source: "wexner", target: "liquid_funding", type: "financial", label: "Investor Epstein vehicle", weight: 9},
+{source: "cayne", target: "bear_stearns", type: "financial", label: "CEO succeeded Greenberg", weight: 10},
+{source: "cayne", target: "greenberg", type: "financial", label: "Bridge partner CEO succession", weight: 9},
+{source: "cayne", target: "epstein", type: "financial", label: "Bear Stearns CEO Epstein relationship", weight: 8},
+{source: "carbyne", target: "ehud_barak", type: "intelligence", label: "Chairman Israeli surveillance tech", weight: 10},
+{source: "carbyne", target: "epstein", type: "intelligence", label: "Investor board member", weight: 9},
+{source: "carbyne", target: "wexner", type: "financial", label: "Investor Epstein connection", weight: 8}
 ]
         };
 
