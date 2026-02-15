@@ -822,9 +822,15 @@
             g.selectAll('.node-circle').style('opacity', d => {
                 // Show if ANY active filter matches
                 for (let filter of activeLegendFilters) {
-                    if ((filter === 'russian' && (d.allegiance === 'russian' || d.allegiance === 'both')) ||
-                        (filter === 'israeli' && (d.allegiance === 'israeli' || d.allegiance === 'both')) ||
-                        (filter === 'intelligence' && d.type === 'intelligence') ||
+                    // Allegiance filters - ALWAYS show hubs and politicals with matching allegiance
+                    if (filter === 'russian' && (d.allegiance === 'russian' || d.allegiance === 'both')) {
+                        return 1; // Visible
+                    }
+                    if (filter === 'israeli' && (d.allegiance === 'israeli' || d.allegiance === 'both')) {
+                        return 1; // Visible
+                    }
+                    // Type filters
+                    if ((filter === 'intelligence' && d.type === 'intelligence') ||
                         (filter === 'financial' && d.type === 'financial') ||
                         (filter === 'tech' && d.type === 'tech') ||
                         (filter === 'legal' && d.type === 'legal') ||
