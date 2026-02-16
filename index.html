@@ -156,6 +156,7 @@
         <button onclick="filterNetwork('financial')">FINANCIAL</button>
         <button onclick="filterNetwork('russia')">RUSSIA</button>
         <button onclick="filterNetwork('israel')">ISRAEL</button>
+        <button onclick="filterNetwork('cohen')">COHEN NETWORK</button>
         <button onclick="filterNetwork('tech')">TECH</button>
         <button onclick="filterNetwork('oligarchs')">OLIGARCHS</button>
         <button onclick="resetSimulation()">RESET</button>
@@ -326,8 +327,9 @@
                 {id: "kushner", label: "JARED KUSHNER", type: "political", size: 20, allegiance: "israeli"},
                 {id: "ivana", label: "IVANA TRUMP", type: "political", size: 18},
                 {id: "stone", label: "ROGER STONE", type: "political", size: 18},
-                {id: "cohen", label: "MICHAEL COHEN", type: "political", size: 18},
+                {id: "cohen", label: "MICHAEL COHEN", type: "political", size: 22, allegiance: "both"},
                 {id: "giuliani", label: "RUDY GIULIANI", type: "political", size: 18},
+                {id: "richard_kahn", label: "RICHARD KAHN", type: "intelligence", size: 18, allegiance: "both"},
                 {id: "dubinin", label: "YURI DUBININ", type: "intelligence", size: 16},
                 {id: "vrablic", label: "ROSEMARY VRABLIC", type: "financial", size: 14},
 
@@ -472,6 +474,11 @@
 // KATIE JOHNSON NETWORK RESPONSE (NEW!)
 {source: "cohen", target: "trump", type: "political", label: "500+ threats 2016", weight: 10},
 {source: "cohen", target: "katie_johnson", type: "victim", label: "Investigated now lies", weight: 10},
+{source: "cohen", target: "kushner", type: "financial", label: "Money laundering network", weight: 9},
+{source: "cohen", target: "vekselberg", type: "financial", label: "AT&T Russian oligarch payments", weight: 10},
+{source: "richard_kahn", target: "epstein", type: "intelligence", label: "Tracked Cohen for Epstein", weight: 10},
+{source: "richard_kahn", target: "cohen", type: "intelligence", label: "2019 monitoring Cohen testimony", weight: 9},
+{source: "epstein", target: "cohen", type: "intelligence", label: "Epstein files withholding info", weight: 10},
 {source: "epstein", target: "barrack", type: "political", label: "Apr 28 2016 alert 4:34 PM", weight: 10},
 {source: "epstein", target: "michael_wolff", type: "political", label: "Wave this away offer", weight: 9},
 {source: "epstein", target: "ruemmler", type: "political", label: "Apr 28 2016 Obama counsel", weight: 8},
@@ -914,6 +921,14 @@
                 const techIds = ['thiel', 'musk', 'zuckerberg', 'hoffman', 'gates', 'palantir',
                     'cambridge', 'starlink', 'spacex', 'epstein'];
                 filteredNodes = graphData.nodes.filter(n => techIds.includes(n.id) || n.type === 'tech');
+                const nodeIds = new Set(filteredNodes.map(n => n.id));
+                filteredLinks = graphData.links.filter(l =>
+                    nodeIds.has(l.source.id || l.source) && nodeIds.has(l.target.id || l.target));
+            } else if (network === 'cohen') {
+                const cohenIds = ['cohen', 'richard_kahn', 'trump', 'sater', 'epstein', 'kushner',
+                    'vekselberg', 'katie_johnson', 'deutsche', 'roy_cohn', 'giuliani', 'stone',
+                    'manafort', 'deripaska', 'rybolovlev', 'bogatin', 'mogilevich'];
+                filteredNodes = graphData.nodes.filter(n => cohenIds.includes(n.id));
                 const nodeIds = new Set(filteredNodes.map(n => n.id));
                 filteredLinks = graphData.links.filter(l =>
                     nodeIds.has(l.source.id || l.source) && nodeIds.has(l.target.id || l.target));
