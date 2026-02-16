@@ -416,6 +416,8 @@
                 {id: "cohen", label: "MICHAEL COHEN", type: "political", size: 22, allegiance: "both"},
                 {id: "giuliani", label: "RUDY GIULIANI", type: "political", size: 18},
                 {id: "richard_kahn", label: "RICHARD KAHN", type: "intelligence", size: 18, allegiance: "both"},
+                {id: "lutnick", label: "HOWARD LUTNICK", type: "political", size: 24, allegiance: "both"},
+                {id: "witkoff", label: "STEVE WITKOFF", type: "political", size: 20, allegiance: "russian"},
                 {id: "dubinin", label: "YURI DUBININ", type: "intelligence", size: 16},
                 {id: "vrablic", label: "ROSEMARY VRABLIC", type: "financial", size: 14},
 
@@ -565,6 +567,13 @@
 {source: "richard_kahn", target: "epstein", type: "intelligence", label: "Tracked Cohen for Epstein", weight: 10},
 {source: "richard_kahn", target: "cohen", type: "intelligence", label: "2019 monitoring Cohen testimony", weight: 9},
 {source: "epstein", target: "cohen", type: "intelligence", label: "Epstein files withholding info", weight: 10},
+{source: "lutnick", target: "epstein", type: "business", label: "Business until 2019 island visits", weight: 10},
+{source: "lutnick", target: "wexner", type: "financial", label: "Bought Manhattan home from Wexner", weight: 9},
+{source: "lutnick", target: "trump", type: "political", label: "Commerce Secretary regular meetings", weight: 9},
+{source: "lutnick", target: "cohen", type: "political", label: "20+ year relationship", weight: 8},
+{source: "witkoff", target: "trump", type: "political", label: "Middle East Envoy close friend", weight: 10},
+{source: "witkoff", target: "kushner", type: "political", label: "Moscow negotiations Jan 2026", weight: 10},
+{source: "witkoff", target: "putin", type: "political", label: "Backchannel to Kremlin", weight: 9},
 {source: "epstein", target: "barrack", type: "political", label: "Apr 28 2016 alert 4:34 PM", weight: 10},
 {source: "epstein", target: "michael_wolff", type: "political", label: "Wave this away offer", weight: 9},
 {source: "epstein", target: "ruemmler", type: "political", label: "Apr 28 2016 Obama counsel", weight: 8},
@@ -1011,9 +1020,9 @@
                 filteredLinks = graphData.links.filter(l =>
                     nodeIds.has(l.source.id || l.source) && nodeIds.has(l.target.id || l.target));
             } else if (network === 'cohen') {
-                const cohenIds = ['cohen', 'richard_kahn', 'trump', 'sater', 'epstein', 'kushner',
-                    'vekselberg', 'katie_johnson', 'deutsche', 'roy_cohn', 'giuliani', 'stone',
-                    'manafort', 'deripaska', 'rybolovlev', 'bogatin', 'mogilevich'];
+                const cohenIds = ['cohen', 'richard_kahn', 'lutnick', 'witkoff', 'trump', 'sater', 'epstein', 'kushner',
+                    'vekselberg', 'wexner', 'katie_johnson', 'deutsche', 'roy_cohn', 'giuliani', 'stone',
+                    'manafort', 'deripaska', 'rybolovlev', 'bogatin', 'mogilevich', 'putin'];
                 filteredNodes = graphData.nodes.filter(n => cohenIds.includes(n.id));
                 const nodeIds = new Set(filteredNodes.map(n => n.id));
                 filteredLinks = graphData.links.filter(l =>
