@@ -146,9 +146,95 @@
         .node-halo {
             filter: drop-shadow(0 0 8px currentColor) drop-shadow(0 0 12px currentColor);
         }
+        .password-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.98);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+        .password-box {
+            background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+            padding: 40px 50px;
+            border-radius: 15px;
+            border: 3px solid #ff4444;
+            box-shadow: 0 0 40px rgba(255, 68, 68, 0.5);
+            text-align: center;
+            max-width: 400px;
+        }
+        .password-box h2 {
+            color: #ff4444;
+            margin-bottom: 10px;
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .password-box p {
+            color: #999;
+            margin-bottom: 25px;
+            font-size: 13px;
+        }
+        .password-box input {
+            width: 100%;
+            padding: 15px;
+            background: #1a1a1a;
+            border: 2px solid #333;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
+            margin-bottom: 20px;
+            outline: none;
+        }
+        .password-box input:focus {
+            border-color: #ff4444;
+        }
+        .password-box button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #ff4444, #cc0000);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .password-box button:hover {
+            background: linear-gradient(135deg, #ff6666, #ff0000);
+            transform: translateY(-2px);
+        }
+        .password-error {
+            color: #ff4444;
+            font-size: 12px;
+            margin-top: 10px;
+            display: none;
+        }
+        .content {
+            display: none;
+        }
+        .content.unlocked {
+            display: block;
+        }
     </style>
 </head>
 <body>
+    <div id="password-overlay" class="password-overlay">
+        <div class="password-box">
+            <h2>🔒 RESTRICTED ACCESS</h2>
+            <p>This visualization contains sensitive investigative research.</p>
+            <input type="password" id="password-input" placeholder="Enter password" onkeypress="if(event.key==='Enter') checkPassword()">
+            <button onclick="checkPassword()">UNLOCK</button>
+            <div class="password-error" id="password-error">Incorrect password. Access denied.</div>
+        </div>
+    </div>
+
+    <div class="content" id="main-content">
     <h1>🔴 THE GREATEST HEIST 🔴</h1>
 
     <div class="controls">
@@ -1039,7 +1125,39 @@
             simulation.alpha(1).restart();
         }
 
-        initGraph();
+        // Password protection
+        async function checkPassword() {
+            const input = document.getElementById('password-input').value;
+            const errorDiv = document.getElementById('password-error');
+
+            // Hash the input password
+            const msgBuffer = new TextEncoder().encode(input);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+            // Correct password hash (SHA-256 of the password)
+            // Password: "epstein-supergraph-2026"
+            const correctHash = "929585a6a492380081b60b6c1fefdcaad4117c4d739680f36209f17e0925ad2e";
+
+            if (hashHex === correctHash) {
+                document.getElementById('password-overlay').style.display = 'none';
+                document.getElementById('main-content').classList.add('unlocked');
+                sessionStorage.setItem('auth', 'true');
+                initGraph();
+            } else {
+                errorDiv.style.display = 'block';
+                setTimeout(() => errorDiv.style.display = 'none', 3000);
+            }
+        }
+
+        // Check if already authenticated in this session
+        if (sessionStorage.getItem('auth') === 'true') {
+            document.getElementById('password-overlay').style.display = 'none';
+            document.getElementById('main-content').classList.add('unlocked');
+            initGraph();
+        }
     </script>
+    </div>
 </body>
 </html>
