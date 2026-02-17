@@ -1007,33 +1007,29 @@
                 else if (n.id === 'musk')          { n.x = cx - separation * 2.0; n.y = cy - 280; }
             });
 
+            // Precompute size lookup — avoids O(n²) find() inside simulation tick
+            const sizeMap = new Map(graphData.nodes.map(n => [n.id, n.size || 16]));
+
             simulation = d3.forceSimulation(graphData.nodes)
+                .alphaDecay(0.04)       // Settle ~2x faster than default 0.0228
+                .velocityDecay(0.55)    // More damping = less thrashing
                 .force("link", d3.forceLink(graphData.links)
                     .id(d => d.id)
                     .distance(d => {
-                        const src = graphData.nodes.find(n => n.id === (d.source.id || d.source));
-                        const tgt = graphData.nodes.find(n => n.id === (d.target.id || d.target));
-                        const srcSize = src.size || 16;
-                        const tgtSize = tgt.size || 16;
-                        // Satellites closer to suns: if one is big (>= 26), pull closer
-                        const maxSize = Math.max(srcSize, tgtSize);
-                        const minSize = Math.min(srcSize, tgtSize);
-                        if (maxSize >= 26) {
-                            return (srcSize + tgtSize) * 6; // Closer to big nodes
-                        }
-                        return (srcSize + tgtSize) * 10; // Normal distance
+                        const srcSize = sizeMap.get(d.source.id || d.source) || 16;
+                        const tgtSize = sizeMap.get(d.target.id || d.target) || 16;
+                        return (srcSize + tgtSize >= 50) ? (srcSize + tgtSize) * 6 : (srcSize + tgtSize) * 10;
                     })
-                    .strength(0.08)) // Very weak = floppy strings
+                    .strength(0.08))
                 .force("charge", d3.forceManyBody()
-                    .strength(d => {
-                        // Big nodes (suns) push each other harder
-                        if (d.size >= 26) return -1 * d.size * 120;
-                        return -1 * (d.size || 16) * 90;
-                    }))
-                .force("center", d3.forceCenter(width / 2, height / 2))
+                    .strength(d => (d.size >= 26) ? -d.size * 120 : -(d.size || 16) * 90)
+                    .distanceMax(600)   // Barnes-Hut: ignore nodes beyond 600px — huge CPU saving
+                    .theta(0.9))        // Larger theta = faster approximation
+                .force("center", d3.forceCenter(width / 2, height / 2).strength(0.04))
                 .force("collision", d3.forceCollide()
-                    .radius(d => (d.size || 16) * 4) // More separation
-                    .strength(1.0));
+                    .radius(d => (d.size || 16) * 3.5)
+                    .strength(0.7)      // Reduced from 1.0
+                    .iterations(1));    // 1 iteration vs default 1 (explicit)
 
             const link = g.append("g")
                 .selectAll("line")
@@ -1093,6 +1089,9 @@
                     .attr("x2", d => d.target.x)
                     .attr("y2", d => d.target.y);
                 node.attr("transform", d => `translate(${d.x},${d.y})`);
+            }).on("end", () => {
+                // Auto-stop: simulation has fully settled — zero CPU after this
+                simulation.stop();
             });
         }
 
@@ -1292,28 +1291,27 @@
         }
 
         function buildGraph(nodes, links) {
+            const nodeSizeMap = new Map(nodes.map(n => [n.id, n.size || 16]));
             const sim = d3.forceSimulation(nodes)
+                .alphaDecay(0.04)
+                .velocityDecay(0.55)
                 .force("link", d3.forceLink(links)
                     .id(d => d.id)
                     .distance(d => {
-                        const src = nodes.find(n => n.id === (d.source.id || d.source));
-                        const tgt = nodes.find(n => n.id === (d.target.id || d.target));
-                        const srcSize = src.size || 16;
-                        const tgtSize = tgt.size || 16;
-                        const maxSize = Math.max(srcSize, tgtSize);
-                        if (maxSize >= 26) return (srcSize + tgtSize) * 6;
-                        return (srcSize + tgtSize) * 10;
+                        const srcSize = nodeSizeMap.get(d.source.id || d.source) || 16;
+                        const tgtSize = nodeSizeMap.get(d.target.id || d.target) || 16;
+                        return (srcSize + tgtSize >= 50) ? (srcSize + tgtSize) * 6 : (srcSize + tgtSize) * 10;
                     })
                     .strength(0.08))
                 .force("charge", d3.forceManyBody()
-                    .strength(d => {
-                        if (d.size >= 26) return -1 * d.size * 120;
-                        return -1 * (d.size || 16) * 90;
-                    }))
-                .force("center", d3.forceCenter(width / 2, height / 2))
+                    .strength(d => (d.size >= 26) ? -d.size * 120 : -(d.size || 16) * 90)
+                    .distanceMax(600)
+                    .theta(0.9))
+                .force("center", d3.forceCenter(width / 2, height / 2).strength(0.04))
                 .force("collision", d3.forceCollide()
-                    .radius(d => (d.size || 16) * 4)
-                    .strength(1.0));
+                    .radius(d => (d.size || 16) * 3.5)
+                    .strength(0.7)
+                    .iterations(1));
 
             const link = g.append("g")
                 .selectAll("line")
@@ -1373,11 +1371,11 @@
                 link.attr("x1", d => d.source.x).attr("y1", d => d.source.y)
                     .attr("x2", d => d.target.x).attr("y2", d => d.target.y);
                 node.attr("transform", d => `translate(${d.x},${d.y})`);
-            });
+            }).on("end", () => sim.stop());
         }
 
         function resetSimulation() {
-            simulation.alpha(1).restart();
+            if (simulation) simulation.alpha(1).alphaDecay(0.04).restart();
         }
 
         // Password protection
