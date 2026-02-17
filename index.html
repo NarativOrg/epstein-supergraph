@@ -56,6 +56,10 @@
             transform: translateY(-2px);
         }
         button.active { background: linear-gradient(135deg, #00ff00, #009900); }
+        .rank-btn { background: rgba(255,68,68,0.12); border: 1px solid #ff4444; padding: 4px 8px; font-size: 10px; font-weight: bold; color: #ffcccc; border-radius: 4px; cursor: pointer; transition: all 0.2s; }
+        .rank-btn:hover { background: rgba(255,68,68,0.35); color: #fff; transform: translateY(-1px); }
+        .rank-btn .rank-num { color: #666; font-size: 9px; margin-right: 2px; }
+        .rank-btn .rank-count { color: #ff4444; font-size: 9px; margin-left: 3px; }
         #graph { width: 100%; height: 100vh; }
         .node-circle { cursor: grab; stroke-width: 3px; }
         .node-circle:active { cursor: grabbing; }
@@ -247,6 +251,7 @@
         <button onclick="filterNetwork('oligarchs')">RUSSIAN MAFIA</button>
         <button onclick="filterNetwork('lutnick')">LUTNICK</button>
         <button onclick="resetSimulation()">RESET</button>
+        <div id="top-rankings" style="margin-top:8px;padding-top:8px;border-top:1px solid #333;display:flex;flex-wrap:wrap;align-items:center;gap:3px;"></div>
     </div>
 
     <div class="stats">
@@ -857,6 +862,7 @@
 
         document.getElementById('node-count').textContent = graphData.nodes.length;
         document.getElementById('link-count').textContent = graphData.links.length;
+        buildTopRankings();
 
         const svg = d3.select("#graph")
             .attr("width", width)
@@ -870,6 +876,45 @@
 
         const tooltip = d3.select("#tooltip");
         let simulation;
+
+        function buildTopRankings(nodes, links) {
+            const src = nodes || graphData.nodes;
+            const lnk = links || graphData.links;
+            const degree = {};
+            src.forEach(n => degree[n.id] = 0);
+            lnk.forEach(l => {
+                const s = l.source.id || l.source;
+                const t = l.target.id || l.target;
+                if (degree[s] !== undefined) degree[s]++;
+                if (degree[t] !== undefined) degree[t]++;
+            });
+            const top10 = src.filter(n => degree[n.id] > 0)
+                .sort((a, b) => degree[b.id] - degree[a.id])
+                .slice(0, 10);
+            const label = n => n.label.length > 14 ? n.label.split(' ').slice(-1)[0] : n.label;
+            document.getElementById('top-rankings').innerHTML =
+                '<span style="color:#666;font-size:10px;margin-right:4px;white-space:nowrap;">TOP 10:</span>' +
+                top10.map((n, i) =>
+                    `<button class="rank-btn" onclick="focusNode('${n.id}')">` +
+                    `<span class="rank-num">#${i+1}</span>${label(n)}<span class="rank-count">${degree[n.id]}</span>` +
+                    `</button>`
+                ).join('');
+        }
+
+        function focusNode(nodeId) {
+            const n = graphData.nodes.find(n => n.id === nodeId);
+            if (!n || n.x == null) return;
+            const scale = 1.8;
+            const tx = width / 2 - scale * n.x;
+            const ty = height / 2 - scale * n.y;
+            d3.select("#graph").transition().duration(750)
+                .call(zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(scale));
+            d3.selectAll(".node-circle").filter(d => d.id === nodeId)
+                .attr("stroke", "#ffff00").attr("stroke-width", 10)
+                .transition().duration(2000)
+                .attr("stroke-width", 3)
+                .attr("stroke", d => getNodeStroke(d));
+        }
 
         function initGraph() {
             g.selectAll("*").remove();
@@ -1178,6 +1223,9 @@
             // Update display
             document.getElementById('node-count').textContent = filteredNodes.length;
             document.getElementById('link-count').textContent = filteredLinks.length;
+
+            // Update top rankings for current filtered view
+            buildTopRankings(filteredNodes, filteredLinks);
 
             // Rebuild graph with filtered data
             g.selectAll("*").remove();
