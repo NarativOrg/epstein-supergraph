@@ -493,7 +493,22 @@
 
                 // EVENTS
                 {id: "2008_crash", label: "2008 CRISIS", type: "event", size: 20},
-                {id: "election_2024", label: "2024 ELECTION", type: "event", size: 16}
+                {id: "election_2024", label: "2024 ELECTION", type: "event", size: 16},
+                {id: "jan6", label: "JANUARY 6", type: "event", size: 20},
+
+                // EXPANDED NETWORK NODES
+                {id: "kilimnik", label: "KONSTANTIN KILIMNIK", type: "intelligence", size: 18, allegiance: "russian"},
+                {id: "yanukovych", label: "VIKTOR YANUKOVYCH", type: "political", size: 18, allegiance: "russian"},
+                {id: "donald_barr", label: "DONALD BARR", type: "political", size: 14},
+                {id: "bayrock", label: "BAYROCK GROUP", type: "entity", size: 18},
+                {id: "terramar", label: "TERRAMAR PROJECT", type: "entity", size: 16},
+                {id: "alpha_bank", label: "ALPHA BANK", type: "entity", size: 18, allegiance: "russian"},
+                {id: "wikileaks", label: "WIKILEAKS", type: "entity", size: 20},
+                {id: "guccifer", label: "GUCCIFER 2.0 (GRU)", type: "intelligence", size: 18, allegiance: "russian"},
+                {id: "ailes", label: "ROGER AILES", type: "political", size: 16},
+                {id: "trump_org", label: "TRUMP ORGANIZATION", type: "entity", size: 22},
+                {id: "kilimnik_polling", label: "2016 POLLING DATA", type: "entity", size: 14},
+                {id: "assange", label: "JULIAN ASSANGE", type: "political", size: 18}
             ],
 
             links: [
@@ -775,7 +790,68 @@
 {source: "cayne", target: "epstein", type: "financial", label: "Bear Stearns CEO Epstein relationship", weight: 8},
 {source: "carbyne", target: "ehud_barak", type: "intelligence", label: "Chairman Israeli surveillance tech", weight: 10},
 {source: "carbyne", target: "epstein", type: "intelligence", label: "Investor board member", weight: 9},
-{source: "carbyne", target: "wexner", type: "financial", label: "Investor Epstein connection", weight: 8}
+{source: "carbyne", target: "wexner", type: "financial", label: "Investor Epstein connection", weight: 8},
+
+// DEUTSCHE BANK EXPANDED
+{source: "deutsche", target: "trump_org", type: "financial", label: "$2B+ loans when no other bank would lend to Trump", weight: 10},
+{source: "deutsche", target: "kushner", type: "financial", label: "$285M loan weeks before 2016 election", weight: 10},
+{source: "deutsche", target: "russian_mafia", type: "financial", label: "$10B mirror trades laundered for Russian clients 2011-2015", weight: 10},
+{source: "trump_org", target: "trump", type: "financial", label: "Trump personal vehicle for loans and income", weight: 10},
+{source: "trump_org", target: "epstein", type: "social", label: "Mar-a-Lago events shared network", weight: 8},
+{source: "trump_org", target: "sater", type: "business", label: "Bayrock Group Trump SoHo Moscow Tower deals", weight: 10},
+
+// MANAFORT EXPANDED
+{source: "manafort", target: "kilimnik", type: "intelligence", label: "Shared 2016 Trump polling data with Russian intel officer GRU", weight: 10},
+{source: "manafort", target: "yanukovych", type: "political", label: "Lobbyist for Ukrainian president $17M undisclosed FARA", weight: 10},
+{source: "manafort", target: "ailes", type: "political", label: "Black Manafort Stone Kelly original firm 1980s", weight: 8},
+{source: "kilimnik", target: "putin", type: "intelligence", label: "Russian GRU intelligence officer", weight: 10},
+{source: "kilimnik", target: "deripaska", type: "financial", label: "Oleg Deripaska backchannel campaign data", weight: 10},
+{source: "yanukovych", target: "russian_mafia", type: "political", label: "Kremlin-backed Ukrainian president fled to Russia", weight: 9},
+
+// WILLIAM BARR EXPANDED
+{source: "barr", target: "epstein", type: "legal", label: "AG oversaw Epstein death | no accountability | Bureau of Prisons", weight: 10},
+{source: "barr", target: "donald_barr", type: "family", label: "Father hired Epstein at Dalton School 1973 no credentials", weight: 10},
+{source: "barr", target: "iran_contra", type: "political", label: "DOJ BCCI Iran-Contra cover-up 1980s", weight: 9},
+{source: "donald_barr", target: "epstein", type: "business", label: "Hired Epstein at Dalton School despite no teaching credentials 1973", weight: 10},
+
+// FELIX SATER + BAYROCK EXPANDED
+{source: "sater", target: "bayrock", type: "business", label: "Bayrock Group co-founder mob-connected developer", weight: 10},
+{source: "bayrock", target: "trump", type: "business", label: "Trump SoHo Trump Fort Lauderdale developments", weight: 10},
+{source: "bayrock", target: "russian_mafia", type: "financial", label: "Tevfik Arif money laundering Kazakhstan oligarch", weight: 9},
+{source: "sater", target: "kilimnik", type: "intelligence", label: "Russian intelligence informant network overlap", weight: 8},
+
+// VEKSELBERG + ALPHA BANK EXPANDED
+{source: "vekselberg", target: "cohen", type: "financial", label: "$500K+ Essential Consultants payments 2017 Mueller probe", weight: 10},
+{source: "vekselberg", target: "alpha_bank", type: "financial", label: "Renova Group Russian oligarch financial network", weight: 9},
+{source: "alpha_bank", target: "trump", type: "intelligence", label: "Alpha Bank servers pinged Trump Tower repeatedly 2016", weight: 10},
+{source: "alpha_bank", target: "russian_mafia", type: "financial", label: "Russian oligarch banking network", weight: 9},
+
+// ROGER STONE EXPANDED
+{source: "stone", target: "wikileaks", type: "intelligence", label: "Advanced knowledge of Podesta emails | coordination", weight: 10},
+{source: "stone", target: "guccifer", type: "intelligence", label: "Direct communications with GRU front Guccifer 2.0", weight: 10},
+{source: "stone", target: "ailes", type: "political", label: "Black Manafort Stone Kelly original firm", weight: 8},
+{source: "stone", target: "jan6", type: "political", label: "January 6 planning pardoned by Trump", weight: 10},
+{source: "wikileaks", target: "guccifer", type: "intelligence", label: "GRU used WikiLeaks as publication vehicle DNC emails", weight: 10},
+{source: "wikileaks", target: "assange", type: "political", label: "Founder publisher Russian intelligence asset", weight: 10},
+{source: "assange", target: "putin", type: "intelligence", label: "WikiLeaks served Russian information warfare agenda", weight: 9},
+{source: "guccifer", target: "kgb", type: "intelligence", label: "GRU military intelligence arm of Russian state", weight: 10},
+{source: "ailes", target: "trump", type: "political", label: "Fox News founder Trump 2016 media strategy", weight: 10},
+{source: "ailes", target: "manafort", type: "political", label: "Black Manafort Stone Kelly 1980s political consulting", weight: 9},
+
+// GHISLAINE MAXWELL EXPANDED
+{source: "g_maxwell", target: "terramar", type: "business", label: "Founder gave Maxwell submarine access international waters", weight: 10},
+{source: "g_maxwell", target: "brunel", type: "business", label: "MC2 modeling agency victim supply network", weight: 10},
+{source: "brunel", target: "epstein", type: "business", label: "MC2 modeling agency recruited victims globally", weight: 10},
+{source: "brunel", target: "g_maxwell", type: "business", label: "Co-ran victim supply network MC2", weight: 10},
+{source: "terramar", target: "epstein", type: "business", label: "Submarine access international waters outside jurisdiction", weight: 9},
+
+// LEON BLACK EXPANDED
+{source: "leon_black", target: "epstein", type: "financial", label: "Paid Epstein $158M largest known payment tax advisory", weight: 10},
+{source: "leon_black", target: "russian_mafia", type: "financial", label: "RDIF Kirill Dmitriev Apollo Global Russian sovereign fund", weight: 8},
+
+// JANUARY 6
+{source: "trump", target: "jan6", type: "political", label: "Incited Capitol attack | pardoned all participants 2025", weight: 10},
+{source: "bannon", target: "jan6", type: "political", label: "Stop the Steal organizer War Room podcast", weight: 10}
 ]
         };
 
@@ -1023,7 +1099,8 @@
                 const russiaIds = ['putin', 'mogilevich', 'deripaska', 'vekselberg', 'rybolovlev',
                     'manafort', 'sater', 'bogatin', 'ivankov', 'kgb', 'churkin', 'belyakov', 'dmitriev',
                     'trump', 'stone', 'kushner', 'deutsche', 'russian_mafia', 'lutnick', 'bgc_international',
-                    'aubin_securities', 'witkoff'];
+                    'aubin_securities', 'witkoff', 'kilimnik', 'yanukovych', 'alpha_bank', 'guccifer',
+                    'wikileaks', 'assange', 'bayrock', 'trump_org'];
                 filteredNodes = graphData.nodes.filter(n => russiaIds.includes(n.id));
                 const nodeIds = new Set(filteredNodes.map(n => n.id));
                 filteredLinks = graphData.links.filter(l =>
