@@ -119,7 +119,11 @@
             pointer-events: none;
             text-shadow: 0 0 3px #000, 0 0 6px #000, 0 0 9px #000;
         }
-        .link { stroke-opacity: 0.35; pointer-events: none; }
+        .link { stroke-opacity: 0.35; pointer-events: none; transition: opacity 0.4s; }
+        .node-circle { transition: opacity 0.4s; }
+        .node-label  { transition: opacity 0.4s; }
+        .node-dimmed .node-circle, .node-dimmed .node-label { opacity: 0.08; }
+        .link-dimmed { opacity: 0.04 !important; }
         .tooltip {
             position: absolute;
             background: rgba(0,0,0,0.95);
@@ -311,6 +315,8 @@
         <button onclick="filterNetwork('tech')">TECH</button>
         <button onclick="filterNetwork('oligarchs')">RUSSIAN MAFIA</button>
         <button onclick="filterNetwork('lutnick')">LUTNICK</button>
+        <button onclick="filterNetwork('royals')" style="background: linear-gradient(135deg, #c8a600, #8a7200);">ROYALS</button>
+        <button onclick="filterNetwork('rothschild')" style="background: linear-gradient(135deg, #00aa44, #006622);">ROTHSCHILD</button>
         <button onclick="resetSimulation()">RESET</button>
     </div>
 
@@ -555,6 +561,11 @@
                 {id: "katie_johnson", label: "KATIE JOHNSON", type: "victim", size: 16},
                 {id: "v_giuffre", label: "VIRGINIA GIUFFRE", type: "victim", size: 16},
                 {id: "tiffany_doe", label: "TIFFANY DOE", type: "victim", size: 14},
+                {id: "jane_doe1", label: "JANE DOE 1 (Minor)", type: "victim", size: 14},
+                {id: "jane_doe2", label: "JANE DOE 2 (Minor)", type: "victim", size: 14},
+                {id: "jane_doe3", label: "JANE DOE 3 (Minor)", type: "victim", size: 14},
+                {id: "johanna_sjoberg", label: "JOHANNA SJOBERG", type: "victim", size: 14},
+                {id: "chauntae_davies", label: "CHAUNTAE DAVIES", type: "victim", size: 14},
 
                 // EVENTS
                 {id: "2008_crash", label: "2008 CRISIS", type: "event", size: 20},
@@ -573,7 +584,17 @@
                 {id: "ailes", label: "ROGER AILES", type: "political", size: 16},
                 {id: "trump_org", label: "TRUMP ORGANIZATION", type: "entity", size: 22},
                 {id: "kilimnik_polling", label: "2016 POLLING DATA", type: "entity", size: 14},
-                {id: "assange", label: "JULIAN ASSANGE", type: "political", size: 18}
+                {id: "assange", label: "JULIAN ASSANGE", type: "political", size: 18},
+
+                // ROYALS CLUSTER
+                {id: "king_charles", label: "KING CHARLES III", type: "royals", size: 22},
+                {id: "queen_elizabeth", label: "QUEEN ELIZABETH II", type: "royals", size: 20},
+                {id: "buckingham", label: "BUCKINGHAM PALACE", type: "entity", size: 18},
+
+                // ROTHSCHILD EXPANSION
+                {id: "lynn_rothschild", label: "LYNN FORESTER de ROTHSCHILD", type: "financial", size: 20},
+                {id: "jacob_rothschild", label: "JACOB de ROTHSCHILD", type: "financial", size: 20},
+                {id: "nathaniel_rothschild", label: "NATHANIEL ROTHSCHILD", type: "financial", size: 16}
             ],
 
             links: [
@@ -916,9 +937,86 @@
 
 // JANUARY 6
 {source: "trump", target: "jan6", type: "political", label: "Incited Capitol attack | pardoned all participants 2025", weight: 10},
-{source: "bannon", target: "jan6", type: "political", label: "Stop the Steal organizer War Room podcast", weight: 10}
+{source: "bannon", target: "jan6", type: "political", label: "Stop the Steal organizer War Room podcast", weight: 10},
+
+// GHISLAINE — CLINTON & IVANA
+{source: "g_maxwell", target: "clinton", type: "political", label: "Social circuit NY Palm Beach | flight logs", weight: 9},
+{source: "g_maxwell", target: "ivana", type: "political", label: "NY social circle | Trump Tower access", weight: 8},
+{source: "clinton", target: "v_giuffre", type: "victim", label: "Giuffre stated Clinton on Epstein island", weight: 9},
+
+// ADDITIONAL VICTIMS
+{source: "epstein", target: "jane_doe1", type: "victim", label: "Minor victim SDNY indictment", weight: 10},
+{source: "epstein", target: "jane_doe2", type: "victim", label: "Minor victim SDNY indictment", weight: 10},
+{source: "epstein", target: "jane_doe3", type: "victim", label: "Minor victim SDNY indictment", weight: 10},
+{source: "g_maxwell", target: "jane_doe1", type: "victim", label: "Recruited and groomed", weight: 10},
+{source: "g_maxwell", target: "jane_doe2", type: "victim", label: "Recruited and groomed", weight: 10},
+{source: "g_maxwell", target: "jane_doe3", type: "victim", label: "Recruited and groomed", weight: 10},
+{source: "epstein", target: "johanna_sjoberg", type: "victim", label: "Named in court filings", weight: 9},
+{source: "g_maxwell", target: "johanna_sjoberg", type: "victim", label: "Recruited via Maxwell", weight: 9},
+{source: "epstein", target: "chauntae_davies", type: "victim", label: "Travelled with Clinton on Epstein plane", weight: 9},
+{source: "clinton", target: "chauntae_davies", type: "victim", label: "Africa trip on Epstein plane 2002", weight: 8},
+{source: "brunel", target: "jane_doe1", type: "victim", label: "MC2 model recruitment pipeline", weight: 8},
+
+// ROYALS CLUSTER LINKS
+{source: "prince_andrew", target: "v_giuffre", type: "victim", label: "Sexual abuse — 3 encounters per sworn testimony", weight: 10},
+{source: "prince_andrew", target: "g_maxwell", type: "social", label: "Close friend — Maxwell recruited Giuffre via Andrew at Mar-a-Lago", weight: 10},
+{source: "sarah_ferguson", target: "epstein", type: "financial", label: "£15k debt paid by Epstein — met at NYC mansion", weight: 9},
+{source: "king_charles", target: "prince_andrew", type: "family", label: "Brother — palace intervened to limit prosecution cooperation", weight: 8},
+{source: "queen_elizabeth", target: "prince_andrew", type: "family", label: "Mother — stripped titles 2022 after Giuffre settlement", weight: 9},
+{source: "queen_elizabeth", target: "buckingham", type: "entity", label: "Head of monarchy 1952-2022", weight: 10},
+{source: "buckingham", target: "prince_andrew", type: "entity", label: "Official palace statements protected Andrew", weight: 9},
+{source: "mandelson", target: "prince_andrew", type: "political", label: "UK political establishment shared Epstein social circle", weight: 7},
+
+// ROTHSCHILD CLUSTER LINKS
+{source: "lynn_rothschild", target: "clinton", type: "political", label: "Clinton Foundation key donor — Martha's Vineyard political gatherings", weight: 10},
+{source: "lynn_rothschild", target: "epstein", type: "social", label: "Attended Epstein events — emails show coordination", weight: 9},
+{source: "lynn_rothschild", target: "g_maxwell", type: "social", label: "Same UK-US elite social circles", weight: 8},
+{source: "jacob_rothschild", target: "epstein", type: "financial", label: "Overlapping elite investor circles", weight: 7},
+{source: "jacob_rothschild", target: "rothschild", type: "family", label: "Rothschild dynasty patriarch — died 2024", weight: 8},
+{source: "nathaniel_rothschild", target: "deripaska", type: "financial", label: "Corfu 2008 yacht — Mandelson scandal Russian oligarch link", weight: 10},
+{source: "nathaniel_rothschild", target: "mandelson", type: "political", label: "Corfu 2008 — Mandelson-Deripaska-Rothschild affair", weight: 10},
+{source: "rothschild", target: "epstein", type: "financial", label: "$25M financial connection — Ariane de Rothschild", weight: 9},
+{source: "rothschild", target: "leon_black", type: "financial", label: "Edmond de Rothschild — Apollo financial networks overlap", weight: 7},
+{source: "jacob_rothschild", target: "nathaniel_rothschild", type: "family", label: "Father-son Rothschild succession", weight: 9}
 ]
         };
+
+        // ── Top-10 hub cluster assignment ────────────────────────────────────
+        // Each of the 10 most-connected nodes is its own orbital centre.
+        // Every other node orbits the hub it shares the most direct links with.
+        const TOP10 = ['epstein','trump','putin','r_maxwell','g_maxwell',
+                       'thiel','musk','lutnick','mogilevich','dimon'];
+        const hubSet = new Set(TOP10);
+
+        // Build hub-score map: nodeId → { hubId: totalWeight }
+        const hubScore = {};
+        graphData.links.forEach(l => {
+            const src = l.source.id || l.source;
+            const tgt = l.target.id || l.target;
+            const w   = l.weight || 1;
+            if (hubSet.has(tgt)) { if (!hubScore[src]) hubScore[src]={}; hubScore[src][tgt]=(hubScore[src][tgt]||0)+w; }
+            if (hubSet.has(src)) { if (!hubScore[tgt]) hubScore[tgt]={}; hubScore[tgt][src]=(hubScore[tgt][src]||0)+w; }
+        });
+
+        graphData.nodes.forEach(n => {
+            if (hubSet.has(n.id)) {
+                n.cluster = n.id;
+            } else {
+                const scores = hubScore[n.id];
+                if (scores && Object.keys(scores).length > 0) {
+                    n.cluster = Object.entries(scores).sort((a,b)=>b[1]-a[1])[0][0];
+                } else {
+                    n.cluster = n.allegiance === 'russian' ? 'putin'     :
+                                n.allegiance === 'israeli' ? 'r_maxwell' :
+                                n.type === 'tech'          ? 'thiel'     :
+                                n.type === 'financial'     ? 'dimon'     :
+                                'epstein';
+                }
+            }
+            // Safety: ensure cluster is always one of the TOP10
+            if (!hubSet.has(n.cluster)) n.cluster = 'epstein';
+        });
+        // ────────────────────────────────────────────────────────────────────
 
         document.getElementById('node-count').textContent = graphData.nodes.length;
         document.getElementById('link-count').textContent = graphData.links.length;
@@ -929,9 +1027,47 @@
             .attr("height", height);
 
         const g = svg.append("g");
+        let activeCluster = null;
+
+        function applyClusterFocus(cluster, force) {
+            if (cluster === activeCluster && !force) return;
+            activeCluster = cluster;
+            if (!cluster) {
+                g.selectAll(".node").classed("node-dimmed", false);
+                g.selectAll(".link").classed("link-dimmed", false);
+            } else {
+                g.selectAll(".node").classed("node-dimmed", d => {
+                    const c = d.cluster || d.id;
+                    return c !== cluster;
+                });
+                g.selectAll(".link").classed("link-dimmed", d => {
+                    const sc = d.source.cluster || d.source.id || d.source;
+                    const tc = d.target.cluster || d.target.id || d.target;
+                    return sc !== cluster && tc !== cluster;
+                });
+            }
+        }
+
         const zoom = d3.zoom()
-            .scaleExtent([0.1, 4])
-            .on("zoom", (event) => g.attr("transform", event.transform));
+            .scaleExtent([0.1, 6])
+            .on("zoom", (event) => {
+                g.attr("transform", event.transform);
+                const k = event.transform.k;
+                if (k < 1.6) {
+                    applyClusterFocus(null);
+                } else {
+                    // Use actual live hub node positions — cluster centres drift during simulation
+                    const vx = (width  / 2 - event.transform.x) / k;
+                    const vy = (height / 2 - event.transform.y) / k;
+                    let nearest = null, bestDist = Infinity;
+                    graphData.nodes.forEach(n => {
+                        if (!hubSet.has(n.id) || n.x == null) return;
+                        const dist = (n.x - vx) ** 2 + (n.y - vy) ** 2;
+                        if (dist < bestDist) { bestDist = dist; nearest = n.id; }
+                    });
+                    applyClusterFocus(nearest);
+                }
+            });
         svg.call(zoom);
 
         const tooltip = d3.select("#tooltip");
@@ -975,61 +1111,79 @@
                 .attr("stroke", d => getNodeStroke(d));
         }
 
+        // ── Cluster layout globals ───────────────────────────────────────────
+        let clusterCenters = {};
+
+        function forceCluster(strength) {
+            let nodes, hubMap;
+            function force(alpha) {
+                // Rebuild hub positions every tick so satellites follow their moving hub
+                hubMap = new Map();
+                nodes.forEach(n => { if (hubSet.has(n.id)) hubMap.set(n.id, n); });
+                nodes.forEach(d => {
+                    if (hubSet.has(d.id)) return; // hubs don't pull themselves
+                    const hub = hubMap.get(d.cluster);
+                    if (!hub) return;
+                    d.vx += (hub.x - d.x) * strength * alpha;
+                    d.vy += (hub.y - d.y) * strength * alpha;
+                });
+            }
+            force.initialize = _ => nodes = _;
+            return force;
+        }
+        // ────────────────────────────────────────────────────────────────────
+
         function initGraph() {
             g.selectAll("*").remove();
 
-            // Seed starting positions for 16:9 layout
-            // Epstein and Trump on the same horizontal line, center-weighted
             const cx = width / 2;
             const cy = height * 0.46;
-            const separation = Math.min(width * 0.22, 380);
 
+            // ── Top-10 hub centres: Epstein at centre, 9 others in a wide ring ──
+            const R = Math.min(width * 0.42, height * 0.46);
+            clusterCenters = { epstein: { x: cx, y: cy } };
+            // 9 hubs evenly at 40° intervals, starting from top (−90°)
+            ['r_maxwell','putin','trump','lutnick','dimon','mogilevich','g_maxwell','thiel','musk']
+                .forEach((hub, i) => {
+                    const rad = ((i * 40) - 90) * Math.PI / 180;
+                    clusterCenters[hub] = { x: cx + R * Math.cos(rad), y: cy + R * Math.sin(rad) };
+                });
+
+            // Seed each node near its cluster centre with jitter
             graphData.nodes.forEach(n => {
-                if (n.id === 'epstein') { n.x = cx - separation; n.y = cy; }
-                else if (n.id === 'trump')   { n.x = cx + separation; n.y = cy; }
-                // Direct Epstein cluster — fan above/below left
-                else if (n.id === 'g_maxwell')  { n.x = cx - separation * 1.6; n.y = cy - 120; }
-                else if (n.id === 'wexner')     { n.x = cx - separation * 1.8; n.y = cy + 80;  }
-                else if (n.id === 'staley')     { n.x = cx - separation * 1.3; n.y = cy + 160; }
-                else if (n.id === 'leon_black') { n.x = cx - separation * 0.7; n.y = cy + 200; }
-                // Direct Trump cluster — fan above/below right
-                else if (n.id === 'r_maxwell')  { n.x = cx + separation * 1.6; n.y = cy - 120; }
-                else if (n.id === 'putin')      { n.x = cx + separation * 1.8; n.y = cy - 40;  }
-                else if (n.id === 'kushner')    { n.x = cx + separation * 1.4; n.y = cy + 140; }
-                else if (n.id === 'manafort')   { n.x = cx + separation * 1.8; n.y = cy + 160; }
-                // Russian network — top right
-                else if (n.id === 'russian_mafia') { n.x = cx + separation * 2.2; n.y = cy - 200; }
-                else if (n.id === 'mogilevich')    { n.x = cx + separation * 2.5; n.y = cy - 100; }
-                else if (n.id === 'deutsche')      { n.x = cx, n.y = cy + 280; }
-                else if (n.id === 'lutnick')       { n.x = cx + separation * 0.4; n.y = cy - 220; }
-                else if (n.id === 'cohen')         { n.x = cx - separation * 0.3; n.y = cy - 200; }
-                else if (n.id === 'thiel')         { n.x = cx - separation * 2.2; n.y = cy - 180; }
-                else if (n.id === 'musk')          { n.x = cx - separation * 2.0; n.y = cy - 280; }
+                const c = clusterCenters[n.cluster] || { x: cx, y: cy };
+                const spread = n.size >= 26 ? 60 : 160;
+                n.x = c.x + (Math.random() - 0.5) * spread;
+                n.y = c.y + (Math.random() - 0.5) * spread;
             });
 
             // Precompute size lookup — avoids O(n²) find() inside simulation tick
             const sizeMap = new Map(graphData.nodes.map(n => [n.id, n.size || 16]));
 
             simulation = d3.forceSimulation(graphData.nodes)
-                .alphaDecay(0.04)       // Settle ~2x faster than default 0.0228
-                .velocityDecay(0.55)    // More damping = less thrashing
+                .alphaDecay(0.025)
+                .velocityDecay(0.55)
                 .force("link", d3.forceLink(graphData.links)
                     .id(d => d.id)
                     .distance(d => {
                         const srcSize = sizeMap.get(d.source.id || d.source) || 16;
                         const tgtSize = sizeMap.get(d.target.id || d.target) || 16;
-                        return (srcSize + tgtSize >= 50) ? (srcSize + tgtSize) * 6 : (srcSize + tgtSize) * 10;
+                        const base = (srcSize + tgtSize >= 50) ? (srcSize + tgtSize) * 5 : (srcSize + tgtSize) * 8;
+                        // Cross-cluster links are longer so clusters breathe
+                        const crossCluster = (d.source.cluster !== d.target.cluster);
+                        return crossCluster ? base * 2.8 : base;
                     })
-                    .strength(0.08))
+                    .strength(d => (d.source.cluster !== d.target.cluster) ? 0.03 : 0.10))
                 .force("charge", d3.forceManyBody()
-                    .strength(d => (d.size >= 26) ? -d.size * 120 : -(d.size || 16) * 90)
-                    .distanceMax(600)   // Barnes-Hut: ignore nodes beyond 600px — huge CPU saving
-                    .theta(0.9))        // Larger theta = faster approximation
-                .force("center", d3.forceCenter(width / 2, height / 2).strength(0.04))
+                    .strength(d => (d.size >= 26) ? -d.size * 180 : -(d.size || 16) * 130)
+                    .distanceMax(700)
+                    .theta(0.9))
+                .force("center", d3.forceCenter(width / 2, height / 2).strength(0.003))
+                .force("cluster", forceCluster(0.28))   // pull satellites toward live hub position
                 .force("collision", d3.forceCollide()
-                    .radius(d => (d.size || 16) * 3.5)
-                    .strength(0.7)      // Reduced from 1.0
-                    .iterations(1));    // 1 iteration vs default 1 (explicit)
+                    .radius(d => (d.size || 16) * 3.2)
+                    .strength(0.9)
+                    .iterations(2));
 
             const link = g.append("g")
                 .selectAll("line")
@@ -1051,6 +1205,7 @@
                 .selectAll("g")
                 .data(graphData.nodes)
                 .enter().append("g")
+                .attr("class", "node")
                 .call(d3.drag()
                     .on("start", dragstarted)
                     .on("drag", dragged)
@@ -1276,6 +1431,20 @@
                 const nodeIds = new Set(filteredNodes.map(n => n.id));
                 filteredLinks = graphData.links.filter(l =>
                     nodeIds.has(l.source.id || l.source) && nodeIds.has(l.target.id || l.target));
+            } else if (network === 'royals') {
+                const royalsIds = ['prince_andrew', 'king_charles', 'queen_elizabeth', 'sarah_ferguson',
+                    'buckingham', 'mandelson', 'epstein', 'g_maxwell', 'v_giuffre', 'staley'];
+                filteredNodes = graphData.nodes.filter(n => royalsIds.includes(n.id) || n.type === 'royals');
+                const nodeIds = new Set(filteredNodes.map(n => n.id));
+                filteredLinks = graphData.links.filter(l =>
+                    nodeIds.has(l.source.id || l.source) && nodeIds.has(l.target.id || l.target));
+            } else if (network === 'rothschild') {
+                const rothschildIds = ['rothschild', 'lynn_rothschild', 'jacob_rothschild', 'nathaniel_rothschild',
+                    'epstein', 'clinton', 'g_maxwell', 'leon_black', 'deripaska', 'mandelson'];
+                filteredNodes = graphData.nodes.filter(n => rothschildIds.includes(n.id));
+                const nodeIds = new Set(filteredNodes.map(n => n.id));
+                filteredLinks = graphData.links.filter(l =>
+                    nodeIds.has(l.source.id || l.source) && nodeIds.has(l.target.id || l.target));
             }
 
             // Update display
@@ -1333,6 +1502,7 @@
                 .selectAll("g")
                 .data(nodes)
                 .enter().append("g")
+                .attr("class", "node")
                 .call(d3.drag()
                     .on("start", (e, d) => {
                         if (!e.active) sim.alphaTarget(0.3).restart();
