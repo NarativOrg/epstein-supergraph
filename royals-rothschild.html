@@ -48,6 +48,33 @@ body { background:#06060e; font-family:'Arial',sans-serif; overflow:hidden; }
 svg { width:100vw; height:100vh; cursor:grab; }
 svg:active { cursor:grabbing; }
 
+/* Password gate */
+.pw-overlay {
+  position:fixed; inset:0; z-index:9999;
+  background:rgba(6,6,14,0.97);
+  display:flex; align-items:center; justify-content:center;
+}
+.pw-box {
+  background:#0d0d1a; border:1px solid #333; border-radius:12px;
+  padding:36px 40px; text-align:center; width:340px;
+}
+.pw-box h2 { font-size:16px; letter-spacing:3px; color:#c8a600; margin-bottom:8px; }
+.pw-box p  { font-size:11px; color:#555; letter-spacing:1px; margin-bottom:20px; }
+.pw-box input {
+  width:100%; padding:10px 14px; background:#111; border:1px solid #333;
+  border-radius:6px; color:#fff; font-size:14px; letter-spacing:2px;
+  margin-bottom:12px; outline:none;
+}
+.pw-box input:focus { border-color:#c8a600; }
+.pw-box button {
+  width:100%; padding:10px; background:linear-gradient(135deg,#c8a600,#8a7200);
+  border:none; border-radius:6px; color:#000; font-size:11px;
+  font-weight:900; letter-spacing:2px; cursor:pointer;
+}
+.pw-box button:hover { opacity:0.85; }
+.pw-err { color:#ff4444; font-size:11px; margin-top:10px; display:none; }
+#rr-content { display:none; }
+
 .edge { fill:none; stroke-linecap:round; }
 .node-g { cursor:pointer; }
 .node-g:hover circle { filter:brightness(1.25); }
@@ -66,6 +93,20 @@ svg:active { cursor:grabbing; }
 </style>
 </head>
 <body>
+
+<!-- Password gate -->
+<div class="pw-overlay" id="pw-overlay">
+  <div class="pw-box">
+    <h2>RESTRICTED ACCESS</h2>
+    <p>Narativ investigative research · Authorised personnel only</p>
+    <input type="password" id="pw-input" placeholder="Enter password"
+           onkeypress="if(event.key==='Enter') checkPw()">
+    <button onclick="checkPw()">UNLOCK</button>
+    <div class="pw-err" id="pw-err">Incorrect password. Access denied.</div>
+  </div>
+</div>
+
+<div id="rr-content">
 
 <div id="header">
   <h1>THE CROWN · ROTHSCHILD · EPSTEIN</h1>
@@ -353,5 +394,31 @@ nodes.forEach(n => {
   });
 });
 </script>
+
+</div><!-- #rr-content -->
+
+<script>
+async function checkPw() {
+  const input = document.getElementById('pw-input').value;
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(input));
+  const hex = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  const correct = "bae6c2af0a459044cb454881f42a628a59f9077cbbf38dc4ebb8582ee81434cd";
+  if (hex === correct) {
+    document.getElementById('pw-overlay').style.display = 'none';
+    document.getElementById('rr-content').style.display = 'block';
+    sessionStorage.setItem('rr-auth','true');
+  } else {
+    const err = document.getElementById('pw-err');
+    err.style.display = 'block';
+    setTimeout(() => err.style.display='none', 3000);
+  }
+}
+// Auto-unlock if already authenticated this session
+if (sessionStorage.getItem('rr-auth')==='true') {
+  document.getElementById('pw-overlay').style.display = 'none';
+  document.getElementById('rr-content').style.display = 'block';
+}
+</script>
+
 </body>
 </html>
