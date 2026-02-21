@@ -1243,14 +1243,14 @@
         function initGraph() {
             g.selectAll("*").remove();
 
-            // ── Virtual canvas: large enough so solar systems never crowd ──
-            const VW = width * 3.5;
-            const VH = height * 3.5;
+            // ── Virtual canvas ──
+            const VW = width * 2.2;
+            const VH = height * 2.2;
             const cx = VW / 2;
             const cy = VH / 2;
 
-            // ── Hub ring: large fixed radius so systems don't crowd each other ──
-            const R = Math.max(VW, VH) * 0.44;
+            // ── Hub ring ──
+            const R = Math.max(VW, VH) * 0.38;
             clusterCenters = { epstein: { x: cx, y: cy } };
             ['r_maxwell','putin','trump','the_crown','dimon','g_maxwell','thiel','musk','rothschild_hub']
                 .forEach((hub, i) => {
@@ -1276,28 +1276,28 @@
             const sizeMap = new Map(graphData.nodes.map(n => [n.id, n.size || 16]));
 
             simulation = d3.forceSimulation(graphData.nodes)
-                .alphaDecay(0.008)
-                .velocityDecay(0.3)
+                .alphaDecay(0.018)
+                .velocityDecay(0.45)
                 .force("link", d3.forceLink(graphData.links)
                     .id(d => d.id)
                     .distance(d => {
                         const srcSize = sizeMap.get(d.source.id || d.source) || 16;
                         const tgtSize = sizeMap.get(d.target.id || d.target) || 16;
-                        const base = (srcSize + tgtSize >= 50) ? (srcSize + tgtSize) * 14 : (srcSize + tgtSize) * 20;
+                        const base = (srcSize + tgtSize >= 50) ? (srcSize + tgtSize) * 10 : (srcSize + tgtSize) * 14;
                         const crossCluster = (d.source.cluster !== d.target.cluster);
-                        return crossCluster ? base * 6 : base;
+                        return crossCluster ? base * 4 : base;
                     })
-                    .strength(d => (d.source.cluster !== d.target.cluster) ? 0.004 : 0.025))
+                    .strength(d => (d.source.cluster !== d.target.cluster) ? 0.012 : 0.05))
                 .force("charge", d3.forceManyBody()
-                    .strength(d => (d.size >= 26) ? -d.size * 700 : -(d.size || 16) * 500)
-                    .distanceMax(2500)
+                    .strength(d => (d.size >= 26) ? -d.size * 350 : -(d.size || 16) * 240)
+                    .distanceMax(1400)
                     .theta(0.8))
-                .force("center", d3.forceCenter(cx, cy).strength(0.0005))
-                .force("cluster", forceCluster(0.08))
+                .force("center", d3.forceCenter(cx, cy).strength(0.002))
+                .force("cluster", forceCluster(0.12))
                 .force("collision", d3.forceCollide()
-                    .radius(d => (d.size || 16) * 10)
+                    .radius(d => (d.size || 16) * 6)
                     .strength(1.0)
-                    .iterations(5));
+                    .iterations(3));
 
             const link = g.append("g")
                 .selectAll("line")
