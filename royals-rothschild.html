@@ -316,20 +316,24 @@ nodes.forEach(n => {
     .attr('stroke-width', n.r >= 30 ? 2 : 1.5)
     .attr('stroke-opacity', 0.6);
 
-  // Label — multi-line
+  // Label — inside node, vertically centred
   const isLight = lightColors.has(n.color);
   const lines = n.label.split('\n');
-  const labelG = ng.append('g').attr('transform', `translate(0,${n.r + 14})`);
+  const lh = 13;
+  const totalLH = (lines.length - 1) * lh;
+  const labelG = ng.append('g');
   lines.forEach((line, i) => {
     labelG.append('text')
       .attr('class', isLight ? 'node-label dark-label' : 'node-label')
-      .attr('dy', i * 13)
+      .attr('dy', i * lh - totalLH / 2 + 4)
       .text(line);
   });
+  // Sub-label below circle
   if (n.sub) {
-    labelG.append('text')
+    ng.append('text')
       .attr('class','node-sublabel')
-      .attr('dy', lines.length * 13 + 2)
+      .attr('text-anchor','middle')
+      .attr('dy', n.r + 13)
       .text(n.sub);
   }
 
