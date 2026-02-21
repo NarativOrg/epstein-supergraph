@@ -1243,7 +1243,7 @@
             // Seed each node near its cluster centre with jitter
             graphData.nodes.forEach(n => {
                 const c = clusterCenters[n.cluster] || { x: cx, y: cy };
-                const spread = n.size >= 26 ? 80 : 200;
+                const spread = n.size >= 26 ? 100 : 300;
                 n.x = c.x + (Math.random() - 0.5) * spread;
                 n.y = c.y + (Math.random() - 0.5) * spread;
             });
@@ -1252,29 +1252,28 @@
             const sizeMap = new Map(graphData.nodes.map(n => [n.id, n.size || 16]));
 
             simulation = d3.forceSimulation(graphData.nodes)
-                .alphaDecay(0.018)
-                .velocityDecay(0.45)
+                .alphaDecay(0.012)
+                .velocityDecay(0.38)
                 .force("link", d3.forceLink(graphData.links)
                     .id(d => d.id)
                     .distance(d => {
                         const srcSize = sizeMap.get(d.source.id || d.source) || 16;
                         const tgtSize = sizeMap.get(d.target.id || d.target) || 16;
-                        const base = (srcSize + tgtSize >= 50) ? (srcSize + tgtSize) * 6 : (srcSize + tgtSize) * 10;
-                        // Cross-cluster links are longer so clusters breathe
+                        const base = (srcSize + tgtSize >= 50) ? (srcSize + tgtSize) * 9 : (srcSize + tgtSize) * 14;
                         const crossCluster = (d.source.cluster !== d.target.cluster);
-                        return crossCluster ? base * 3.2 : base;
+                        return crossCluster ? base * 4.5 : base;
                     })
-                    .strength(d => (d.source.cluster !== d.target.cluster) ? 0.02 : 0.08))
+                    .strength(d => (d.source.cluster !== d.target.cluster) ? 0.01 : 0.05))
                 .force("charge", d3.forceManyBody()
-                    .strength(d => (d.size >= 26) ? -d.size * 220 : -(d.size || 16) * 160)
-                    .distanceMax(900)
-                    .theta(0.9))
-                .force("center", d3.forceCenter(width / 2, height / 2).strength(0.002))
-                .force("cluster", forceCluster(0.22))   // pull satellites toward live hub position
+                    .strength(d => (d.size >= 26) ? -d.size * 400 : -(d.size || 16) * 280)
+                    .distanceMax(1400)
+                    .theta(0.85))
+                .force("center", d3.forceCenter(width / 2, height / 2).strength(0.001))
+                .force("cluster", forceCluster(0.14))
                 .force("collision", d3.forceCollide()
-                    .radius(d => (d.size || 16) * 4.0)
+                    .radius(d => (d.size || 16) * 6.5)
                     .strength(1.0)
-                    .iterations(3));
+                    .iterations(4));
 
             const link = g.append("g")
                 .selectAll("line")
