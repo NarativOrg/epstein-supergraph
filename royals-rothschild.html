@@ -290,6 +290,7 @@ const edges = [
 ];
 
 // ── RENDER ──────────────────────────────────────────────────────────────────
+function initRR() {
 const svg   = d3.select('#svg');
 const vw    = window.innerWidth;
 const vh    = window.innerHeight;
@@ -393,6 +394,7 @@ nodes.forEach(n => {
     document.getElementById('tip').style.display = 'none';
   });
 });
+} // end initRR
 </script>
 
 </div><!-- #rr-content -->
@@ -407,6 +409,7 @@ async function checkPw() {
     document.getElementById('pw-overlay').style.display = 'none';
     document.getElementById('rr-content').style.display = 'block';
     sessionStorage.setItem('rr-auth','true');
+    initRR();
   } else {
     const err = document.getElementById('pw-err');
     err.style.display = 'block';
@@ -417,6 +420,7 @@ async function checkPw() {
 if (sessionStorage.getItem('rr-auth')==='true') {
   document.getElementById('pw-overlay').style.display = 'none';
   document.getElementById('rr-content').style.display = 'block';
+  initRR();
 }
 </script>
 
