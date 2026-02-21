@@ -115,12 +115,16 @@
             font-size: 12px;
             font-weight: 700;
             fill: #ffffff;
+            stroke: rgba(0,0,0,0.9);
             text-anchor: middle;
             pointer-events: none;
             paint-order: stroke;
-            stroke: #000000;
             stroke-width: 4px;
             stroke-linejoin: round;
+        }
+        .node-label-dark {
+            fill: #111111 !important;
+            stroke: rgba(255,255,255,0.7) !important;
         }
         .link { stroke-opacity: 0.35; pointer-events: none; transition: opacity 0.4s; }
         .node-circle { transition: opacity 0.4s; }
@@ -1226,27 +1230,34 @@
         function initGraph() {
             g.selectAll("*").remove();
 
-            const cx = width / 2;
-            const cy = height * 0.46;
+            // ── Virtual canvas: 4× the viewport so solar systems have room ──
+            const VW = width * 2.2;
+            const VH = height * 2.2;
+            const cx = VW / 2;
+            const cy = VH / 2;
 
-            // ── Top-10 hub centres: Epstein at centre, 9 others in a wide ring ──
-            const R = Math.min(width * 0.44, height * 0.48);
+            // ── Hub ring: large fixed radius so systems don't crowd each other ──
+            const R = Math.max(VW, VH) * 0.38;
             clusterCenters = { epstein: { x: cx, y: cy } };
-            // 9 hubs evenly at 40° intervals, starting from top (−90°)
-            // Must match TOP10 exactly (minus epstein): trump,putin,r_maxwell,g_maxwell,thiel,musk,lutnick,the_crown,dimon
             ['r_maxwell','putin','trump','the_crown','dimon','g_maxwell','thiel','musk','lutnick']
                 .forEach((hub, i) => {
                     const rad = ((i * 40) - 90) * Math.PI / 180;
                     clusterCenters[hub] = { x: cx + R * Math.cos(rad), y: cy + R * Math.sin(rad) };
                 });
 
-            // Seed each node near its cluster centre with jitter
+            // Seed each node near its cluster centre
             graphData.nodes.forEach(n => {
                 const c = clusterCenters[n.cluster] || { x: cx, y: cy };
-                const spread = n.size >= 26 ? 100 : 300;
+                const spread = n.size >= 26 ? 80 : 220;
                 n.x = c.x + (Math.random() - 0.5) * spread;
                 n.y = c.y + (Math.random() - 0.5) * spread;
             });
+
+            // Zoom to fit whole graph on load
+            const scale = Math.min(width / VW, height / VH) * 0.92;
+            const tx = (width  - VW * scale) / 2;
+            const ty = (height - VH * scale) / 2;
+            svg.call(zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(scale));
 
             // Precompute size lookup — avoids O(n²) find() inside simulation tick
             const sizeMap = new Map(graphData.nodes.map(n => [n.id, n.size || 16]));
@@ -1268,7 +1279,7 @@
                     .strength(d => (d.size >= 26) ? -d.size * 400 : -(d.size || 16) * 280)
                     .distanceMax(1400)
                     .theta(0.85))
-                .force("center", d3.forceCenter(width / 2, height / 2).strength(0.001))
+                .force("center", d3.forceCenter(cx, cy).strength(0.001))
                 .force("cluster", forceCluster(0.14))
                 .force("collision", d3.forceCollide()
                     .radius(d => (d.size || 16) * 6.5)
@@ -1322,8 +1333,10 @@
                     tooltip.style("display", "none");
                 });
 
+            // Light-fill node types need dark text to be readable
+            const lightFills = new Set(['hub','financial','tech','royals']);
             node.append("text")
-                .attr("class", "node-label")
+                .attr("class", d => lightFills.has(d.type) ? "node-label node-label-dark" : "node-label")
                 .attr("dy", d => (d.size || 16) + 14)
                 .text(d => d.label);
 
