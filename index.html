@@ -539,7 +539,7 @@
                 {id: "gates", label: "BILL GATES", type: "tech", size: 20},
                 {id: "nancy_reagan", label: "NANCY REAGAN", type: "political", size: 16},
                 // lutnick defined above in TRUMP INNER CIRCLE
-                {id: "witkoff", label: "STEVE WITKOFF", type: "political", size: 18},
+                // witkoff defined above in RUSSIAN NETWORK
                 {id: "vance", label: "JD VANCE", type: "political", size: 22},
                 {id: "bondi", label: "PAM BONDI", type: "legal", size: 18},
                 {id: "mbs", label: "MOHAMMED BIN SALMAN", type: "political", size: 24},
@@ -587,6 +587,7 @@
                 {id: "assange", label: "JULIAN ASSANGE", type: "political", size: 18},
 
                 // ROYALS CLUSTER
+                {id: "the_crown", label: "THE CROWN", type: "royals", size: 36},
                 {id: "king_charles", label: "KING CHARLES III", type: "royals", size: 22},
                 {id: "queen_elizabeth", label: "QUEEN ELIZABETH II", type: "royals", size: 20},
                 {id: "buckingham", label: "BUCKINGHAM PALACE", type: "entity", size: 18},
@@ -594,7 +595,24 @@
                 // ROTHSCHILD EXPANSION
                 {id: "lynn_rothschild", label: "LYNN FORESTER de ROTHSCHILD", type: "financial", size: 20},
                 {id: "jacob_rothschild", label: "JACOB de ROTHSCHILD", type: "financial", size: 20},
-                {id: "nathaniel_rothschild", label: "NATHANIEL ROTHSCHILD", type: "financial", size: 16}
+                {id: "nathaniel_rothschild", label: "NATHANIEL ROTHSCHILD", type: "financial", size: 16},
+                {id: "elie_rothschild", label: "BARON ÉLIE de ROTHSCHILD", type: "financial", size: 22},
+                {id: "evelyn_rothschild", label: "SIR EVELYN de ROTHSCHILD", type: "financial", size: 20},
+
+                // WEXNER DEPOSITION — NEW NODES (Feb 19 2026)
+                {id: "david_stern", label: "DAVID STERN", type: "intelligence", size: 26},
+                {id: "brin", label: "SERGEY BRIN", type: "tech", size: 22},
+                {id: "page", label: "LARRY PAGE", type: "tech", size: 20},
+                {id: "bezos", label: "JEFF BEZOS", type: "financial", size: 22},
+                {id: "abigail_johnson", label: "ABIGAIL JOHNSON\nFIDELITY", type: "financial", size: 18},
+                {id: "osborne", label: "GEORGE OSBORNE", type: "political", size: 18},
+                {id: "gordon_brown", label: "GORDON BROWN\nUK PM", type: "political", size: 18},
+                {id: "starmer", label: "KEIR STARMER\nUK PM", type: "political", size: 18},
+                {id: "ushakov", label: "YURI USHAKOV\nKREMLIN", type: "intelligence", size: 18},
+                {id: "rusal", label: "RUSAL\nDERIPASKA EMPIRE", type: "entity", size: 20},
+                {id: "renova", label: "RENOVA GROUP\nVEKSELBERG", type: "entity", size: 18},
+                {id: "edmond_doj", label: "EdR DOJ SETTLEMENT\n$45.4M 2015", type: "entity", size: 16},
+                {id: "edmond_1mdb", label: "EdR 1MDB\nMONEY LAUNDERING", type: "entity", size: 16}
             ],
 
             links: [
@@ -694,9 +712,12 @@
 {source: "bgc_international", target: "bear_stearns", type: "financial", label: "Liquid Funding relationship | execs migrated to BGC after 2008 collapse", weight: 9},
 {source: "bear_stearns", target: "russian_mafia", type: "financial", label: "Collapsed execs moved to Russian hedge fund FBI 302", weight: 9},
 {source: "sarah_ferguson", target: "g_maxwell", type: "social", label: "Dolce Vita Parties Children in Crisis charity", weight: 8},
-{source: "witkoff", target: "trump", type: "political", label: "Middle East Envoy close friend", weight: 10},
+{source: "witkoff", target: "trump", type: "political", label: "Decades-long close friend · Special Envoy Middle East & Ukraine 2025 · backchannel architect", weight: 10},
 {source: "witkoff", target: "kushner", type: "political", label: "Moscow negotiations Jan 2026", weight: 10},
-{source: "witkoff", target: "putin", type: "political", label: "Backchannel to Kremlin", weight: 9},
+{source: "witkoff", target: "putin", type: "political", label: "Backchannel to Kremlin · solo meetings Moscow 2025-26 · Ukraine ceasefire negotiations outside normal diplomatic channels", weight: 10},
+{source: "vrablic", target: "trump", type: "financial", label: "Deutsche Bank private banker arranged ~$2B in loans to Trump/Kushner when no other bank would lend · resigned 2019 under scrutiny", weight: 10},
+{source: "vrablic", target: "deutsche", type: "financial", label: "Senior private wealth manager Trump/Kushner accounts · facilitated loans despite Trump's default history", weight: 10},
+{source: "dimon", target: "trump", type: "financial", label: "JPMorgan CEO · Trump business advisory council 2017 · floated for Treasury Secretary · $2B Epstein settlement 2023 under Dimon's tenure", weight: 9},
 {source: "epstein", target: "barrack", type: "political", label: "Apr 28 2016 alert 4:34 PM", weight: 10},
 {source: "epstein", target: "michael_wolff", type: "political", label: "Wave this away offer", weight: 9},
 {source: "epstein", target: "ruemmler", type: "political", label: "Apr 28 2016 Obama counsel", weight: 8},
@@ -828,9 +849,9 @@
 {source: "belyakov", target: "deripaska", type: "intelligence", label: "Adviser to Deripaska", weight: 9},
 {source: "v_giuffre", target: "g_maxwell", type: "victim", label: "Trafficking", weight: 10},
 
-// MUSK-PUTIN-RUSSIA CONNECTIONS (NEW!)
+// MUSK-PUTIN-RUSSIA CONNECTIONS
 {source: "musk", target: "putin", type: "intelligence", label: "Russian party within Trumpist movement", weight: 10},
-{source: "musk", target: "trump", type: "political", label: "DOGE 2025 Russian IP breach to gov data", weight: 10},
+{source: "musk", target: "trump", type: "political", label: "DOGE czar · $250M+ campaign donor 2024 · key to 2024 victory · daily White House access · de facto co-president", weight: 10},
 {source: "musk", target: "starlink", type: "tech", label: "Founder CEO SpaceX", weight: 10},
 {source: "musk", target: "spacex", type: "tech", label: "Founder CEO", weight: 10},
 {source: "musk", target: "doge", type: "political", label: "Dept Govt Efficiency 2025", weight: 10},
@@ -957,7 +978,14 @@
 {source: "clinton", target: "chauntae_davies", type: "victim", label: "Africa trip on Epstein plane 2002", weight: 8},
 {source: "brunel", target: "jane_doe1", type: "victim", label: "MC2 model recruitment pipeline", weight: 8},
 
-// ROYALS CLUSTER LINKS
+// ROYALS CLUSTER LINKS — THE CROWN HUB
+{source: "the_crown", target: "queen_elizabeth", type: "family", label: "Head of the Crown 1952-2022", weight: 10},
+{source: "the_crown", target: "king_charles", type: "family", label: "Head of the Crown 2022-present", weight: 10},
+{source: "the_crown", target: "prince_andrew", type: "family", label: "Duke of York — arrested Feb 19 2026 · stripped of titles 2022 · £12M Giuffre settlement", weight: 10},
+{source: "the_crown", target: "buckingham", type: "entity", label: "Seat of the monarchy", weight: 10},
+{source: "the_crown", target: "evelyn_rothschild", type: "financial", label: "Sir Evelyn = Queen Elizabeth's personal financial advisor · knighted 1989 · 2016 St James's Palace same table as Epstein intermediary David Stern", weight: 10},
+{source: "the_crown", target: "sarah_ferguson", type: "family", label: "Duchess of York · Sarah's Trust shut down Feb 2026 · 7 charities dropped her · 6 companies shuttered", weight: 9},
+{source: "the_crown", target: "david_stern", type: "intelligence", label: "Stern sat directly left of Queen Elizabeth at St James's Palace 2016 — Epstein's man at the Crown's table", weight: 10},
 {source: "prince_andrew", target: "v_giuffre", type: "victim", label: "Sexual abuse — 3 encounters per sworn testimony", weight: 10},
 {source: "prince_andrew", target: "g_maxwell", type: "social", label: "Close friend — Maxwell recruited Giuffre via Andrew at Mar-a-Lago", weight: 10},
 {source: "sarah_ferguson", target: "epstein", type: "financial", label: "£15k debt paid by Epstein — met at NYC mansion", weight: 9},
@@ -968,16 +996,65 @@
 {source: "mandelson", target: "prince_andrew", type: "political", label: "UK political establishment shared Epstein social circle", weight: 7},
 
 // ROTHSCHILD CLUSTER LINKS
-{source: "lynn_rothschild", target: "clinton", type: "political", label: "Clinton Foundation key donor — Martha's Vineyard political gatherings", weight: 10},
-{source: "lynn_rothschild", target: "epstein", type: "social", label: "Attended Epstein events — emails show coordination", weight: 9},
+{source: "lynn_rothschild", target: "clinton", type: "political", label: "Clinton Foundation key donor — 1995 Clinton Library letter discusses Epstein with President", weight: 10},
+{source: "lynn_rothschild", target: "epstein", type: "financial", label: "5 flights 1997-98 · sold Epstein Manhattan townhouse · Maxwell: Epstein provided financial services to Lynn · not in black book", weight: 10},
 {source: "lynn_rothschild", target: "g_maxwell", type: "social", label: "Same UK-US elite social circles", weight: 8},
-{source: "jacob_rothschild", target: "epstein", type: "financial", label: "Overlapping elite investor circles", weight: 7},
+{source: "lynn_rothschild", target: "prince_andrew", type: "social", label: "MAXWELL DOJ TESTIMONY July 2025: Lynn introduced Epstein to Prince Andrew at her Martha's Vineyard/Nantucket house", weight: 10},
+{source: "lynn_rothschild", target: "dershowitz", type: "social", label: "Introduced Dershowitz to Epstein on Martha's Vineyard — 'interesting autodidact' — Dershowitz later negotiated 2008 plea deal", weight: 10},
+{source: "elie_rothschild", target: "epstein", type: "financial", label: "Epstein did undocumented financial work for Élie family early 1980s London — the missing chapter", weight: 10},
+{source: "elie_rothschild", target: "wexner", type: "financial", label: "WEXNER TESTIMONY Feb 18 2026: 'Elie highly recommended Epstein based on work done for his family' — the vouching call that built the empire", weight: 10},
+{source: "evelyn_rothschild", target: "epstein", type: "financial", label: "In Epstein black book HOUSE_OVERSIGHT_022975 Doc 17757 with daughter Hannah — Queen's personal financial advisor knighted 1989", weight: 9},
+{source: "evelyn_rothschild", target: "lynn_rothschild", type: "family", label: "Married 2000 — honeymoon at Clinton White House", weight: 9},
 {source: "jacob_rothschild", target: "rothschild", type: "family", label: "Rothschild dynasty patriarch — died 2024", weight: 8},
+{source: "jacob_rothschild", target: "thiel", type: "financial", label: "RIT Capital Partners LP in Thiel Founders Fund — independent Rothschild-Thiel channel", weight: 8},
 {source: "nathaniel_rothschild", target: "deripaska", type: "financial", label: "Corfu 2008 yacht — Mandelson scandal Russian oligarch link", weight: 10},
 {source: "nathaniel_rothschild", target: "mandelson", type: "political", label: "Corfu 2008 — Mandelson-Deripaska-Rothschild affair", weight: 10},
-{source: "rothschild", target: "epstein", type: "financial", label: "$25M financial connection — Ariane de Rothschild", weight: 9},
+{source: "rothschild", target: "epstein", type: "financial", label: "$25M Southern Trust contract Oct 2015 · BRIDGE/TIIC infrastructure prospectuses · Ariane texted about Trump from room with Portuguese PM · met Epstein NYC Nov 2018 (8mo before arrest) · all via official EdR bank systems", weight: 10},
 {source: "rothschild", target: "leon_black", type: "financial", label: "Edmond de Rothschild — Apollo financial networks overlap", weight: 7},
-{source: "jacob_rothschild", target: "nathaniel_rothschild", type: "family", label: "Father-son Rothschild succession", weight: 9}
+{source: "jacob_rothschild", target: "nathaniel_rothschild", type: "family", label: "Father-son Rothschild succession", weight: 9},
+{source: "leese", target: "elie_rothschild", type: "intelligence", label: "Same 1980s London arms-banking-intelligence corridor — Khashoggi / Al-Yamamah / Rothschild financial world", weight: 8},
+
+// ── WEXNER DEPOSITION MAP — Feb 19 2026 ──────────────────────────────────────
+// DAVID STERN — Epstein's ambassador to the Crown
+{source: "david_stern", target: "epstein", type: "intelligence", label: "Thousands of docs · operating system for Crown access · forwarded Andrew trade reports · proposed investment office using Andrew's aura · 'orgies etc' email May 2014", weight: 10},
+{source: "david_stern", target: "prince_andrew", type: "intelligence", label: "Closest aide · proposed private London investment office · forwarded confidential trade reports to Epstein · fled to UAE after Andrew arrest", weight: 10},
+{source: "david_stern", target: "queen_elizabeth", type: "intelligence", label: "Sat directly LEFT of Queen Elizabeth at St James's Palace 2016 · Evelyn Rothschild sat two seats to her right · Epstein intermediary at Crown table", weight: 10},
+{source: "david_stern", target: "evelyn_rothschild", type: "financial", label: "2015: asked Epstein whether Evelyn wanted to sponsor Andrew's Pitch@Palace", weight: 9},
+{source: "david_stern", target: "deutsche", type: "financial", label: "Suggested Andrew should buy Deutsche Bank — the whole institution", weight: 8},
+
+// GOOGLE / TECH — Wexner testimony Feb 19 2026
+{source: "epstein", target: "brin", type: "financial", label: "Wexner: Epstein 'providing financial advice to founders of Google' · introduced Brin to JPMorgan via Staley", weight: 9},
+{source: "epstein", target: "page", type: "financial", label: "Google co-founder · introduced to JPMorgan via Staley · Epstein known as 'advisor to Google founders' 2011", weight: 9},
+{source: "epstein", target: "bezos", type: "financial", label: "Wexner named Bezos under oath as Epstein advisory client — lawyer intervened", weight: 8},
+{source: "epstein", target: "abigail_johnson", type: "financial", label: "Wexner named Abigail Johnson/Fidelity under oath — lawyer intervened", weight: 8},
+{source: "staley", target: "brin", type: "financial", label: "Epstein introduction led to ~$4B Google deposits at JPMorgan Private Bank", weight: 10},
+
+// MANDELSON — convergence of every corridor
+{source: "mandelson", target: "epstein", type: "intelligence", label: "Nov 2010: secured Epstein Russian visa via Deripaska · May 9 2010: emailed '500b euro bailout almost complete' — market-moving govt intel BEFORE announcement · 'Finally got him to go today' re Brown resignation · MPs: Mandelson helped Epstein make money used to run paedophilic prostitution ring", weight: 10},
+{source: "mandelson", target: "deripaska", type: "intelligence", label: "Corfu yacht · Deripaska private jet to EU-Russia Putin summit · aide arranged Moscow visa · EU aluminum tariffs benefited RUSAL while Mandelson was Trade Commissioner", weight: 10},
+{source: "mandelson", target: "gordon_brown", type: "political", label: "Mandelson emailed Epstein 'Finally got him to go today' — claimed to have engineered sitting UK PM's resignation", weight: 10},
+{source: "mandelson", target: "osborne", type: "political", label: "Nathaniel Rothschild introduced both to Deripaska at Corfu — same Rothschild-Russia corridor", weight: 9},
+{source: "starmer", target: "mandelson", type: "political", label: "Appointed as UK Ambassador to US · 3 Starmer aides resigned · Mandelson dismissed + under Met Police investigation for misconduct in public office", weight: 9},
+
+// DERIPASKA-ROTHSCHILD-RUSSIA CHAIN
+{source: "nathaniel_rothschild", target: "rusal", type: "financial", label: "Major investor in Deripaska's RUSAL aluminum empire · personally introduced Deripaska to British politicians", weight: 10},
+{source: "deripaska", target: "rusal", type: "financial", label: "Owner · US diplomatic cables: among 2-3 oligarchs Putin turns to regularly", weight: 10},
+{source: "nathaniel_rothschild", target: "osborne", type: "political", label: "Introduced Osborne to Deripaska at Corfu family estate — scandal that nearly ended Osborne's career", weight: 9},
+
+// BARAK-VEKSELBERG-KREMLIN BACKCHANNEL
+{source: "epstein", target: "vekselberg", type: "intelligence", label: "Architected Barak-Kremlin backchannel through Vekselberg · coached 'do not go to number 1 too quickly'", weight: 10},
+{source: "ehud_barak", target: "vekselberg", type: "intelligence", label: "$1M quarterly Renova consulting · reported to Kremlin aide Ushakov · arranged Putin meetings · St Petersburg Forum 2015 via Epstein", weight: 10},
+{source: "ehud_barak", target: "ushakov", type: "intelligence", label: "Kremlin aide — Barak reported to Ushakov to arrange Putin access via Vekselberg/Renova", weight: 10},
+{source: "vekselberg", target: "renova", type: "financial", label: "Founder — Kremlin-linked investment vehicle", weight: 10},
+{source: "vekselberg", target: "ushakov", type: "intelligence", label: "Renova conduit to Kremlin aide Yuri Ushakov", weight: 9},
+
+// EdR DOJ SETTLEMENT — Epstein as unlicensed fixer
+{source: "rothschild", target: "edmond_doj", type: "financial", label: "Dec 2015: EdR Suisse paid $45.4M to DOJ · avoid prosecution for helping Americans evade taxes offshore · EdR Luxembourg first Luxembourg bank convicted money laundering (1MDB 2025)", weight: 10},
+{source: "epstein", target: "edmond_doj", type: "financial", label: "$25M fee = 55% of entire settlement · edited DOJ submissions · directed board decisions · coached legal narrative — convicted sex offender, unlicensed in any jurisdiction", weight: 10},
+{source: "ruemmler", target: "edmond_doj", type: "legal", label: "EdR official attorney — Obama's former White House counsel — paid LESS than Epstein for same DOJ settlement", weight: 9},
+
+// SARAH FERGUSON — charity circuit corridor
+{source: "sarah_ferguson", target: "lutnick", type: "social", label: "Cantor Fitzgerald Charity Day 2015 · royals + network + money in same charity circuit", weight: 8}
 ]
         };
 
@@ -985,7 +1062,7 @@
         // Each of the 10 most-connected nodes is its own orbital centre.
         // Every other node orbits the hub it shares the most direct links with.
         const TOP10 = ['epstein','trump','putin','r_maxwell','g_maxwell',
-                       'thiel','musk','lutnick','mogilevich','dimon'];
+                       'thiel','musk','lutnick','the_crown','dimon'];
         const hubSet = new Set(TOP10);
 
         // Build hub-score map: nodeId → { hubId: totalWeight }
@@ -1010,6 +1087,7 @@
                                 n.allegiance === 'israeli' ? 'r_maxwell' :
                                 n.type === 'tech'          ? 'thiel'     :
                                 n.type === 'financial'     ? 'dimon'     :
+                                n.type === 'royals'        ? 'the_crown' :
                                 'epstein';
                 }
             }
@@ -1432,8 +1510,10 @@
                 filteredLinks = graphData.links.filter(l =>
                     nodeIds.has(l.source.id || l.source) && nodeIds.has(l.target.id || l.target));
             } else if (network === 'royals') {
-                const royalsIds = ['prince_andrew', 'king_charles', 'queen_elizabeth', 'sarah_ferguson',
-                    'buckingham', 'mandelson', 'epstein', 'g_maxwell', 'v_giuffre', 'staley'];
+                const royalsIds = ['the_crown', 'prince_andrew', 'king_charles', 'queen_elizabeth',
+                    'sarah_ferguson', 'buckingham', 'mandelson', 'epstein', 'g_maxwell', 'v_giuffre',
+                    'staley', 'david_stern', 'evelyn_rothschild', 'lynn_rothschild', 'lutnick',
+                    'r_maxwell', 'dershowitz', 'leese', 'al_yamamah', 'mbs'];
                 filteredNodes = graphData.nodes.filter(n => royalsIds.includes(n.id) || n.type === 'royals');
                 const nodeIds = new Set(filteredNodes.map(n => n.id));
                 filteredLinks = graphData.links.filter(l =>
@@ -1561,7 +1641,7 @@
 
             // Correct password hash (SHA-256 of the password)
             // Password: "epstein-supergraph-2026"
-            const correctHash = "bae6c2af0a459044cb454881f42a628a59f9077cbbf38dc4ebb8582ee81434cd";
+            const correctHash = "929585a6a492380081b60b6c1fefdcaad4117c4d739680f36209f17e0925ad2e";
 
             if (hashHex === correctHash) {
                 document.getElementById('password-overlay').style.display = 'none';
