@@ -607,7 +607,10 @@
                 {id: "queen_elizabeth", label: "QUEEN ELIZABETH II", type: "royals", size: 20},
                 {id: "buckingham", label: "BUCKINGHAM PALACE", type: "institution", size: 18},
 
-                // ROTHSCHILD EXPANSION
+                // ROTHSCHILD DYNASTY HUB
+                {id: "rothschild_hub", label: "ROTHSCHILD\nDYNASTY", type: "financial", size: 36},
+
+                // ROTHSCHILD BRANCHES
                 {id: "lynn_rothschild", label: "LYNN FORESTER de ROTHSCHILD", type: "financial", size: 20},
                 {id: "jacob_rothschild", label: "JACOB de ROTHSCHILD", type: "financial", size: 20},
                 {id: "nathaniel_rothschild", label: "NATHANIEL ROTHSCHILD", type: "financial", size: 16},
@@ -1011,6 +1014,16 @@
 {source: "buckingham", target: "prince_andrew", type: "institution", label: "Official palace statements protected Andrew", weight: 9},
 {source: "mandelson", target: "prince_andrew", type: "political", label: "UK political establishment shared Epstein social circle", weight: 7},
 
+// ROTHSCHILD DYNASTY HUB — anchor for all branches
+{source: "rothschild_hub", target: "epstein",          type: "financial", label: "Rothschild Dynasty — multiple branches connected to Epstein across 4 decades: Élie (1980s London), Evelyn (black book), Lynn (5 flights + townhouse), Ariane ($25M contract 2015)", weight: 10},
+{source: "rothschild_hub", target: "elie_rothschild",  type: "family",    label: "Élie de Rothschild branch — earliest Epstein connection, recommended Epstein to Wexner", weight: 10},
+{source: "rothschild_hub", target: "evelyn_rothschild",type: "family",    label: "Sir Evelyn branch — Queen's personal financial advisor, in Epstein black book", weight: 10},
+{source: "rothschild_hub", target: "jacob_rothschild", type: "family",    label: "Jacob branch — RIT Capital · died 2024", weight: 9},
+{source: "rothschild_hub", target: "lynn_rothschild",  type: "family",    label: "Lynn Forester branch — married Evelyn 2000 · introduced Epstein to Prince Andrew", weight: 10},
+{source: "rothschild_hub", target: "rothschild",       type: "family",    label: "Ariane de Rothschild (EdR CEO) — $25M Southern Trust contract 2015 · Hitler email Dec 2018", weight: 10},
+{source: "rothschild_hub", target: "nathaniel_rothschild", type: "family",label: "Nathaniel branch — introduced Deripaska to British politicians via Corfu", weight: 9},
+{source: "rothschild_hub", target: "the_crown",        type: "financial", label: "Rothschild Dynasty financial ties to the Crown: Sir Evelyn = Queen's personal advisor · Ariane → Crown node", weight: 9},
+
 // ROTHSCHILD CLUSTER LINKS
 {source: "lynn_rothschild", target: "clinton", type: "political", label: "Clinton Foundation key donor — 1995 Clinton Library letter discusses Epstein with President", weight: 10},
 {source: "lynn_rothschild", target: "epstein", type: "financial", label: "5 flights 1997-98 · sold Epstein Manhattan townhouse · Maxwell: Epstein provided financial services to Lynn · not in black book", weight: 10},
@@ -1078,7 +1091,7 @@
         // Each of the 10 most-connected nodes is its own orbital centre.
         // Every other node orbits the hub it shares the most direct links with.
         const TOP10 = ['epstein','trump','putin','r_maxwell','g_maxwell',
-                       'thiel','musk','lutnick','the_crown','dimon'];
+                       'thiel','musk','rothschild_hub','the_crown','dimon'];
         const hubSet = new Set(TOP10);
 
         // Build hub-score map: nodeId → { hubId: totalWeight }
@@ -1099,11 +1112,11 @@
                 if (scores && Object.keys(scores).length > 0) {
                     n.cluster = Object.entries(scores).sort((a,b)=>b[1]-a[1])[0][0];
                 } else {
-                    n.cluster = n.allegiance === 'russian' ? 'putin'     :
-                                n.allegiance === 'israeli' ? 'r_maxwell' :
-                                n.type === 'tech'          ? 'thiel'     :
-                                n.type === 'financial'     ? 'dimon'     :
-                                n.type === 'royals'        ? 'the_crown' :
+                    n.cluster = n.allegiance === 'russian' ? 'putin'          :
+                                n.allegiance === 'israeli' ? 'r_maxwell'      :
+                                n.type === 'tech'          ? 'thiel'          :
+                                n.type === 'royals'        ? 'the_crown'      :
+                                n.type === 'financial'     ? 'rothschild_hub' :
                                 'epstein';
                 }
             }
@@ -1237,9 +1250,9 @@
             const cy = VH / 2;
 
             // ── Hub ring: large fixed radius so systems don't crowd each other ──
-            const R = Math.max(VW, VH) * 0.38;
+            const R = Math.max(VW, VH) * 0.44;
             clusterCenters = { epstein: { x: cx, y: cy } };
-            ['r_maxwell','putin','trump','the_crown','dimon','g_maxwell','thiel','musk','lutnick']
+            ['r_maxwell','putin','trump','the_crown','dimon','g_maxwell','thiel','musk','rothschild_hub']
                 .forEach((hub, i) => {
                     const rad = ((i * 40) - 90) * Math.PI / 180;
                     clusterCenters[hub] = { x: cx + R * Math.cos(rad), y: cy + R * Math.sin(rad) };
