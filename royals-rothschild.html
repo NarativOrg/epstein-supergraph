@@ -300,12 +300,13 @@ const baseScale = Math.min(scaleX, scaleY) * 0.92;
 const offsetX = (vw - W * baseScale) / 2;
 const offsetY = (vh - H * baseScale) / 2;
 
+// g must be declared before zoom so the handler can reference it
+const g = svg.append('g');
+
 const zoom = d3.zoom().scaleExtent([0.3, 4])
   .on('zoom', e => g.attr('transform', e.transform));
 svg.call(zoom);
 svg.call(zoom.transform, d3.zoomIdentity.translate(offsetX, offsetY).scale(baseScale));
-
-const g = svg.append('g');
 
 // node lookup
 const nodeMap = {};
