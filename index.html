@@ -317,6 +317,7 @@
         <button onclick="filterNetwork('lutnick')">LUTNICK</button>
         <button onclick="filterNetwork('royals')" style="background: linear-gradient(135deg, #c8a600, #8a7200);">ROYALS</button>
         <button onclick="filterNetwork('rothschild')" style="background: linear-gradient(135deg, #00aa44, #006622);">ROTHSCHILD</button>
+        <button onclick="filterNetwork('wexner_deposition')" style="background: linear-gradient(135deg, #cc2200, #881100);">WEXNER DEPOSITION</button>
         <button onclick="resetSimulation()">RESET</button>
     </div>
 
@@ -350,9 +351,13 @@
             <div class="legend-color" style="background: #ff00ff;"></div>
             <span class="legend-label">Legal</span>
         </div>
-        <div class="legend-item" onclick="toggleLegendFilter('entity')" data-type="entity">
+        <div class="legend-item" onclick="toggleLegendFilter('institution')" data-type="institution">
             <div class="legend-color" style="background: #888888;"></div>
-            <span class="legend-label">Entities</span>
+            <span class="legend-label">Institutions</span>
+        </div>
+        <div class="legend-item" onclick="toggleLegendFilter('royals')" data-type="royals">
+            <div class="legend-color" style="background: #c8a600;"></div>
+            <span class="legend-label">Royals / Crown</span>
         </div>
         <div class="legend-item" onclick="toggleLegendFilter('victim')" data-type="victim">
             <div class="legend-color" style="background: #ff44aa;"></div>
@@ -373,16 +378,19 @@
         const height = window.innerHeight;
 
         const colors = {
-            russian: "#ff0000",      // Red for Russian allegiance
-            israeli: "#0088ff",      // Blue for Israeli allegiance
-            both: "#ff0088",         // Pink/magenta for dual allegiance
-            intelligence: "#ff6600", // Orange
-            financial: "#00ff00",    // Green (swapped with tech)
-            tech: "#ffdd00",         // Yellow (swapped with financial)
-            legal: "#ff00ff",        // Purple
-            entity: "#888888",       // Gray
-            victim: "#ff44aa",       // Pink
-            event: "#aa44ff"         // Purple
+            russian:      "#ff0000",  // Red — Russian allegiance
+            israeli:      "#0088ff",  // Blue — Israeli allegiance
+            both:         "#ff0088",  // Magenta — dual allegiance
+            intelligence: "#ff6600",  // Orange — spies/operatives
+            financial:    "#00ff88",  // Mint green — bankers/money people
+            tech:         "#ffdd00",  // Yellow — tech figures
+            legal:        "#cc44ff",  // Purple — lawyers
+            political:    "#4488ff",  // Blue — politicians (default, no allegiance)
+            royals:       "#c8a600",  // Gold — Crown / royals
+            institution:  "#888888",  // Grey — institutions & entities
+            entity:       "#888888",  // Grey — same as institution
+            victim:       "#ff44aa",  // Pink — victims
+            event:        "#aa44ff"   // Purple — events
         };
 
         function getNodeFill(node) {
@@ -429,11 +437,11 @@
                 {id: "ehud_barak", label: "EHUD BARAK", type: "political", size: 26, allegiance: "israeli"},
 
                 // INTELLIGENCE 20-24
-                {id: "kgb", label: "KGB/FSB", type: "entity", size: 24, allegiance: "russian"},
-                {id: "mossad", label: "MOSSAD", type: "entity", size: 24, allegiance: "israeli"},
-                {id: "mi6", label: "MI6", type: "entity", size: 22},
-                {id: "cia", label: "CIA", type: "entity", size: 22},
-                {id: "israeli_intel", label: "ISRAELI MIL INTEL", type: "entity", size: 22, allegiance: "israeli"},
+                {id: "kgb", label: "KGB/FSB", type: "institution", size: 24, allegiance: "russian"},
+                {id: "mossad", label: "MOSSAD", type: "institution", size: 24, allegiance: "israeli"},
+                {id: "mi6", label: "MI6", type: "institution", size: 22},
+                {id: "cia", label: "CIA", type: "institution", size: 22},
+                {id: "israeli_intel", label: "ISRAELI MIL INTEL", type: "institution", size: 22, allegiance: "israeli"},
                 {id: "chebrikov", label: "VIKTOR CHEBRIKOV", type: "intelligence", size: 22, allegiance: "russian"},
                 {id: "kryuchkov", label: "VLADIMIR KRYUCHKOV", type: "intelligence", size: 22, allegiance: "russian"},
                 {id: "churkin", label: "VITALY CHURKIN", type: "intelligence", size: 20, allegiance: "russian"},
@@ -448,22 +456,22 @@
                 {id: "staley", label: "JES STALEY", type: "financial", size: 24},
                 {id: "erdoes", label: "MARY ERDOES", type: "financial", size: 22},
                 {id: "cutler", label: "STEPHEN CUTLER", type: "legal", size: 18},
-                {id: "jpmorgan", label: "JP MORGAN", type: "entity", size: 24},
+                {id: "jpmorgan", label: "JP MORGAN", type: "institution", size: 24},
 
                 // FINANCIAL NETWORK
                 {id: "leon_black", label: "LEON BLACK", type: "financial", size: 24},
                 {id: "wexner", label: "LES WEXNER", type: "financial", size: 24},
                 {id: "greenberg", label: "ALAN GREENBERG", type: "financial", size: 22},
                 {id: "cayne", label: "JIMMY CAYNE", type: "financial", size: 20},
-                {id: "bear_stearns", label: "BEAR STEARNS", type: "entity", size: 22},
-                {id: "deutsche", label: "DEUTSCHE BANK", type: "entity", size: 24, secondaryType: "financial"},
-                {id: "liquid_funding", label: "LIQUID FUNDING", type: "entity", size: 20},
-                {id: "carbyne", label: "CARBYNE", type: "entity", size: 18},
-                {id: "southern_trust", label: "SOUTHERN TRUST", type: "entity", size: 20},
+                {id: "bear_stearns", label: "BEAR STEARNS", type: "institution", size: 22},
+                {id: "deutsche", label: "DEUTSCHE BANK", type: "institution", size: 24, secondaryType: "financial"},
+                {id: "liquid_funding", label: "LIQUID FUNDING", type: "institution", size: 20},
+                {id: "carbyne", label: "CARBYNE", type: "institution", size: 18},
+                {id: "southern_trust", label: "SOUTHERN TRUST", type: "institution", size: 20},
                 {id: "bowers", label: "THOMAS BOWERS", type: "financial", size: 18},
                 {id: "milken", label: "MICHAEL MILKEN", type: "financial", size: 20},
-                {id: "drexel", label: "DREXEL BURNHAM", type: "entity", size: 20},
-                {id: "apollo", label: "APOLLO GLOBAL", type: "entity", size: 20},
+                {id: "drexel", label: "DREXEL BURNHAM", type: "institution", size: 20},
+                {id: "apollo", label: "APOLLO GLOBAL", type: "institution", size: 20},
                 {id: "rothschild", label: "ARIANE DE ROTHSCHILD", type: "financial", size: 18},
                 {id: "dubin", label: "GLENN DUBIN", type: "financial", size: 18},
 
@@ -490,10 +498,10 @@
                 {id: "richard_kahn", label: "RICHARD KAHN", type: "intelligence", size: 18, allegiance: "both"},
                 {id: "lutnick", label: "HOWARD LUTNICK", type: "political", size: 26, allegiance: "russian"},
                 {id: "russian_mafia", label: "RUSSIAN MAFIA", type: "financial", size: 28, allegiance: "russian"},
-                {id: "bgc_international", label: "BGC INTERNATIONAL", type: "entity", size: 22, allegiance: "russian"},
-                {id: "sarah_ferguson", label: "SARAH FERGUSON", type: "political", size: 16},
-                {id: "aubin_securities", label: "AUBIN SECURITIES", type: "entity", size: 16, allegiance: "russian"},
-                {id: "parabridge", label: "PARABRIDGE INTL", type: "entity", size: 16, allegiance: "russian"},
+                {id: "bgc_international", label: "BGC INTERNATIONAL", type: "institution", size: 22, allegiance: "russian"},
+                {id: "sarah_ferguson", label: "SARAH FERGUSON", type: "royals", size: 16},
+                {id: "aubin_securities", label: "AUBIN SECURITIES", type: "institution", size: 16, allegiance: "russian"},
+                {id: "parabridge", label: "PARABRIDGE INTL", type: "institution", size: 16, allegiance: "russian"},
                 {id: "witkoff", label: "STEVE WITKOFF", type: "political", size: 20, allegiance: "russian"},
                 {id: "dubinin", label: "YURI DUBININ", type: "intelligence", size: 16},
                 {id: "vrablic", label: "ROSEMARY VRABLIC", type: "financial", size: 14},
@@ -502,19 +510,19 @@
                 {id: "khashoggi", label: "ADNAN KHASHOGGI", type: "financial", size: 22},
                 {id: "leese", label: "DOUGLAS LEESE", type: "intelligence", size: 20},
                 {id: "hoffenberg", label: "STEVEN HOFFENBERG", type: "financial", size: 20},
-                {id: "towers", label: "TOWERS FINANCIAL", type: "entity", size: 18},
+                {id: "towers", label: "TOWERS FINANCIAL", type: "institution", size: 18},
                 {id: "iran_contra", label: "IRAN-CONTRA", type: "event", size: 20},
                 {id: "tower_john", label: "JOHN TOWER", type: "political", size: 16},
 
                 // PAYPAL MAFIA
                 {id: "musk", label: "ELON MUSK", type: "tech", size: 28, allegiance: "russian"},
-                {id: "starlink", label: "STARLINK", type: "entity", size: 22, allegiance: "russian"},
-                {id: "spacex", label: "SPACEX", type: "entity", size: 20},
-                {id: "doge", label: "DOGE", type: "entity", size: 20, allegiance: "russian"},
+                {id: "starlink", label: "STARLINK", type: "institution", size: 22, allegiance: "russian"},
+                {id: "spacex", label: "SPACEX", type: "institution", size: 20},
+                {id: "doge", label: "DOGE", type: "institution", size: 20, allegiance: "russian"},
                 {id: "hoffman", label: "REID HOFFMAN", type: "tech", size: 20},
                 {id: "zuckerberg", label: "MARK ZUCKERBERG", type: "tech", size: 20},
-                {id: "palantir", label: "PALANTIR", type: "entity", size: 20},
-                {id: "cambridge", label: "CAMBRIDGE ANALYTICA", type: "entity", size: 18},
+                {id: "palantir", label: "PALANTIR", type: "institution", size: 20},
+                {id: "cambridge", label: "CAMBRIDGE ANALYTICA", type: "institution", size: 18},
                 {id: "mercer", label: "ROBERT MERCER", type: "political", size: 18},
                 {id: "bannon", label: "STEVE BANNON", type: "political", size: 18},
 
@@ -524,7 +532,7 @@
                 {id: "starr", label: "KENNETH STARR", type: "legal", size: 18},
                 {id: "lefkowitz", label: "JAY LEFKOWITZ", type: "legal", size: 18},
                 {id: "dershowitz", label: "ALAN DERSHOWITZ", type: "legal", size: 18},
-                {id: "kirkland", label: "KIRKLAND & ELLIS", type: "entity", size: 18},
+                {id: "kirkland", label: "KIRKLAND & ELLIS", type: "institution", size: 18},
                 {id: "weingarten", label: "REID WEINGARTEN", type: "legal", size: 16},
 
                 // EPSTEIN OPERATIONS
@@ -546,16 +554,16 @@
                 {id: "mbz", label: "MOHAMMED BIN ZAYED", type: "political", size: 22},
                 {id: "michael_wolff", label: "MICHAEL WOLFF", type: "political", size: 16},
                 {id: "ruemmler", label: "KATHY RUEMMLER", type: "political", size: 16},
-                {id: "prince_andrew", label: "PRINCE ANDREW", type: "political", size: 18},
+                {id: "prince_andrew", label: "PRINCE ANDREW", type: "royals", size: 18},
                 {id: "mandelson", label: "PETER MANDELSON", type: "political", size: 16},
 
                 // OTHER KEY
                 {id: "lukanov", label: "ANDREI LUKANOV", type: "intelligence", size: 14},
-                {id: "colony", label: "COLONY CAPITAL", type: "entity", size: 16},
+                {id: "colony", label: "COLONY CAPITAL", type: "institution", size: 16},
                 {id: "qatar", label: "QATAR", type: "political", size: 16},
                 {id: "al_waleed", label: "PRINCE AL-WALEED", type: "financial", size: 16},
-                {id: "promis", label: "PROMIS SOFTWARE", type: "entity", size: 18},
-                {id: "wexner_mansion", label: "WEXNER MANSION", type: "entity", size: 18},
+                {id: "promis", label: "PROMIS SOFTWARE", type: "institution", size: 18},
+                {id: "wexner_mansion", label: "WEXNER MANSION", type: "institution", size: 18},
 
                 // VICTIMS
                 {id: "katie_johnson", label: "KATIE JOHNSON", type: "victim", size: 16},
@@ -576,21 +584,21 @@
                 {id: "kilimnik", label: "KONSTANTIN KILIMNIK", type: "intelligence", size: 18, allegiance: "russian"},
                 {id: "yanukovych", label: "VIKTOR YANUKOVYCH", type: "political", size: 18, allegiance: "russian"},
                 {id: "donald_barr", label: "DONALD BARR", type: "political", size: 14},
-                {id: "bayrock", label: "BAYROCK GROUP", type: "entity", size: 18},
-                {id: "terramar", label: "TERRAMAR PROJECT", type: "entity", size: 16},
-                {id: "alpha_bank", label: "ALPHA BANK", type: "entity", size: 18, allegiance: "russian"},
-                {id: "wikileaks", label: "WIKILEAKS", type: "entity", size: 20},
+                {id: "bayrock", label: "BAYROCK GROUP", type: "institution", size: 18},
+                {id: "terramar", label: "TERRAMAR PROJECT", type: "institution", size: 16},
+                {id: "alpha_bank", label: "ALPHA BANK", type: "institution", size: 18, allegiance: "russian"},
+                {id: "wikileaks", label: "WIKILEAKS", type: "institution", size: 20},
                 {id: "guccifer", label: "GUCCIFER 2.0 (GRU)", type: "intelligence", size: 18, allegiance: "russian"},
                 {id: "ailes", label: "ROGER AILES", type: "political", size: 16},
-                {id: "trump_org", label: "TRUMP ORGANIZATION", type: "entity", size: 22},
-                {id: "kilimnik_polling", label: "2016 POLLING DATA", type: "entity", size: 14},
+                {id: "trump_org", label: "TRUMP ORGANIZATION", type: "institution", size: 22},
+                {id: "kilimnik_polling", label: "2016 POLLING DATA", type: "institution", size: 14},
                 {id: "assange", label: "JULIAN ASSANGE", type: "political", size: 18},
 
                 // ROYALS CLUSTER
                 {id: "the_crown", label: "THE CROWN", type: "royals", size: 36},
                 {id: "king_charles", label: "KING CHARLES III", type: "royals", size: 22},
                 {id: "queen_elizabeth", label: "QUEEN ELIZABETH II", type: "royals", size: 20},
-                {id: "buckingham", label: "BUCKINGHAM PALACE", type: "entity", size: 18},
+                {id: "buckingham", label: "BUCKINGHAM PALACE", type: "institution", size: 18},
 
                 // ROTHSCHILD EXPANSION
                 {id: "lynn_rothschild", label: "LYNN FORESTER de ROTHSCHILD", type: "financial", size: 20},
@@ -609,10 +617,10 @@
                 {id: "gordon_brown", label: "GORDON BROWN\nUK PM", type: "political", size: 18},
                 {id: "starmer", label: "KEIR STARMER\nUK PM", type: "political", size: 18},
                 {id: "ushakov", label: "YURI USHAKOV\nKREMLIN", type: "intelligence", size: 18},
-                {id: "rusal", label: "RUSAL\nDERIPASKA EMPIRE", type: "entity", size: 20},
-                {id: "renova", label: "RENOVA GROUP\nVEKSELBERG", type: "entity", size: 18},
-                {id: "edmond_doj", label: "EdR DOJ SETTLEMENT\n$45.4M 2015", type: "entity", size: 16},
-                {id: "edmond_1mdb", label: "EdR 1MDB\nMONEY LAUNDERING", type: "entity", size: 16}
+                {id: "rusal", label: "RUSAL\nDERIPASKA EMPIRE", type: "institution", size: 20},
+                {id: "renova", label: "RENOVA GROUP\nVEKSELBERG", type: "institution", size: 18},
+                {id: "edmond_doj", label: "EdR DOJ SETTLEMENT\n$45.4M 2015", type: "institution", size: 16},
+                {id: "edmond_1mdb", label: "EdR 1MDB\nMONEY LAUNDERING", type: "institution", size: 16}
             ],
 
             links: [
@@ -679,7 +687,7 @@
 // TRUMP-EPSTEIN ALLEGATIONS (NEW!)
 {source: "trump", target: "katie_johnson", type: "victim", label: "Lawsuit rape age 13 Wexner Mansion", weight: 10},
 {source: "trump", target: "tiffany_doe", type: "victim", label: "Witness 4 encounters forcible rape", weight: 9},
-{source: "trump", target: "wexner_mansion", type: "entity", label: "9 E 71st St location", weight: 9},
+{source: "trump", target: "wexner_mansion", type: "institution", label: "9 E 71st St location", weight: 9},
 {source: "epstein", target: "katie_johnson", type: "victim", label: "1994 Wexner Mansion", weight: 10},
 {source: "epstein", target: "tiffany_doe", type: "victim", label: "9yr recruiter witness", weight: 9},
 {source: "katie_johnson", target: "wexner_mansion", type: "victim", label: "Age 13 1994", weight: 10},
@@ -826,13 +834,13 @@
 {source: "thiel", target: "hoffman", type: "business", label: "PayPal co-founders", weight: 7},
 {source: "thiel", target: "palantir", type: "tech", label: "CEO Co-founder", weight: 10},
 {source: "thiel", target: "zuckerberg", type: "tech", label: "First investor Facebook board", weight: 9},
-{source: "thiel", target: "cambridge", type: "entity", label: "Inside enabler", weight: 9},
+{source: "thiel", target: "cambridge", type: "institution", label: "Inside enabler", weight: 9},
 {source: "belyakov", target: "thiel", type: "intelligence", label: "July 6 2015 FSB-SV bridge", weight: 10},
 {source: "belyakov", target: "leon_black", type: "intelligence", label: "Guzel Ganieva intel", weight: 9},
 {source: "churkin", target: "thiel", type: "intelligence", label: "Oct 2016 coordination", weight: 10},
-{source: "zuckerberg", target: "cambridge", type: "entity", label: "87M users breach", weight: 10},
-{source: "mercer", target: "cambridge", type: "entity", label: "Funded", weight: 10},
-{source: "bannon", target: "cambridge", type: "entity", label: "Orchestrated", weight: 10},
+{source: "zuckerberg", target: "cambridge", type: "institution", label: "87M users breach", weight: 10},
+{source: "mercer", target: "cambridge", type: "institution", label: "Funded", weight: 10},
+{source: "bannon", target: "cambridge", type: "institution", label: "Orchestrated", weight: 10},
 {source: "southern_trust", target: "thiel", type: "financial", label: "$40M Valar 2015-17", weight: 10},
 {source: "epstein", target: "southern_trust", type: "financial", label: "$1.1B wires", weight: 10},
 {source: "musk", target: "election_2024", type: "event", label: "$277M donation", weight: 10},
@@ -982,17 +990,18 @@
 {source: "the_crown", target: "queen_elizabeth", type: "family", label: "Head of the Crown 1952-2022", weight: 10},
 {source: "the_crown", target: "king_charles", type: "family", label: "Head of the Crown 2022-present", weight: 10},
 {source: "the_crown", target: "prince_andrew", type: "family", label: "Duke of York — arrested Feb 19 2026 · stripped of titles 2022 · £12M Giuffre settlement", weight: 10},
-{source: "the_crown", target: "buckingham", type: "entity", label: "Seat of the monarchy", weight: 10},
+{source: "the_crown", target: "buckingham", type: "institution", label: "Seat of the monarchy", weight: 10},
 {source: "the_crown", target: "evelyn_rothschild", type: "financial", label: "Sir Evelyn = Queen Elizabeth's personal financial advisor · knighted 1989 · 2016 St James's Palace same table as Epstein intermediary David Stern", weight: 10},
 {source: "the_crown", target: "sarah_ferguson", type: "family", label: "Duchess of York · Sarah's Trust shut down Feb 2026 · 7 charities dropped her · 6 companies shuttered", weight: 9},
 {source: "the_crown", target: "david_stern", type: "intelligence", label: "Stern sat directly left of Queen Elizabeth at St James's Palace 2016 — Epstein's man at the Crown's table", weight: 10},
+{source: "rothschild", target: "the_crown", type: "financial", label: "Ariane de Rothschild — EdR CEO · $25M Southern Trust contract Oct 2015 · Sir Evelyn (Queen's personal financial advisor, knighted 1989) same Rothschild dynasty · Epstein told Thiel 'I represent the Rothschilds'", weight: 9},
 {source: "prince_andrew", target: "v_giuffre", type: "victim", label: "Sexual abuse — 3 encounters per sworn testimony", weight: 10},
 {source: "prince_andrew", target: "g_maxwell", type: "social", label: "Close friend — Maxwell recruited Giuffre via Andrew at Mar-a-Lago", weight: 10},
 {source: "sarah_ferguson", target: "epstein", type: "financial", label: "£15k debt paid by Epstein — met at NYC mansion", weight: 9},
 {source: "king_charles", target: "prince_andrew", type: "family", label: "Brother — palace intervened to limit prosecution cooperation", weight: 8},
 {source: "queen_elizabeth", target: "prince_andrew", type: "family", label: "Mother — stripped titles 2022 after Giuffre settlement", weight: 9},
-{source: "queen_elizabeth", target: "buckingham", type: "entity", label: "Head of monarchy 1952-2022", weight: 10},
-{source: "buckingham", target: "prince_andrew", type: "entity", label: "Official palace statements protected Andrew", weight: 9},
+{source: "queen_elizabeth", target: "buckingham", type: "institution", label: "Head of monarchy 1952-2022", weight: 10},
+{source: "buckingham", target: "prince_andrew", type: "institution", label: "Official palace statements protected Andrew", weight: 9},
 {source: "mandelson", target: "prince_andrew", type: "political", label: "UK political establishment shared Epstein social circle", weight: 7},
 
 // ROTHSCHILD CLUSTER LINKS
@@ -1399,7 +1408,9 @@
                         (filter === 'financial' && d.type === 'financial') ||
                         (filter === 'tech' && d.type === 'tech') ||
                         (filter === 'legal' && d.type === 'legal') ||
-                        (filter === 'entity' && d.type === 'entity') ||
+                        (filter === 'institution' && (d.type === 'institution' || d.type === 'entity')) ||
+                        (filter === 'entity' && (d.type === 'entity' || d.type === 'institution')) ||
+                        (filter === 'royals' && d.type === 'royals') ||
                         (filter === 'victim' && d.type === 'victim')) {
                         return 1; // Visible
                     }
@@ -1421,7 +1432,9 @@
                         (filter === 'financial' && srcNode.type === 'financial') ||
                         (filter === 'tech' && srcNode.type === 'tech') ||
                         (filter === 'legal' && srcNode.type === 'legal') ||
-                        (filter === 'entity' && srcNode.type === 'entity') ||
+                        (filter === 'institution' && (srcNode.type === 'institution' || srcNode.type === 'entity')) ||
+                        (filter === 'entity' && (srcNode.type === 'entity' || srcNode.type === 'institution')) ||
+                        (filter === 'royals' && srcNode.type === 'royals') ||
                         (filter === 'victim' && srcNode.type === 'victim')) {
                         srcVisible = true;
                     }
@@ -1431,7 +1444,9 @@
                         (filter === 'financial' && tgtNode.type === 'financial') ||
                         (filter === 'tech' && tgtNode.type === 'tech') ||
                         (filter === 'legal' && tgtNode.type === 'legal') ||
-                        (filter === 'entity' && tgtNode.type === 'entity') ||
+                        (filter === 'institution' && (tgtNode.type === 'institution' || tgtNode.type === 'entity')) ||
+                        (filter === 'entity' && (tgtNode.type === 'entity' || tgtNode.type === 'institution')) ||
+                        (filter === 'royals' && tgtNode.type === 'royals') ||
                         (filter === 'victim' && tgtNode.type === 'victim')) {
                         tgtVisible = true;
                     }
@@ -1520,8 +1535,44 @@
                     nodeIds.has(l.source.id || l.source) && nodeIds.has(l.target.id || l.target));
             } else if (network === 'rothschild') {
                 const rothschildIds = ['rothschild', 'lynn_rothschild', 'jacob_rothschild', 'nathaniel_rothschild',
-                    'epstein', 'clinton', 'g_maxwell', 'leon_black', 'deripaska', 'mandelson'];
+                    'elie_rothschild', 'evelyn_rothschild',
+                    'epstein', 'clinton', 'g_maxwell', 'leon_black', 'deripaska', 'mandelson',
+                    'wexner', 'thiel', 'southern_trust', 'edmond_doj', 'edmond_1mdb',
+                    'ruemmler', 'ehud_barak', 'carbyne', 'vekselberg'];
                 filteredNodes = graphData.nodes.filter(n => rothschildIds.includes(n.id));
+                const nodeIds = new Set(filteredNodes.map(n => n.id));
+                filteredLinks = graphData.links.filter(l =>
+                    nodeIds.has(l.source.id || l.source) && nodeIds.has(l.target.id || l.target));
+
+            } else if (network === 'wexner_deposition') {
+                // The full map of names Wexner dropped Feb 18-19 2026
+                const wexnerIds = [
+                    // Core
+                    'epstein', 'wexner',
+                    // Rothschilds named
+                    'elie_rothschild', 'rothschild', 'ariane_rothschild',
+                    'evelyn_rothschild', 'lynn_rothschild', 'jacob_rothschild', 'nathaniel_rothschild',
+                    // Crown / UK named
+                    'the_crown', 'queen_elizabeth', 'prince_andrew', 'king_charles',
+                    'david_stern', 'sarah_ferguson', 'buckingham',
+                    // UK political corridor
+                    'mandelson', 'gordon_brown', 'starmer', 'osborne',
+                    // Russian corridor
+                    'deripaska', 'rusal', 'vekselberg', 'renova', 'ushakov',
+                    'ehud_barak', 'manafort', 'kilimnik', 'belyakov',
+                    // Tech named under oath
+                    'brin', 'page', 'bezos', 'abigail_johnson', 'thiel',
+                    // Banking architecture
+                    'jpmorgan', 'deutsche', 'bear_stearns', 'southern_trust',
+                    'edmond_doj', 'edmond_1mdb', 'ruemmler',
+                    // Saudi/arms corridor
+                    'mbs', 'leese', 'khashoggi', 'r_maxwell',
+                    // Trump convergence
+                    'trump', 'vrablic', 'lutnick', 'witkoff',
+                    // Other named
+                    'staley', 'dimon', 'carbyne', 'g_maxwell'
+                ];
+                filteredNodes = graphData.nodes.filter(n => wexnerIds.includes(n.id));
                 const nodeIds = new Set(filteredNodes.map(n => n.id));
                 filteredLinks = graphData.links.filter(l =>
                     nodeIds.has(l.source.id || l.source) && nodeIds.has(l.target.id || l.target));
