@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE CROWN × ROTHSCHILD × EPSTEIN</title>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #050508; color: #eee; font-family: 'Arial', sans-serif; overflow: hidden; }
+
+  #header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: linear-gradient(180deg, rgba(5,5,8,0.98) 0%, transparent 100%);
+    padding: 18px 24px 30px;
+    display: flex; align-items: center; gap: 20px;
+  }
+  #header h1 {
+    font-size: 22px; font-weight: 900; letter-spacing: 3px;
+    background: linear-gradient(135deg, #c8a600, #fff8dc, #c8a600);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    text-shadow: none;
+  }
+  #header .subtitle {
+    font-size: 11px; color: #888; letter-spacing: 2px; text-transform: uppercase;
+    margin-top: 3px;
+  }
+  #header .divider { color: #333; font-size: 24px; }
+
+  #legend {
+    position: fixed; bottom: 20px; left: 20px; z-index: 100;
+    background: rgba(10,10,18,0.92); border: 1px solid #222;
+    border-radius: 8px; padding: 14px 16px; min-width: 180px;
+  }
+  #legend h4 { font-size: 10px; color: #666; letter-spacing: 2px; margin-bottom: 10px; text-transform: uppercase; }
+  .leg { display: flex; align-items: center; gap: 8px; margin: 5px 0; font-size: 11px; color: #bbb; cursor: pointer; }
+  .leg:hover { color: #fff; }
+  .leg-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+
+  #info {
+    position: fixed; top: 80px; right: 20px; z-index: 100;
+    background: rgba(10,10,18,0.95); border: 1px solid #2a2a2a;
+    border-radius: 8px; padding: 16px; width: 320px;
+    display: none;
+  }
+  #info h3 { font-size: 13px; color: #fff; letter-spacing: 1px; margin-bottom: 8px; }
+  #info .type-badge { display: inline-block; font-size: 9px; letter-spacing: 2px; padding: 2px 8px; border-radius: 3px; margin-bottom: 10px; text-transform: uppercase; }
+  #info .connections { font-size: 11px; color: #888; }
+  #info .conn-item { padding: 6px 0; border-bottom: 1px solid #1a1a1a; }
+  #info .conn-item:last-child { border-bottom: none; }
+  #info .conn-label { font-size: 10px; color: #aaa; margin-top: 3px; line-height: 1.4; }
+  #info .conn-weight { float: right; font-size: 10px; }
+  #info .w10 { color: #ff4444; }
+  #info .w9  { color: #ff8800; }
+  #info .w8  { color: #ffcc00; }
+  #info .close-btn { float: right; cursor: pointer; color: #555; font-size: 16px; margin-top: -4px; }
+  #info .close-btn:hover { color: #fff; }
+
+  .tooltip {
+    position: fixed; pointer-events: none; z-index: 200;
+    background: rgba(10,10,18,0.95); border: 1px solid #333;
+    border-radius: 6px; padding: 10px 14px; font-size: 12px;
+    max-width: 300px; line-height: 1.5; display: none;
+  }
+  .tooltip .tip-name { font-weight: bold; color: #fff; margin-bottom: 4px; }
+  .tooltip .tip-label { color: #999; font-size: 10px; line-height: 1.4; }
+
+  svg { width: 100vw; height: 100vh; }
+  .link { stroke-opacity: 0.6; }
+  .node-circle { cursor: pointer; stroke-width: 2; }
+  .node-circle:hover { stroke-width: 4; filter: brightness(1.3); }
+  .node-label { pointer-events: none; text-anchor: middle; font-family: Arial, sans-serif; fill: #ddd; }
+  .node-label.hub { fill: #fff; font-weight: bold; }
+
+  #stats {
+    position: fixed; top: 80px; left: 20px; z-index: 100;
+    background: rgba(10,10,18,0.85); border: 1px solid #1a1a1a;
+    border-radius: 6px; padding: 10px 14px; font-size: 10px; color: #666;
+  }
+  #stats span { color: #c8a600; font-weight: bold; }
+
+  #back-btn {
+    position: fixed; bottom: 20px; right: 20px; z-index: 100;
+    background: rgba(10,10,18,0.9); border: 1px solid #333;
+    border-radius: 6px; padding: 8px 16px; font-size: 11px; color: #888;
+    cursor: pointer; letter-spacing: 1px; text-decoration: none;
+  }
+  #back-btn:hover { color: #fff; border-color: #666; }
+</style>
+</head>
+<body>
+
+<div id="header">
+  <div>
+    <h1>THE CROWN × ROTHSCHILD × EPSTEIN</h1>
+    <div class="subtitle">Narativ Investigative Network · Feb 2026</div>
+  </div>
+</div>
+
+<div id="stats">
+  <span id="nodeCount">0</span> nodes · <span id="edgeCount">0</span> connections
+</div>
+
+<div id="legend">
+  <h4>Node Type</h4>
+  <div class="leg"><div class="leg-dot" style="background:#c8a600"></div>Royals / Crown</div>
+  <div class="leg"><div class="leg-dot" style="background:#00ff88"></div>Financial / Banking</div>
+  <div class="leg"><div class="leg-dot" style="background:#ff0000"></div>Russian Network</div>
+  <div class="leg"><div class="leg-dot" style="background:#ff6600"></div>Intelligence</div>
+  <div class="leg"><div class="leg-dot" style="background:#4488ff"></div>Political</div>
+  <div class="leg"><div class="leg-dot" style="background:#888888"></div>Institution</div>
+  <div class="leg"><div class="leg-dot" style="background:#ff44aa"></div>Victim</div>
+  <div style="margin-top:10px;padding-top:10px;border-top:1px solid #222;font-size:9px;color:#555;">
+    Line thickness = evidence weight<br>
+    <span style="color:#ff4444">■</span> Weight 10 = Smoking Gun
+  </div>
+</div>
+
+<div id="info">
+  <span class="close-btn" onclick="document.getElementById('info').style.display='none'">×</span>
+  <h3 id="info-name"></h3>
+  <div class="type-badge" id="info-badge"></div>
+  <div class="connections" id="info-connections"></div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+<svg id="graph"></svg>
+<a href="index.html" id="back-btn">← Full Supergraph</a>
+
+<script>
+const colors = {
+  royals:      "#c8a600",
+  financial:   "#00ff88",
+  russian:     "#ff0000",
+  intelligence:"#ff6600",
+  political:   "#4488ff",
+  institution: "#888888",
+  victim:      "#ff44aa",
+  hub:         "#ffffff",
+  event:       "#aa44ff",
+  social:      "#44ddff",
+};
+
+function getColor(node) {
+  if (node.type === 'hub') return '#ffffff';
+  return colors[node.type] || '#aaaaaa';
+}
+
+const nodes = [
+  // EPSTEIN — the center
+  {id: "epstein", label: "JEFFREY\nEPSTEIN", type: "hub", size: 42},
+
+  // ROYALS
+  {id: "the_crown",      label: "THE CROWN",           type: "royals", size: 36},
+  {id: "king_charles",   label: "KING CHARLES III",    type: "royals", size: 22},
+  {id: "queen_elizabeth",label: "QUEEN ELIZABETH II",  type: "royals", size: 22},
+  {id: "prince_andrew",  label: "PRINCE ANDREW",       type: "royals", size: 24},
+  {id: "sarah_ferguson", label: "SARAH FERGUSON",      type: "royals", size: 18},
+  {id: "buckingham",     label: "BUCKINGHAM PALACE",   type: "institution", size: 18},
+
+  // ROTHSCHILD FAMILY
+  {id: "rothschild",      label: "ARIANE\nde ROTHSCHILD", type: "financial", size: 24},
+  {id: "evelyn_rothschild",label: "SIR EVELYN\nde ROTHSCHILD", type: "financial", size: 22},
+  {id: "jacob_rothschild", label: "JACOB\nde ROTHSCHILD", type: "financial", size: 20},
+  {id: "nathaniel_rothschild",label: "NATHANIEL\nROTHSCHILD", type: "financial", size: 18},
+  {id: "elie_rothschild",  label: "BARON ÉLIE\nde ROTHSCHILD", type: "financial", size: 22},
+  {id: "lynn_rothschild",  label: "LYNN FORESTER\nde ROTHSCHILD", type: "financial", size: 22},
+  {id: "edmond_doj",       label: "EdR DOJ\n$45.4M 2015", type: "institution", size: 16},
+
+  // KEY CONNECTORS
+  {id: "g_maxwell",     label: "GHISLAINE\nMAXWELL",     type: "intelligence", size: 28},
+  {id: "david_stern",   label: "DAVID STERN",             type: "intelligence", size: 26},
+  {id: "mandelson",     label: "PETER\nMANDELSON",        type: "political", size: 20},
+  {id: "wexner",        label: "LES WEXNER",              type: "financial", size: 22},
+  {id: "v_giuffre",     label: "VIRGINIA\nGIUFFRE",       type: "victim", size: 18},
+  {id: "deripaska",     label: "OLEG\nDERIPASKA",         type: "russian", size: 20},
+  {id: "nathaniel_rothschild_russia", label: "", type: "hidden", size: 0}, // placeholder to avoid orphan
+
+  // UK POLITICAL
+  {id: "gordon_brown",  label: "GORDON BROWN\nUK PM",     type: "political", size: 16},
+  {id: "osborne",       label: "GEORGE\nOSBORNE",         type: "political", size: 16},
+  {id: "starmer",       label: "KEIR STARMER\nUK PM",     type: "political", size: 16},
+  {id: "rusal",         label: "RUSAL\nDERIPASKA EMPIRE", type: "institution", size: 16},
+];
+
+// Remove placeholder
+const graphNodes = nodes.filter(n => n.type !== 'hidden');
+
+const edges = [
+  // CROWN hub
+  {source:"the_crown",      target:"queen_elizabeth",  type:"family",      label:"Head of the Crown 1952–2022", weight:10},
+  {source:"the_crown",      target:"king_charles",     type:"family",      label:"Head of the Crown 2022–present", weight:10},
+  {source:"the_crown",      target:"prince_andrew",    type:"family",      label:"Duke of York — arrested Feb 19 2026 · stripped of titles 2022 · £12M Giuffre settlement", weight:10},
+  {source:"the_crown",      target:"buckingham",       type:"institution", label:"Seat of the monarchy", weight:10},
+  {source:"the_crown",      target:"evelyn_rothschild",type:"financial",   label:"Sir Evelyn = Queen Elizabeth's personal financial advisor · knighted 1989 · 2016 St James's Palace same table as Epstein intermediary David Stern", weight:10},
+  {source:"the_crown",      target:"sarah_ferguson",   type:"family",      label:"Duchess of York · Sarah's Trust shut down Feb 2026 · 7 charities dropped her · 6 companies shuttered", weight:9},
+  {source:"the_crown",      target:"david_stern",      type:"intelligence",label:"Stern sat directly left of Queen Elizabeth at St James's Palace 2016 — Epstein's man at the Crown's table", weight:10},
+
+  // Ariane → Crown
+  {source:"rothschild",     target:"the_crown",        type:"financial",   label:"Ariane de Rothschild — EdR CEO · $25M Southern Trust contract Oct 2015 · Sir Evelyn (Queen's personal financial advisor, knighted 1989) same Rothschild dynasty · Epstein told Thiel 'I represent the Rothschilds'", weight:9},
+
+  // Royals internal
+  {source:"queen_elizabeth", target:"prince_andrew",   type:"family",      label:"Mother — stripped titles 2022 after Giuffre settlement", weight:9},
+  {source:"king_charles",    target:"prince_andrew",   type:"family",      label:"Brother — palace intervened to limit prosecution cooperation", weight:8},
+  {source:"queen_elizabeth", target:"buckingham",      type:"institution", label:"Head of monarchy 1952–2022", weight:10},
+  {source:"buckingham",      target:"prince_andrew",   type:"institution", label:"Official palace statements protected Andrew", weight:9},
+
+  // Epstein → Royals
+  {source:"epstein",        target:"prince_andrew",    type:"political",   label:"UK royalty access — Epstein used Andrew for legitimacy with investors", weight:9},
+  {source:"epstein",        target:"g_maxwell",        type:"intelligence",label:"Maxwell recruited victims, managed island, co-conspirator", weight:10},
+
+  // Maxwell
+  {source:"g_maxwell",      target:"prince_andrew",    type:"social",      label:"Close friend — Maxwell recruited Giuffre via Andrew at Mar-a-Lago", weight:10},
+  {source:"prince_andrew",  target:"v_giuffre",        type:"victim",      label:"Sexual abuse — 3 encounters per sworn testimony · £12M settlement", weight:10},
+  {source:"sarah_ferguson",  target:"epstein",         type:"financial",   label:"£15k debt paid by Epstein — met at NYC mansion", weight:9},
+  {source:"sarah_ferguson",  target:"g_maxwell",       type:"social",      label:"Dolce Vita Parties · Children in Crisis charity overlap", weight:8},
+  {source:"mandelson",       target:"prince_andrew",   type:"political",   label:"UK political establishment shared Epstein social circle", weight:7},
+  {source:"mandelson",       target:"epstein",         type:"intelligence",label:"Nov 2010: secured Epstein Russian visa via Deripaska · May 2010: emailed '500b euro bailout almost complete' — market-moving govt intel BEFORE announcement · 'Finally got him to go today' re Brown resignation", weight:10},
+
+  // David Stern
+  {source:"david_stern",    target:"epstein",          type:"intelligence",label:"Thousands of docs · operating system for Crown access · forwarded Andrew trade reports · proposed investment office using Andrew's aura · 'orgies etc' email May 2014", weight:10},
+  {source:"david_stern",    target:"prince_andrew",    type:"intelligence",label:"Closest aide · proposed private London investment office · forwarded confidential trade reports to Epstein · fled to UAE after Andrew arrest", weight:10},
+  {source:"david_stern",    target:"queen_elizabeth",  type:"intelligence",label:"Sat directly LEFT of Queen Elizabeth at St James's Palace 2016 · Evelyn Rothschild sat two seats to her right", weight:10},
+  {source:"david_stern",    target:"evelyn_rothschild",type:"financial",   label:"2015: asked Epstein whether Evelyn wanted to sponsor Andrew's Pitch@Palace", weight:9},
+
+  // Rothschild family
+  {source:"elie_rothschild",  target:"epstein",        type:"financial",   label:"Epstein did undocumented financial work for Élie family early 1980s London — the missing chapter", weight:10},
+  {source:"elie_rothschild",  target:"wexner",         type:"financial",   label:"WEXNER TESTIMONY Feb 18 2026: 'Elie highly recommended Epstein based on work done for his family' — the vouching call that built the empire", weight:10},
+  {source:"evelyn_rothschild",target:"epstein",        type:"financial",   label:"In Epstein black book HOUSE_OVERSIGHT_022975 with daughter Hannah — Queen's personal financial advisor knighted 1989", weight:9},
+  {source:"evelyn_rothschild",target:"lynn_rothschild",type:"family",      label:"Married 2000 — honeymoon at Clinton White House", weight:9},
+  {source:"jacob_rothschild", target:"rothschild",     type:"family",      label:"Rothschild dynasty patriarch — died 2024", weight:8},
+  {source:"jacob_rothschild", target:"nathaniel_rothschild",type:"family", label:"Father-son Rothschild succession", weight:9},
+
+  // Lynn Rothschild
+  {source:"lynn_rothschild",  target:"epstein",        type:"financial",   label:"5 flights 1997–98 · sold Epstein Manhattan townhouse · Maxwell: Epstein provided financial services to Lynn · not in black book", weight:10},
+  {source:"lynn_rothschild",  target:"g_maxwell",      type:"social",      label:"Same UK-US elite social circles", weight:8},
+  {source:"lynn_rothschild",  target:"prince_andrew",  type:"social",      label:"MAXWELL DOJ TESTIMONY July 2025: Lynn introduced Epstein to Prince Andrew at her Martha's Vineyard/Nantucket house", weight:10},
+
+  // Ariane
+  {source:"rothschild",       target:"epstein",        type:"financial",   label:"$25M Southern Trust contract Oct 2015 · BRIDGE/TIIC infrastructure prospectuses · Ariane texted about Trump from room with Portuguese PM · met Epstein NYC Nov 2018 (8 months before arrest) · Hitler email Dec 31 2018 via Bannon forward", weight:10},
+  {source:"rothschild",       target:"edmond_doj",     type:"financial",   label:"Dec 2015: EdR Suisse paid $45.4M to DOJ · avoid prosecution for helping Americans evade taxes offshore · EdR Luxembourg first Luxembourg bank convicted money laundering (1MDB 2025)", weight:10},
+
+  // Wexner
+  {source:"wexner",           target:"epstein",        type:"financial",   label:"WEXNER TESTIMONY Feb 2026: gave Epstein power of attorney · $1B+ transferred · 'he had become a different person'", weight:10},
+
+  // Nathaniel / Russia
+  {source:"nathaniel_rothschild",target:"deripaska",   type:"financial",   label:"Corfu 2008 yacht — Mandelson scandal · Russian oligarch link · major investor in RUSAL", weight:10},
+  {source:"nathaniel_rothschild",target:"mandelson",   type:"political",   label:"Corfu 2008 — Mandelson-Deripaska-Rothschild affair", weight:10},
+  {source:"nathaniel_rothschild",target:"osborne",     type:"political",   label:"Introduced Osborne to Deripaska at Corfu — scandal that nearly ended Osborne's career", weight:9},
+  {source:"nathaniel_rothschild",target:"rusal",       type:"financial",   label:"Major investor in Deripaska's RUSAL aluminum empire · personally introduced Deripaska to British politicians", weight:10},
+  {source:"deripaska",         target:"rusal",          type:"financial",   label:"Owner · US diplomatic cables: among 2-3 oligarchs Putin turns to regularly", weight:10},
+  {source:"mandelson",         target:"gordon_brown",  type:"political",   label:"Mandelson emailed Epstein 'Finally got him to go today' — claimed to have engineered sitting UK PM's resignation", weight:10},
+  {source:"mandelson",         target:"osborne",       type:"political",   label:"Nathaniel Rothschild introduced both to Deripaska at Corfu — same Rothschild-Russia corridor", weight:9},
+  {source:"starmer",           target:"mandelson",     type:"political",   label:"Appointed as UK Ambassador to US · Mandelson dismissed + under Met Police investigation for misconduct in public office", weight:9},
+  {source:"mandelson",         target:"deripaska",     type:"intelligence",label:"Corfu yacht · Deripaska private jet to EU-Russia Putin summit · aide arranged Moscow visa · EU aluminum tariffs benefited RUSAL while Mandelson was Trade Commissioner", weight:10},
+];
+
+const width = window.innerWidth;
+const height = window.innerHeight;
+
+const svg = d3.select('#graph')
+  .attr('width', width)
+  .attr('height', height);
+
+const g = svg.append('g');
+
+svg.call(d3.zoom()
+  .scaleExtent([0.2, 4])
+  .on('zoom', e => g.attr('transform', e.transform))
+);
+
+// Update stats
+document.getElementById('nodeCount').textContent = graphNodes.length;
+document.getElementById('edgeCount').textContent = edges.length;
+
+const edgeColorMap = {
+  family:      "#c8a600",
+  financial:   "#00ff88",
+  intelligence:"#ff6600",
+  political:   "#4488ff",
+  social:      "#44ddff",
+  institution: "#888888",
+  victim:      "#ff44aa",
+  russian:     "#ff0000",
+};
+
+const sim = d3.forceSimulation(graphNodes)
+  .force('link', d3.forceLink(edges).id(d => d.id).distance(d => {
+    const base = 160;
+    if (d.source.id === 'the_crown' || d.target.id === 'the_crown') return 120;
+    if (d.source.id === 'epstein' || d.target.id === 'epstein') return 140;
+    return base - d.weight * 8;
+  }).strength(0.7))
+  .force('charge', d3.forceManyBody().strength(d => d.size ? -d.size * 28 : -400))
+  .force('center', d3.forceCenter(width / 2, height / 2))
+  .force('collision', d3.forceCollide().radius(d => (d.size || 14) + 20))
+  .force('x', d3.forceX(width / 2).strength(0.04))
+  .force('y', d3.forceY(height / 2).strength(0.04));
+
+// Draw links
+const link = g.append('g').selectAll('line')
+  .data(edges).join('line')
+  .attr('class', 'link')
+  .attr('stroke', d => edgeColorMap[d.type] || '#555')
+  .attr('stroke-width', d => Math.max(1, d.weight * 0.6))
+  .attr('stroke-opacity', d => 0.3 + d.weight * 0.04);
+
+// Draw nodes
+const node = g.append('g').selectAll('g')
+  .data(graphNodes).join('g')
+  .call(d3.drag()
+    .on('start', (e,d) => { if (!e.active) sim.alphaTarget(0.3).restart(); d.fx=d.x; d.fy=d.y; })
+    .on('drag', (e,d) => { d.fx=e.x; d.fy=e.y; })
+    .on('end', (e,d) => { if (!e.active) sim.alphaTarget(0); d.fx=null; d.fy=null; })
+  )
+  .on('click', (e, d) => showInfo(d))
+  .on('mouseover', (e, d) => showTooltip(e, d))
+  .on('mousemove', (e) => moveTooltip(e))
+  .on('mouseout', () => hideTooltip());
+
+node.append('circle')
+  .attr('class', 'node-circle')
+  .attr('r', d => d.size || 12)
+  .attr('fill', d => getColor(d))
+  .attr('fill-opacity', 0.85)
+  .attr('stroke', d => d.type === 'hub' ? '#c8a600' : getColor(d))
+  .attr('stroke-width', d => d.type === 'hub' ? 3 : 1.5)
+  .attr('stroke-opacity', 0.9);
+
+node.append('text')
+  .attr('class', d => d.type === 'hub' ? 'node-label hub' : 'node-label')
+  .attr('dy', d => (d.size || 12) + 14)
+  .attr('font-size', d => d.type === 'hub' ? 12 : d.size > 20 ? 10 : 9)
+  .attr('fill', d => d.type === 'hub' ? '#ffffff' : d.type === 'royals' ? '#f5d060' : '#cccccc')
+  .each(function(d) {
+    const lines = d.label.split('\n');
+    const el = d3.select(this);
+    if (lines.length > 1) {
+      el.attr('dy', (d.size || 12) + 12);
+      lines.forEach((line, i) => {
+        el.append('tspan')
+          .attr('x', 0)
+          .attr('dy', i === 0 ? 0 : 12)
+          .text(line);
+      });
+    } else {
+      el.text(d.label);
+    }
+  });
+
+sim.on('tick', () => {
+  link
+    .attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+    .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+  node.attr('transform', d => `translate(${d.x},${d.y})`);
+});
+
+function showTooltip(e, d) {
+  const tip = document.getElementById('tooltip');
+  const connCount = edges.filter(ed => ed.source.id === d.id || ed.target.id === d.id).length;
+  tip.innerHTML = `<div class="tip-name">${d.label.replace('\n', ' ')}</div>
+    <div class="tip-label">${d.type.toUpperCase()} · ${connCount} connection${connCount !== 1 ? 's' : ''}</div>`;
+  tip.style.display = 'block';
+  moveTooltip(e);
+}
+function moveTooltip(e) {
+  const tip = document.getElementById('tooltip');
+  tip.style.left = (e.clientX + 15) + 'px';
+  tip.style.top  = (e.clientY - 10) + 'px';
+}
+function hideTooltip() {
+  document.getElementById('tooltip').style.display = 'none';
+}
+
+function showInfo(d) {
+  const panel = document.getElementById('info');
+  document.getElementById('info-name').textContent = d.label.replace('\n', ' ');
+  const badge = document.getElementById('info-badge');
+  badge.textContent = d.type;
+  badge.style.background = getColor(d) + '33';
+  badge.style.color = getColor(d);
+  badge.style.border = `1px solid ${getColor(d)}55`;
+
+  const conns = edges.filter(ed => {
+    const src = typeof ed.source === 'object' ? ed.source.id : ed.source;
+    const tgt = typeof ed.target === 'object' ? ed.target.id : ed.target;
+    return src === d.id || tgt === d.id;
+  });
+
+  const connHtml = conns.map(ed => {
+    const src = typeof ed.source === 'object' ? ed.source.id : ed.source;
+    const tgt = typeof ed.target === 'object' ? ed.target.id : ed.target;
+    const other = src === d.id ? tgt : src;
+    const otherNode = graphNodes.find(n => n.id === other);
+    const wClass = ed.weight >= 10 ? 'w10' : ed.weight >= 9 ? 'w9' : 'w8';
+    return `<div class="conn-item">
+      <strong>${otherNode ? otherNode.label.replace('\n',' ') : other}</strong>
+      <span class="conn-weight ${wClass}">●${ed.weight}</span>
+      <div class="conn-label">${ed.label}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('info-connections').innerHTML = connHtml || '<div style="color:#555;font-size:11px">No connections found</div>';
+  panel.style.display = 'block';
+}
+
+// Highlight connected on hover
+node.on('mouseover.highlight', (e, d) => {
+  const connected = new Set();
+  edges.forEach(ed => {
+    const src = typeof ed.source === 'object' ? ed.source.id : ed.source;
+    const tgt = typeof ed.target === 'object' ? ed.target.id : ed.target;
+    if (src === d.id) connected.add(tgt);
+    if (tgt === d.id) connected.add(src);
+  });
+  link.attr('stroke-opacity', ed => {
+    const src = typeof ed.source === 'object' ? ed.source.id : ed.source;
+    const tgt = typeof ed.target === 'object' ? ed.target.id : ed.target;
+    return (src === d.id || tgt === d.id) ? 0.9 : 0.05;
+  }).attr('stroke-width', ed => {
+    const src = typeof ed.source === 'object' ? ed.source.id : ed.source;
+    const tgt = typeof ed.target === 'object' ? ed.target.id : ed.target;
+    return (src === d.id || tgt === d.id) ? Math.max(2, ed.weight * 0.8) : Math.max(1, ed.weight * 0.6);
+  });
+  node.select('circle').attr('fill-opacity', n => n.id === d.id || connected.has(n.id) ? 1 : 0.15);
+  node.select('text').attr('fill-opacity', n => n.id === d.id || connected.has(n.id) ? 1 : 0.15);
+})
+.on('mouseout.highlight', () => {
+  link.attr('stroke-opacity', d => 0.3 + d.weight * 0.04)
+      .attr('stroke-width', d => Math.max(1, d.weight * 0.6));
+  node.select('circle').attr('fill-opacity', 0.85);
+  node.select('text').attr('fill-opacity', 1);
+  hideTooltip();
+});
+</script>
+</body>
+</html>
