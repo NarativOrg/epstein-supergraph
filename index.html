@@ -630,7 +630,15 @@
                 {id: "rusal", label: "RUSAL\nDERIPASKA EMPIRE", type: "institution", size: 20},
                 {id: "renova", label: "RENOVA GROUP\nVEKSELBERG", type: "institution", size: 18},
                 {id: "edmond_doj", label: "EdR DOJ SETTLEMENT\n$45.4M 2015", type: "institution", size: 16},
-                {id: "edmond_1mdb", label: "EdR 1MDB\nMONEY LAUNDERING", type: "institution", size: 16}
+                {id: "edmond_1mdb", label: "EdR 1MDB\nMONEY LAUNDERING", type: "institution", size: 16},
+
+                // TRUMP-EPSTEIN-ROTHSCHILD NETWORK (Feb 26 2026 update)
+                {id: "wilbur_ross", label: "WILBUR ROSS", type: "financial", size: 26},
+                {id: "bank_of_cyprus", label: "BANK OF CYPRUS", type: "institution", size: 20, allegiance: "russian"},
+                {id: "southern_air", label: "SOUTHERN AIR\nTRANSPORT", type: "institution", size: 18},
+                {id: "martin_nowak", label: "MARTIN NOWAK\nHARVARD", type: "financial", size: 18},
+                {id: "rod_larsen", label: "TERJE RØD-LARSEN\nUN ENVOY", type: "political", size: 18},
+                {id: "von_habsburg", label: "FRANCESCA\nvon HABSBURG", type: "royals", size: 16}
             ],
 
             links: [
@@ -1083,7 +1091,32 @@
 {source: "ruemmler", target: "edmond_doj", type: "legal", label: "EdR official attorney — Obama's former White House counsel — paid LESS than Epstein for same DOJ settlement", weight: 9},
 
 // SARAH FERGUSON — charity circuit corridor
-{source: "sarah_ferguson", target: "lutnick", type: "social", label: "Cantor Fitzgerald Charity Day 2015 · royals + network + money in same charity circuit", weight: 8}
+{source: "sarah_ferguson", target: "lutnick", type: "social", label: "Cantor Fitzgerald Charity Day 2015 · royals + network + money in same charity circuit", weight: 8},
+
+// WILBUR ROSS — ROTHSCHILD'S MAN WHO SAVED TRUMP (Feb 26 2026)
+{source: "wilbur_ross", target: "rothschild_hub", type: "financial", label: "24 years at Rothschild Inc. (N.M. Rothschild & Sons NY) 1976–2000 · built and ran bankruptcy restructuring practice · Rothschild's instrument in US markets", weight: 10},
+{source: "wilbur_ross", target: "trump", type: "financial", label: "1990: restructured Trump's $3.4B bankruptcy · told bondholders Trump name 'adds value' · kept Trump in control of his casinos · saved his brand and borrowing ability · Trump repaid with Commerce Secretary 2017", weight: 10},
+{source: "wilbur_ross", target: "lutnick", type: "political", label: "SAME DESK: Ross (Rothschild's man) held Commerce Secretary 2017–2021 · Lutnick (Epstein's man) holds it today — Rothschild dynasty then Epstein network controlling US trade policy", weight: 10},
+{source: "wilbur_ross", target: "bank_of_cyprus", type: "financial", label: "Vice Chairman Bank of Cyprus · co-investors included former KGB agent and Viktor Vekselberg (Putin associate)", weight: 10},
+{source: "bank_of_cyprus", target: "vekselberg", type: "financial", label: "Co-investor with Wilbur Ross at Bank of Cyprus · known haven for Russian oligarch money", weight: 10},
+{source: "bank_of_cyprus", target: "kgb", type: "intelligence", label: "Ross's co-investor at Bank of Cyprus was former KGB agent", weight: 9},
+
+// SOUTHERN AIR TRANSPORT — Iran-Contra airline relocated for Wexner
+{source: "southern_air", target: "wexner", type: "financial", label: "Epstein relocated CIA-linked Southern Air Transport to Columbus Ohio to ship clothes for Wexner's retail empire · cocaine found on plane 1996", weight: 10},
+{source: "southern_air", target: "iran_contra", type: "intelligence", label: "Southern Air Transport — the Iran-Contra airline · CIA front · relocated to Columbus by Epstein", weight: 10},
+{source: "southern_air", target: "cia", type: "intelligence", label: "CIA-linked cargo airline · Iran-Contra drug/arms operation", weight: 9},
+{source: "epstein", target: "southern_air", type: "financial", label: "Epstein relocated Southern Air Transport to Columbus for Wexner retail empire · cocaine found on plane 1996", weight: 10},
+
+// MARTIN NOWAK — Harvard science associate, von Epstein tomb
+{source: "martin_nowak", target: "epstein", type: "financial", label: "$6.5M from Epstein for Harvard research program · April 2011: suggested 'Jeffrey Ritter von Epstein' · June 2012: photographed von Epstein family tomb in Vienna EFTA01177485", weight: 10},
+{source: "martin_nowak", target: "rothschild_hub", type: "financial", label: "Austrian-born Harvard professor in Epstein science network — bridge between Epstein and European aristocratic mythology", weight: 7},
+
+// TERJE RØD-LARSEN — UN diplomat, Vienna connection
+{source: "rod_larsen", target: "epstein", type: "political", label: "Former UN Special Envoy to Middle East · March 2011 visited Vienna after Epstein sent Gustav von Epstein Wikipedia link · 'I like the sound of von Epstein!' EFTA01803256", weight: 9},
+
+// FRANCESCA von HABSBURG — Habsburg imperial family connection
+{source: "von_habsburg", target: "epstein", type: "financial", label: "April 2013: Epstein associate brokered business deal — 'she holds highest ranking equity in company and has a board seat. She knows Ghislaine FYI' EFTA02037333", weight: 9},
+{source: "von_habsburg", target: "g_maxwell", type: "social", label: "Known to Ghislaine Maxwell · same European elite network", weight: 8}
 ]
         };
 
@@ -1567,7 +1600,9 @@
                     'elie_rothschild', 'evelyn_rothschild',
                     'epstein', 'clinton', 'g_maxwell', 'leon_black', 'deripaska', 'mandelson',
                     'wexner', 'thiel', 'southern_trust', 'edmond_doj', 'edmond_1mdb',
-                    'ruemmler', 'ehud_barak', 'carbyne', 'vekselberg'];
+                    'ruemmler', 'ehud_barak', 'carbyne', 'vekselberg',
+                    'wilbur_ross', 'bank_of_cyprus', 'trump', 'lutnick', 'southern_air', 'iran_contra', 'cia',
+                    'martin_nowak', 'rod_larsen', 'von_habsburg', 'g_maxwell', 'rothschild_hub'];
                 filteredNodes = graphData.nodes.filter(n => rothschildIds.includes(n.id));
                 const nodeIds = new Set(filteredNodes.map(n => n.id));
                 filteredLinks = graphData.links.filter(l =>
