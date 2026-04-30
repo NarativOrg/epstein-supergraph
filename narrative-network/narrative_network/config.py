@@ -98,7 +98,14 @@ def load_config() -> Config:
         if candidate and candidate.exists():
             data = _load_toml(candidate)
             cfg.raw = data
-            cfg.project_root = Path(data.get("project_root", str(cfg.project_root))).expanduser()
+            # project_root: honor what's in the file, but if the configured
+            # path doesn't exist (typical when copied from the example),
+            # silently fall back to the cwd. Saves users a "permission
+            # denied: /Users/narativ" gotcha on first install.
+            configured_root = data.get("project_root")
+            if configured_root:
+                p = Path(configured_root).expanduser()
+                cfg.project_root = p if p.exists() else Path.cwd()
             cfg.db_path = data.get("db_path", cfg.db_path)
             cfg.timezone = data.get("timezone", cfg.timezone)
             for section, dataclass_field in (

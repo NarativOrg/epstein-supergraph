@@ -2,8 +2,10 @@
 # Copy to ~/.narrative-network/config.toml and edit.
 # Never commit the real config — it contains secrets.
 
-# Where data/ lives. Defaults to the directory you run `nn` from.
-project_root = "/Users/narativ/narrative-network"
+# Where data/ lives. Leave empty to use the directory you run `nn` from
+# (the right answer for almost everyone — only set this if your data
+# directory lives somewhere other than the project checkout).
+project_root = ""
 db_path      = "data/narrative_network.sqlite"
 timezone     = "America/New_York"
 
