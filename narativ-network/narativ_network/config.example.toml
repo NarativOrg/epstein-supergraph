@@ -1,12 +1,12 @@
-# Narrative Network — example configuration.
-# Copy to ~/.narrative-network/config.toml and edit.
+# Narativ Network — example configuration.
+# Copy to ~/.narativ-network/config.toml and edit.
 # Never commit the real config — it contains secrets.
 
 # Where data/ lives. Leave empty to use the directory you run `nn` from
 # (the right answer for almost everyone — only set this if your data
 # directory lives somewhere other than the project checkout).
 project_root = ""
-db_path      = "data/narrative_network.sqlite"
+db_path      = "data/narativ_network.sqlite"
 timezone     = "America/New_York"
 
 [playout]
@@ -28,7 +28,7 @@ keyframe_interval_sec = 2
 poll_seconds                  = 900
 # Path to a Google service-account JSON. Share creator GDrive folders
 # with the service account's email — no per-creator OAuth needed.
-gdrive_service_account_json   = "/Users/narativ/.narrative-network/service-account.json"
+gdrive_service_account_json   = "/Users/narativ/.narativ-network/service-account.json"
 inbox_dir                     = "data/inbox"
 
 [process]
@@ -103,7 +103,7 @@ miss_threshold          = 3
 # Sole purpose: stop anything from leaving the channel above broadcast
 # ceiling. Per-show shaping happens at process time via the show's
 # audio_preset (DIALOG_TIGHT / DOC_NATURAL / MUSIC_LIGHT / PANEL /
-# NEWS_HARD — see narrative_network/process/audio.py).
+# NEWS_HARD — see narativ_network/process/audio.py).
 
 [audio.master_bus]
 disabled            = false        # set true to skip the master bus entirely

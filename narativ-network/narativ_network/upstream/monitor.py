@@ -83,7 +83,7 @@ def run_forever(cfg: Config) -> None:
         return
 
     miss_streak = 0
-    with httpx.Client(headers={"User-Agent": "narrative-network/1.0"}) as client:
+    with httpx.Client(headers={"User-Agent": "narativ-network/1.0"}) as client:
         while True:
             yt = _check_youtube_live(yt_url, client) if yt_url else None
             st = _check_status_url(status_url, client) if status_url else None

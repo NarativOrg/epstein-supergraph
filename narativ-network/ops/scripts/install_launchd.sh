@@ -11,8 +11,8 @@ fi
 
 PROJECT_ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 VENV_PYTHON="${VENV_PYTHON:-$PROJECT_ROOT/.venv/bin/python}"
-CONFIG_PATH="${NN_CONFIG:-$HOME/.narrative-network/config.toml}"
-LOG_DIR="${NN_LOG_DIR:-$HOME/Library/Logs/narrative-network}"
+CONFIG_PATH="${NN_CONFIG:-$HOME/.narativ-network/config.toml}"
+LOG_DIR="${NN_LOG_DIR:-$HOME/Library/Logs/narativ-network}"
 AGENTS_DIR="$HOME/Library/LaunchAgents"
 
 if [[ ! -x "$VENV_PYTHON" ]]; then
@@ -23,7 +23,7 @@ fi
 
 if [[ ! -f "$CONFIG_PATH" ]]; then
   echo "Config not found at $CONFIG_PATH" >&2
-  echo "Create it from narrative_network/config.example.toml first." >&2
+  echo "Create it from narativ_network/config.example.toml first." >&2
   exit 2
 fi
 

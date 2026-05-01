@@ -40,7 +40,7 @@ STATIC_DIR = THIS_DIR / "web" / "static"
 
 def create_app(cfg: Config | None = None) -> FastAPI:
     cfg = cfg or load_config()
-    app = FastAPI(title="Narrative Network")
+    app = FastAPI(title="Narativ Network")
     app.state.cfg = cfg
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
 

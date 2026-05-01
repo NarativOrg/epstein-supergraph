@@ -13,7 +13,7 @@ Subcommands:
   nn playout       run the ffmpeg RTMP pusher (auto-restarts itself)
   nn watchdog      run the watchdog forever
 
-Each subcommand reads ~/.narrative-network/config.toml unless $NN_CONFIG is set.
+Each subcommand reads ~/.narativ-network/config.toml unless $NN_CONFIG is set.
 """
 from __future__ import annotations
 

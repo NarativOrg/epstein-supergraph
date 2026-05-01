@@ -18,11 +18,11 @@ ffmpeg has full GPU/codec access.
 ## Install
 
 ```sh
-cd narrative-network
+cd narativ-network
 ./ops/scripts/install_launchd.sh
 ```
 
-The script edits each plist to point at your `narrative-network` checkout
+The script edits each plist to point at your `narativ-network` checkout
 and your venv's Python, then symlinks them into `~/Library/LaunchAgents/`
 and `launchctl load`s them.
 
@@ -32,7 +32,7 @@ and `launchctl load`s them.
 launchctl list | grep narativ                 # see job state
 launchctl kickstart -k gui/$(id -u)/org.narativ.nn.playout
 launchctl print gui/$(id -u)/org.narativ.nn.playout
-tail -f ~/Library/Logs/narrative-network/*.log
+tail -f ~/Library/Logs/narativ-network/*.log
 ```
 
 ## Uninstall

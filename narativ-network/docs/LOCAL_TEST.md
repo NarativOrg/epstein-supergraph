@@ -38,14 +38,14 @@ curl -L -o ~/whisper-models/ggml-medium.en.bin \
 ## Run the smoke test
 
 ```sh
-git clone <your-repo-or-tarball-path> narrative-network
-cd narrative-network
+git clone <your-repo-or-tarball-path> narativ-network
+cd narativ-network
 python3.12 -m venv .venv
 . .venv/bin/activate
 pip install -e .
 
-mkdir -p ~/.narrative-network
-cp narrative_network/config.example.toml ~/.narrative-network/config.toml
+mkdir -p ~/.narativ-network
+cp narativ_network/config.example.toml ~/.narativ-network/config.toml
 # Set admin_token to any long string. Set [transcripts] model_path if you
 # want the optional whisper step. Everything else can stay default.
 
@@ -131,7 +131,7 @@ balance / level on the new render.
 
 ```sh
 rm -rf data/archive/* data/run_logs/* data/inbox/_smoke_test.mp4
-rm -f data/narrative_network.sqlite*
+rm -f data/narativ_network.sqlite*
 ```
 
 Then `nn smoke-test` again will recreate everything cleanly.

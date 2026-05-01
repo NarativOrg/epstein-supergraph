@@ -8,7 +8,7 @@
     <array>
       <string>__VENV_PYTHON__</string>
       <string>-m</string>
-      <string>narrative_network.cli</string>
+      <string>narativ_network.cli</string>
       <string>schedule</string>
     </array>
   <key>WorkingDirectory</key><string>__PROJECT_ROOT__</string>

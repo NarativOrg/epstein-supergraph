@@ -3,13 +3,13 @@
   "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>Label</key>           <string>org.narativ.nn.cue-runner</string>
+  <key>Label</key>           <string>org.narativ.nn.ingest</string>
   <key>ProgramArguments</key>
     <array>
       <string>__VENV_PYTHON__</string>
       <string>-m</string>
-      <string>narrative_network.cli</string>
-      <string>cue-runner</string>
+      <string>narativ_network.cli</string>
+      <string>ingest</string>
     </array>
   <key>WorkingDirectory</key><string>__PROJECT_ROOT__</string>
   <key>EnvironmentVariables</key>
@@ -19,8 +19,7 @@
     </dict>
   <key>RunAtLoad</key>       <true/>
   <key>KeepAlive</key>       <true/>
-  <key>ThrottleInterval</key><integer>5</integer>
-  <key>StandardOutPath</key> <string>__LOG_DIR__/cue-runner.log</string>
-  <key>StandardErrorPath</key><string>__LOG_DIR__/cue-runner.err.log</string>
+  <key>StandardOutPath</key> <string>__LOG_DIR__/ingest.log</string>
+  <key>StandardErrorPath</key><string>__LOG_DIR__/ingest.err.log</string>
 </dict>
 </plist>

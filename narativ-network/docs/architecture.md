@@ -1,4 +1,4 @@
-# Narrative Network — Architecture
+# Narativ Network — Architecture
 
 ## What this is
 
@@ -50,7 +50,7 @@ presenter ──────┼─►  rtmp://mac/internal/live ─► nginx-rtm
 
 Components on the Mac:
 
-- **ffmpeg playout** (`narrative_network/playout/`) — reads
+- **ffmpeg playout** (`narativ_network/playout/`) — reads
   `data/run_logs/current_playlist.ffconcat` and pushes to
   `rtmp://127.0.0.1:1935/internal/scheduled`.
 - **nginx-rtmp** (`ops/nginx-rtmp/nginx.conf`) — receives the scheduled
@@ -60,10 +60,10 @@ Components on the Mac:
   encoder. Reads the scheduled feed as a Media Source. Has a LIVE scene
   reading the live RTMP input. Pushes the active scene out to YouTube
   etc. (via OBS Multi-RTMP plugin OR via nginx-rtmp `distribute`).
-- **OBS controller** (`narrative_network/obs/`) — our app's WebSocket
+- **OBS controller** (`narativ_network/obs/`) — our app's WebSocket
   client. The dashboard's BREAK IN button calls `break_in()` →
   `SetCurrentProgramScene LIVE` → presenter is on air.
-- **Watchdog** (`narrative_network/watchdog/`) — confirms the playout
+- **Watchdog** (`narativ_network/watchdog/`) — confirms the playout
   ffmpeg is alive; logs silence/black detection.
 
 Live break-ins are clean because OBS does the cut, not ffmpeg. ffmpeg
@@ -73,7 +73,7 @@ at that feed during the break-in.
 ### Path A (fallback) — upload to upstream.so
 
 If we ever need to fall back to upstream.so as a managed fan-out, we
-have a complete implementation in `narrative_network/upstream/`:
+have a complete implementation in `narativ_network/upstream/`:
 
 - `daily_build.py` resolves an entire calendar day to the second and
   writes a folder of files + a manifest + an upload checklist.
@@ -102,7 +102,7 @@ These run identically regardless of output path:
 
 ## Data model (SQLite)
 
-See `narrative_network/db/schema.sql`. Core tables:
+See `narativ_network/db/schema.sql`. Core tables:
 
 - **shows** — series metadata (title, default duration, tags, source config)
 - **sources** — where we fetch new episodes from (gdrive, local folder, etc.)

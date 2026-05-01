@@ -1,4 +1,4 @@
-# Narrative Network
+# Narativ Network
 
 A self-running 24/7 narrative TV channel on a Mac mini.
 
@@ -20,16 +20,16 @@ brew install --cask obs                            # scene switcher + encoder
 # Optional: brew install --cask obs-multi-rtmp     # if you don't want nginx fanout
 
 # 2. Get the code, install Python deps
-git clone <your-repo-url> narrative-network
-cd narrative-network
+git clone <your-repo-url> narativ-network
+cd narativ-network
 python3.12 -m venv .venv
 . .venv/bin/activate
 pip install -e .
 
 # 3. Configure
-mkdir -p ~/.narrative-network
-cp narrative_network/config.example.toml ~/.narrative-network/config.toml
-$EDITOR ~/.narrative-network/config.toml         # admin_token, gdrive SA path, OBS pwd
+mkdir -p ~/.narativ-network
+cp narativ_network/config.example.toml ~/.narativ-network/config.toml
+$EDITOR ~/.narativ-network/config.toml         # admin_token, gdrive SA path, OBS pwd
 
 # 4. Set up OBS once (~5 minutes)
 open ops/obs/SETUP.md

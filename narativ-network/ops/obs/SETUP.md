@@ -22,7 +22,7 @@ OBS 28+ ships obs-websocket built in. Open OBS:
 - Server port: `4455`
 - ☑ Enable Authentication
 - Click **Show Connect Info** → copy the password
-- Paste the password into `~/.narrative-network/config.toml` under
+- Paste the password into `~/.narativ-network/config.toml` under
   `[obs] websocket_password = "..."`
 
 ## 3. Scenes

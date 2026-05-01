@@ -2,8 +2,8 @@
 
 Looks in (first found wins):
   1. $NN_CONFIG (path to a TOML file)
-  2. ~/.narrative-network/config.toml
-  3. ./narrative_network/config.example.toml (fallback for `nn doctor`)
+  2. ~/.narativ-network/config.toml
+  3. ./narativ_network/config.example.toml (fallback for `nn doctor`)
 """
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ from pathlib import Path
 
 DEFAULT_CONFIG_PATHS = [
     Path(os.environ["NN_CONFIG"]) if os.environ.get("NN_CONFIG") else None,
-    Path.home() / ".narrative-network" / "config.toml",
+    Path.home() / ".narativ-network" / "config.toml",
     Path(__file__).parent / "config.example.toml",
 ]
 
@@ -76,7 +76,7 @@ class AdminConfig:
 @dataclass
 class Config:
     project_root: Path = field(default_factory=lambda: Path.cwd())
-    db_path: str = "data/narrative_network.sqlite"
+    db_path: str = "data/narativ_network.sqlite"
     timezone: str = "America/New_York"
     playout: PlayoutConfig = field(default_factory=PlayoutConfig)
     ingest: IngestConfig = field(default_factory=IngestConfig)

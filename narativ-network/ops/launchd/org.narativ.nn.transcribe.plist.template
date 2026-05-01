@@ -3,13 +3,13 @@
   "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>Label</key>           <string>org.narativ.nn.watchdog</string>
+  <key>Label</key>           <string>org.narativ.nn.transcribe</string>
   <key>ProgramArguments</key>
     <array>
       <string>__VENV_PYTHON__</string>
       <string>-m</string>
-      <string>narrative_network.cli</string>
-      <string>watchdog</string>
+      <string>narativ_network.cli</string>
+      <string>transcribe-watch</string>
     </array>
   <key>WorkingDirectory</key><string>__PROJECT_ROOT__</string>
   <key>EnvironmentVariables</key>
@@ -19,7 +19,9 @@
     </dict>
   <key>RunAtLoad</key>       <true/>
   <key>KeepAlive</key>       <true/>
-  <key>StandardOutPath</key> <string>__LOG_DIR__/watchdog.log</string>
-  <key>StandardErrorPath</key><string>__LOG_DIR__/watchdog.err.log</string>
+  <key>ThrottleInterval</key><integer>5</integer>
+  <key>Nice</key>            <integer>10</integer>
+  <key>StandardOutPath</key> <string>__LOG_DIR__/transcribe.log</string>
+  <key>StandardErrorPath</key><string>__LOG_DIR__/transcribe.err.log</string>
 </dict>
 </plist>
