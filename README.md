@@ -240,6 +240,7 @@ Research and journalism purposes. Attribution required.
 ### 🔗 Quick Links
 
 - **[Open Visualization](EPSTEIN_SUPERGRAPH_V4.html)** - Main interactive graph
+- **[The Trump Take](trump-take.html)** - Live counter: $ flowing to Trump & family ($107.74/sec)
 - **[Development Guide](HANDOVER.md)** - How to expand the network
 - **[Version History](versions/)** - Previous iterations (V1-V3)
 

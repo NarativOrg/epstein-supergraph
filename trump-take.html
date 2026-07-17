@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>🔴 THE TRUMP TAKE — Live Counter</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #0a0a0a;
+    --red: #ff4444;
+    --red-deep: #cc0000;
+    --gold: #ffcf4a;
+    --ink: #ffffff;
+    --muted: #7a7a7a;
+    --muted-2: #a8a8a8;
+    --card: rgba(255,255,255,0.03);
+    --line: rgba(255,255,255,0.09);
+  }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background:
+      radial-gradient(1200px 600px at 50% -10%, rgba(255,68,68,0.10), transparent 60%),
+      var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px 90px; }
+
+  /* Top ticker bar */
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; gap: 12px;
+    height: 34px; padding: 0 16px;
+    background: rgba(0,0,0,0.92);
+    border-bottom: 1px solid var(--red);
+    backdrop-filter: blur(6px);
+    font-size: 11px; letter-spacing: 1px;
+  }
+  .topbar .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--red); box-shadow: 0 0 10px var(--red); animation: blink 1.4s infinite; }
+  .topbar b { color: var(--red); }
+  .topbar .spacer { flex: 1; }
+  .topbar .live { color: var(--muted-2); }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+
+  /* Hero */
+  .hero { text-align: center; padding: 54px 0 30px; }
+  .kicker {
+    color: var(--red); font-weight: 800; letter-spacing: 4px; font-size: 12px;
+    text-transform: uppercase; margin-bottom: 14px;
+  }
+  h1 {
+    font-size: clamp(26px, 5vw, 46px);
+    font-weight: 800; letter-spacing: 0.5px; line-height: 1.12;
+    text-shadow: 0 0 24px rgba(255,0,0,0.35);
+  }
+  h1 .accent { color: var(--red); }
+  .subhead { color: var(--muted-2); font-size: clamp(13px,2.4vw,16px); margin-top: 14px; }
+
+  /* Counter */
+  .counter-shell {
+    margin: 34px auto 8px; max-width: 900px;
+    background: linear-gradient(180deg, rgba(255,68,68,0.08), rgba(255,68,68,0.02));
+    border: 1px solid rgba(255,68,68,0.35);
+    border-radius: 18px;
+    padding: 30px 20px 26px;
+    box-shadow: 0 0 60px rgba(255,0,0,0.12), inset 0 0 40px rgba(255,0,0,0.05);
+  }
+  .counter-label { color: var(--muted-2); font-size: 12px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 12px; }
+  .counter {
+    font-variant-numeric: tabular-nums;
+    font-weight: 800;
+    font-size: clamp(38px, 9vw, 96px);
+    letter-spacing: -1px;
+    color: var(--red);
+    text-shadow: 0 0 30px rgba(255,0,0,0.5);
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .counter .cents { color: var(--gold); font-size: 0.42em; opacity: 0.85; }
+  .counter-sub { margin-top: 14px; color: var(--muted); font-size: 13px; }
+  .counter-sub b { color: var(--muted-2); }
+
+  /* Rate row */
+  .rates { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 26px auto 0; max-width: 900px; }
+  .rate {
+    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px 10px; text-align: center;
+  }
+  .rate .val { font-variant-numeric: tabular-nums; font-weight: 800; font-size: clamp(16px,3.2vw,24px); color: var(--gold); }
+  .rate .unit { color: var(--muted); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; margin-top: 6px; }
+
+  /* Section */
+  section { margin-top: 52px; }
+  .sec-title { display: flex; align-items: baseline; gap: 12px; margin-bottom: 18px; }
+  .sec-title h2 { font-size: 18px; letter-spacing: 1px; text-transform: uppercase; color: var(--ink); }
+  .sec-title .bar { flex: 1; height: 1px; background: var(--line); }
+  .sec-title .tag { color: var(--red); font-size: 12px; font-weight: 700; letter-spacing: 1px; }
+
+  /* Streams */
+  .streams { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px,1fr)); gap: 16px; }
+  .stream {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 20px; position: relative; overflow: hidden;
+  }
+  .stream::before { content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background: var(--red); opacity:.7; }
+  .stream h3 { font-size: 15px; margin-bottom: 4px; }
+  .stream .amt { font-variant-numeric: tabular-nums; font-weight: 800; font-size: 28px; color: var(--red); margin: 8px 0 2px; }
+  .stream .per { color: var(--gold); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .stream p { color: var(--muted-2); font-size: 12.5px; margin-top: 10px; }
+  .stream .src { color: var(--muted); font-size: 11px; margin-top: 10px; }
+
+  /* Cabinet / context stats */
+  .ctx { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px,1fr)); gap: 16px; }
+  .stat {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 20px;
+  }
+  .stat .big { font-variant-numeric: tabular-nums; font-weight: 800; font-size: 30px; color: var(--gold); }
+  .stat .lbl { color: var(--ink); font-size: 13.5px; font-weight: 600; margin-top: 6px; }
+  .stat .note { color: var(--muted); font-size: 11.5px; margin-top: 8px; }
+
+  /* Methodology */
+  .method { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; }
+  .method h2 { font-size: 15px; letter-spacing: 1px; text-transform: uppercase; color: var(--red); margin-bottom: 12px; }
+  .method ul { list-style: none; }
+  .method li { color: var(--muted-2); font-size: 13px; padding: 7px 0 7px 20px; position: relative; border-bottom: 1px solid rgba(255,255,255,0.05); }
+  .method li:last-child { border-bottom: 0; }
+  .method li::before { content:"▸"; color: var(--red); position: absolute; left: 0; }
+  .method b { color: var(--ink); }
+
+  /* Sources */
+  .sources { margin-top: 40px; }
+  .sources h2 { font-size: 13px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+  .sources ol { list-style: decimal; padding-left: 22px; color: var(--muted-2); font-size: 12.5px; }
+  .sources li { padding: 4px 0; }
+  .sources a { color: var(--red); text-decoration: none; }
+  .sources a:hover { text-decoration: underline; color: #ff7a7a; }
+
+  /* Footer / brand */
+  .brand { display: flex; align-items: center; gap: 12px; margin-top: 46px; padding-top: 22px; border-top: 1px solid var(--line); }
+  .brand .mark { color: var(--red); font-weight: 800; letter-spacing: 3px; font-size: 14px; text-shadow: 0 0 12px rgba(255,0,0,.5); }
+  .brand .sub { color: var(--muted); font-size: 11px; letter-spacing: 1px; }
+  .disclaimer { color: var(--muted); font-size: 11px; margin-top: 14px; line-height: 1.6; }
+
+  @media (max-width: 560px) {
+    .rates { grid-template-columns: repeat(2,1fr); }
+    .counter { letter-spacing: -0.5px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span class="dot"></span>
+  <b>THE TRUMP TAKE</b>
+  <span class="live">· LIVE MONEY COUNTER</span>
+  <span class="spacer"></span>
+  <span class="live" id="clock">—</span>
+</div>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="kicker">Profiting from the Presidency</div>
+    <h1>Money flowing to <span class="accent">Trump &amp; his family</span><br>since he took office</h1>
+    <div class="subhead">A live tally, ticking at the documented rate of <b style="color:var(--gold)">$107.74 every second</b>.</div>
+
+    <div class="counter-shell">
+      <div class="counter-label">Estimated total since inauguration · Jan 20, 2025</div>
+      <div class="counter" id="counter">$0</div>
+      <div class="counter-sub">Accruing at <b>$3.4 billion / year</b> — Trump's personal income plus his family's crypto empire.</div>
+    </div>
+
+    <div class="rates">
+      <div class="rate"><div class="val" id="r-sec">$107.74</div><div class="unit">per second</div></div>
+      <div class="rate"><div class="val" id="r-min">$6,464</div><div class="unit">per minute</div></div>
+      <div class="rate"><div class="val" id="r-hr">$387,862</div><div class="unit">per hour</div></div>
+      <div class="rate"><div class="val" id="r-day">$9.31M</div><div class="unit">per day</div></div>
+    </div>
+  </div>
+
+  <!-- STREAMS -->
+  <section>
+    <div class="sec-title">
+      <span class="tag">01</span>
+      <h2>Where the money comes from</h2>
+      <span class="bar"></span>
+    </div>
+    <div class="streams">
+      <div class="stream">
+        <h3>Donald Trump — personal income</h3>
+        <div class="amt">$2.2B<span style="font-size:14px;color:var(--muted)"> / yr</span></div>
+        <div class="per" id="s-trump">+$69.71 / sec</div>
+        <p>His single biggest year ever. ~$1.4B in crypto income ($TRUMP memecoin + World Liberty Financial), plus $575M+ in real estate and overseas licensing (Saudi Arabia, Qatar).</p>
+        <div class="src">Source: Fortune, "Donald Trump's $2.2 billion year" (2026)</div>
+      </div>
+      <div class="stream">
+        <h3>The Trump family crypto empire</h3>
+        <div class="amt">~$1.2B<span style="font-size:14px;color:var(--muted)"> / yr</span></div>
+        <div class="per" id="s-family">+$38.03 / sec</div>
+        <p>Beyond Trump's own filing: the sons' World Liberty Financial stakes, memecoin cuts, and Jared Kushner's Gulf-funded Affinity Partners. Family crypto holdings valued as high as <b style="color:var(--muted-2)">$11.6 billion</b>, with $800M+ from crypto sales in H1 2025 alone.</p>
+        <div class="src">Source: House Judiciary Committee Democrats report (2025)</div>
+      </div>
+      <div class="stream">
+        <h3>Net worth, then vs. now</h3>
+        <div class="amt">$2.4B → $6.3B</div>
+        <div class="per">nearly tripled in ~18 months</div>
+        <p>Forbes puts Trump's fortune at $6.3B as of April 2026, up from ~$2.4B at the start of 2024 — growth driven overwhelmingly by ventures tied directly to his political power.</p>
+        <div class="src">Source: Forbes, Dan Alexander (2026)</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CABINET -->
+  <section>
+    <div class="sec-title">
+      <span class="tag">02</span>
+      <h2>And the room around him</h2>
+      <span class="bar"></span>
+    </div>
+    <div class="ctx">
+      <div class="stat">
+        <div class="big">$7.5B</div>
+        <div class="lbl">Combined net worth of the Cabinet</div>
+        <div class="note">Excluding Trump. The richest presidential cabinet in history — more than double his first-term cabinet ($3.2B), and ~64× Biden's ($118M).</div>
+      </div>
+      <div class="stat">
+        <div class="big">$390B+</div>
+        <div class="lbl">The billionaire administration</div>
+        <div class="note">12 billionaires serving across the broader administration were worth ~$390.6B as of March — the wealthiest White House in modern history.</div>
+      </div>
+      <div class="stat">
+        <div class="big">13</div>
+        <div class="lbl">Billionaires appointed</div>
+        <div class="note">An unprecedented number tapped for top roles — Lutnick (Commerce), McMahon (Education), Bessent (Treasury), Burgum (Interior), and more.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- METHODOLOGY -->
+  <section>
+    <div class="method">
+      <h2>How this counter works</h2>
+      <ul>
+        <li><b>The ticking number</b> is an <b>annual income flow</b> — money coming <i>in</i> — not net worth. It counts up from Trump's Jan 20, 2025 inauguration at $3.4B/year ($107.74/second).</li>
+        <li><b>$3.4B/yr</b> = Trump's documented personal income (<b>$2.2B</b>, Fortune) + a conservative estimate of additional Trump-family gains not on his personal filing (<b>~$1.2B</b>, from the House Judiciary report's $11.6B holdings and $800M+ H1-2025 crypto sales).</li>
+        <li><b>Cabinet figures are net worth (a stock), not a yearly flow</b>, so they are shown as context and are deliberately <i>not</i> added to the ticking counter — that would mix a one-time balance with an annual rate.</li>
+        <li>Figures are drawn from public reporting and financial disclosures. They are estimates; where sources disagree we use the more conservative number. All dollar amounts are USD.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- SOURCES -->
+  <section class="sources">
+    <h2>Sources</h2>
+    <ol>
+      <li><a href="https://fortune.com/2026/07/02/donald-trump-billionaire-2-2-billion-wealth-brand/" target="_blank" rel="noopener">Fortune — "The true cost of Donald Trump's $2.2 billion year" (Jul 2026)</a></li>
+      <li><a href="https://www.aljazeera.com/news/2026/6/30/donald-trump-reports-1-4bn-in-cryptocurrency-income-in-government-filing" target="_blank" rel="noopener">Al Jazeera — Trump reports $1.4bn in crypto income (2025 disclosure)</a></li>
+      <li><a href="https://time.com/article/2026/07/01/trump-2025-financial-disclosure-crypto-world-liberty-financial/" target="_blank" rel="noopener">TIME — Trump's 2025 financial disclosure &amp; crypto ventures</a></li>
+      <li><a href="https://democrats-judiciary.house.gov/media-center/press-releases/new-report-exposes-the-trump-family-s-multi-billion-dollar-crypto-empire-fueled-by-self-dealing-and-corrupt-foreign-interests" target="_blank" rel="noopener">U.S. House Judiciary Committee Democrats — "Trump, Crypto, and a New Age of Corruption" ($11.6B family holdings)</a></li>
+      <li><a href="https://www.forbes.com/sites/danalexander/2026/07/15/trump-is-making-three-times-as-much-in-white-house-as-he-did-in-business/" target="_blank" rel="noopener">Forbes — Trump making 3× as much in the White House as in business</a></li>
+      <li><a href="https://www.forbes.com/sites/kylemullins/2025/08/13/inside-the-richest-presidential-cabinet-ever/" target="_blank" rel="noopener">Forbes — "Inside the richest presidential cabinet ever" ($7.5B)</a></li>
+      <li><a href="https://www.washingtonpost.com/politics/interactive/2025/trump-white-house-billionaires-musk/" target="_blank" rel="noopener">Washington Post — The Trump administration's billionaires ($390B+)</a></li>
+      <li><a href="https://www.americanprogress.org/feature/trumps-take/" target="_blank" rel="noopener">Center for American Progress — "Trump's Take" real-time tracker</a></li>
+    </ol>
+  </section>
+
+  <div class="brand">
+    <div>
+      <div class="mark">NARATIV</div>
+      <div class="sub">THE GREATEST HEIST · INVESTIGATIVE VISUALIZATION</div>
+    </div>
+  </div>
+  <div class="disclaimer">
+    For investigative journalism, academic research, and public accountability. All figures are estimates compiled from public reporting and financial disclosures and may be revised as new data emerges. Not financial or legal advice.
+  </div>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  // ---- Model -------------------------------------------------------------
+  var SECONDS_PER_YEAR = 365.25 * 24 * 60 * 60; // 31,557,600
+
+  var TRUMP_PER_YEAR  = 2_200_000_000; // Fortune: $2.2B personal income year
+  var FAMILY_PER_YEAR = 1_200_000_000; // conservative additional family flow
+  var TOTAL_PER_YEAR  = TRUMP_PER_YEAR + FAMILY_PER_YEAR; // $3.4B
+
+  var perSecond = TOTAL_PER_YEAR / SECONDS_PER_YEAR;      // ~$107.74
+  var trumpPerSecond  = TRUMP_PER_YEAR / SECONDS_PER_YEAR;  // ~$69.71
+  var familyPerSecond = FAMILY_PER_YEAR / SECONDS_PER_YEAR; // ~$38.03
+
+  // Second inauguration: Jan 20, 2025, noon ET (17:00 UTC)
+  var START = Date.UTC(2025, 0, 20, 17, 0, 0);
+
+  // ---- Formatting --------------------------------------------------------
+  function fmtDollars(n) {
+    var whole = Math.floor(n);
+    var cents = Math.round((n - whole) * 100);
+    if (cents === 100) { whole += 1; cents = 0; }
+    var s = whole.toLocaleString("en-US");
+    return { whole: "$" + s, cents: ("0" + cents).slice(-2) };
+  }
+  function fmtRate(n) {
+    return "$" + n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  var counterEl = document.getElementById("counter");
+  var clockEl   = document.getElementById("clock");
+
+  // Static rate readouts
+  document.getElementById("r-sec").textContent = fmtRate(perSecond);
+  document.getElementById("r-min").textContent = "$" + Math.round(perSecond * 60).toLocaleString("en-US");
+  document.getElementById("r-hr").textContent  = "$" + Math.round(perSecond * 3600).toLocaleString("en-US");
+  document.getElementById("r-day").textContent = "$" + (perSecond * 86400 / 1e6).toFixed(2) + "M";
+  document.getElementById("s-trump").textContent  = "+" + fmtRate(trumpPerSecond) + " / sec";
+  document.getElementById("s-family").textContent = "+" + fmtRate(familyPerSecond) + " / sec";
+
+  // ---- Live tick ---------------------------------------------------------
+  function render() {
+    var elapsedSec = (Date.now() - START) / 1000;
+    if (elapsedSec < 0) elapsedSec = 0;
+    var amount = elapsedSec * perSecond;
+
+    var f = fmtDollars(amount);
+    counterEl.innerHTML = f.whole + '<span class="cents">.' + f.cents + '</span>';
+
+    var days = Math.floor(elapsedSec / 86400);
+    clockEl.textContent = days.toLocaleString("en-US") + " days in office";
+  }
+
+  render();
+  // ~16fps is plenty for a smooth cents roll without burning CPU
+  setInterval(render, 60);
+})();
+</script>
+</body>
+</html>
